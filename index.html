@@ -4757,7 +4757,7 @@ const listQ=document.getElementById('list-q'),listLv=document.getElementById('li
 listLv.innerHTML='<option value="">Alle Altersbereiche</option>'+LV.map(l=>'<option value="'+l.id+'">'+esc(l.name)+'</option>').join('');
 function updateListCnt(){const n=allSessions().length;listCnt.textContent=n;listCnt.hidden=n===0;}
 function renderStoreNote(){storeNote.textContent=dbCol?(dbWritable?'Synchronisiert: Du siehst deine Einheiten auf allen Geräten, auf denen du angemeldet bist.':'Du kannst die Einheiten ansehen und als PDF laden. Eigene Änderungen werden nur auf diesem Gerät gespeichert.')
-  :(dbReady?'Gespeichert nur auf diesem Gerät. Melde dich oben mit „Anmelden für Sync“ an, damit alles auf Handy und PC gleich ist.':'Wird geladen …');}
+  :(dbReady?(window.HI_CONFIG&&window.HI_CONFIG.supabaseUrl?'Gespeichert nur auf diesem Gerät. Melde dich oben mit „Anmelden für Sync“ an, damit alles auf Handy und PC gleich ist.':'Gespeichert nur in diesem Browser auf diesem Gerät.'):'Wird geladen …');}
 async function saveSession(p){
   const body={meta:clone(p.meta),parts:clone(p.parts),total:totalMin(p),count:countOf(p),createdAt:p.createdAt||Date.now(),updatedAt:Date.now()};
   if(dbCol&&dbWritable&&p.src!=='local'){
@@ -4857,7 +4857,7 @@ const terminFor=s=>termStore.all().find(t=>t.einheit&&t.einheit.src===s.src&&t.e
 const timeStr=t=>(t.zeit||'')+(t.ende?'–'+t.ende:'');
 let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),1);})(),calSel=today();
 const calEl=document.getElementById('cal'),calGrid=document.getElementById('cal-grid'),calDay=document.getElementById('cal-day'),calNext=document.getElementById('cal-next');
-function calNote(){const el=document.getElementById('cal-note');el.textContent=termStore.col?(termStore.writable?'Synchronisiert: auf allen Geräten sichtbar, auf denen du angemeldet bist.':'Du kannst den Kalender ansehen. Eigene Einträge werden nur auf diesem Gerät gespeichert.'):(termStore.ready?'Gespeichert nur auf diesem Gerät. Melde dich oben mit „Anmelden für Sync“ an, damit alles auf Handy und PC gleich ist.':'Kalender wird geladen …');}
+function calNote(){const el=document.getElementById('cal-note');el.textContent=termStore.col?(termStore.writable?'Synchronisiert: auf allen Geräten sichtbar, auf denen du angemeldet bist.':'Du kannst den Kalender ansehen. Eigene Einträge werden nur auf diesem Gerät gespeichert.'):(termStore.ready?(window.HI_CONFIG&&window.HI_CONFIG.supabaseUrl?'Gespeichert nur auf diesem Gerät. Melde dich oben mit „Anmelden für Sync“ an, damit alles auf Handy und PC gleich ist.':'Gespeichert nur in diesem Browser auf diesem Gerät.'):'Kalender wird geladen …');}
 function evHtml(t){const s=sessByLink(t.einheit);return '<span class="ev '+(t.art||'training')+'" title="'+esc(timeStr(t)+' '+(t.titel||artName(t.art))+(s?' · Einheit: '+((s.meta||{}).thema||'Trainingseinheit'):''))+'">'+(s?'<i class="ok" aria-hidden="true">✓</i>':'')+esc((t.zeit?t.zeit+' ':'')+(t.titel||artName(t.art)))+'</span>';}
 function tcardHtml(t,showDate){const s=sessByLink(t.einheit),k=tKey(t),ed=termStore.canEdit(t);
   let ein;
