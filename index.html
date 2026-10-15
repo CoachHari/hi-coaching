@@ -127,6 +127,22 @@ footer{margin-top:32px;font-size:13px;color:var(--muted)}
   .lower{grid-template-columns:1fr}
   .card-head,.pitch,.side,.lower{padding-left:16px;padding-right:16px}
 }
+/* ---------- Intro ---------- */
+.splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 38%,#2C66BC 0%,#1F53A0 42%,#0E2A57 100%);color:#fff;cursor:pointer;overflow:hidden;transition:transform .8s cubic-bezier(.76,0,.24,1),opacity .6s ease}
+.splash.out{transform:translateY(-100%)}
+.splash::after{content:"";position:absolute;inset:-40%;background:conic-gradient(from 200deg at 50% 50%,transparent 0deg,rgba(255,255,255,.07) 40deg,transparent 90deg);animation:spSweep 2.6s .2s ease-out both;pointer-events:none}
+.sp-inner{position:relative;z-index:1;text-align:center;padding:0 16px}
+.sp-hi{font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;font-weight:700;font-size:clamp(96px,26vw,200px);line-height:.88;display:flex;justify-content:center;gap:.06em}
+.sp-hi span{display:inline-block;opacity:0;transform:translateY(.45em);animation:spUp .75s cubic-bezier(.16,1,.3,1) forwards}
+.sp-hi .sp-dot{color:#F2C230}
+.sp-hi span:nth-child(1){animation-delay:.15s}.sp-hi span:nth-child(2){animation-delay:.27s}.sp-hi span:nth-child(3){animation-delay:.39s}.sp-hi span:nth-child(4){animation-delay:.51s}
+.sp-co{display:flex;justify-content:center;gap:.42em;margin-top:.5em;font-family:"Barlow Condensed","Arial Narrow",Arial,sans-serif;font-weight:600;font-size:clamp(22px,6.2vw,42px);text-transform:uppercase}
+.sp-co span{display:inline-block;opacity:0;transform:translateY(.6em);animation:spUp .6s cubic-bezier(.16,1,.3,1) forwards}
+.sp-bar{display:block;height:4px;width:76px;margin:22px auto 0;border-radius:2px;background:#F2C230;transform:scaleX(0);animation:spBar .7s 1.15s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes spUp{to{opacity:1;transform:none}}
+@keyframes spBar{to{transform:scaleX(1)}}
+@keyframes spSweep{from{transform:rotate(-40deg);opacity:0}30%{opacity:1}to{transform:rotate(40deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.splash{transition:opacity .4s}.splash.out{transform:none;opacity:0}.splash::after{display:none}.sp-hi span,.sp-co span{animation:none;opacity:1;transform:none}.sp-bar{animation:none;transform:none}}
 /* ---------- Trainingseinheit planen ---------- */
 .views{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
 .views button{font-family:var(--display);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.04em;padding:9px 18px;border-radius:999px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
@@ -365,6 +381,11 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 <body>
 
 
+<div class="splash" id="splash" role="img" aria-label="H. I. Coaching"><div class="sp-inner"><div class="sp-hi" aria-hidden="true"><span>H</span><span class="sp-dot">.</span><span>I</span><span class="sp-dot">.</span></div><div class="sp-co" aria-hidden="true"><span style="animation-delay:0.62s">C</span><span style="animation-delay:0.67s">o</span><span style="animation-delay:0.72s">a</span><span style="animation-delay:0.77s">c</span><span style="animation-delay:0.82s">h</span><span style="animation-delay:0.87s">i</span><span style="animation-delay:0.92s">n</span><span style="animation-delay:0.97s">g</span></div><i class="sp-bar" aria-hidden="true"></i></div></div>
+<script>(function(){var s=document.getElementById('splash'),t0=Date.now(),done=false;
+function hide(){if(done)return;done=true;s.classList.add('out');setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);},900);}
+window.__splashHide=function(min){setTimeout(hide,Math.max(0,(min||0)-(Date.now()-t0)));};
+s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();});})();</script>
 <div class="wrap">
   <header class="top">
     <div class="badge" aria-hidden="true">FCB</div>
@@ -469,7 +490,7 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="sync.js"></script>
 <script>
-(function(){
+function __hiMain(){(function(){
 const NS='http://www.w3.org/2000/svg';
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const BLUE='#1F53A0',WAIT='#86A9DE',RED='#D85A30',NEU='#EF9F27',GRASS='#4A8C3F';
@@ -4969,7 +4990,10 @@ function renderPlanLink(){const el=document.getElementById('plan-link');const t=
 
 cur=location.hash.slice(1)||'passen';
 renderLevel();
-})();
+})();}
+(function(){var ran=false,rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+window.__hiGo=function(){if(ran)return;ran=true;try{__hiMain();}finally{if(window.__splashHide)window.__splashHide(rm?900:2700);}};
+requestAnimationFrame(function(){setTimeout(window.__hiGo,rm?60:1400);});})();
 </script>
 <script>
 if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
