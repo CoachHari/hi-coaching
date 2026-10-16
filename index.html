@@ -819,6 +819,8 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
         <li data-rv><span class="st-y">09/2025 – 07/2026</span><b>Trainer U12 · SV Austria Salzburg</b></li>
         <li data-rv><span class="st-y">2024/25</span><b>Trainer U16 · SG Golling/Scheffau</b></li>
         <li data-rv><span class="st-y">2023/24</span><b>Trainer U13 · SV Kuchl</b></li>
+        <li data-rv><span class="st-y">2022/23</span><b>Trainer U14 · SG Golling/Scheffau</b></li>
+        <li data-rv><span class="st-y">2021/22</span><b>Trainer U12 · SG Golling/Scheffau</b></li>
         <li data-rv><span class="st-y">2019 – 2021</span><b>Trainer U10 · SG Golling/Scheffau</b><small>im zweiten Jahr zusätzlich Jugendleiter</small></li>
         <li data-rv><span class="st-y">2018</span><b>Start als Bambini-Trainer</b><small>SG Golling/Scheffau</small></li>
         <li data-rv class="extra"><span class="st-y">laufend</span><b>Individualtrainer</b><small>für einige höherklassige Spieler</small></li>
@@ -5562,9 +5564,10 @@ function countUp(el){const to=NUMS[el.dataset.count]!=null?NUMS[el.dataset.count
   const t0=performance.now(),D=1400;const f=t=>{const u=Math.min(1,(t-t0)/D),e=1-Math.pow(1-u,3);el.textContent=Math.round(to*e);if(u<1)requestAnimationFrame(f);};requestAnimationFrame(f);}
 /* Werdegang-Diagramm */
 (function(){const svg=document.getElementById('chart');const N='http://www.w3.org/2000/svg';
-  const P=[{y:2018,v:370,t:'Start: Bambini',s:'SG Golling/Scheffau'},{y:2019,v:330,t:'U10',s:'SG Golling/Scheffau'},{y:2020,v:300,t:'+ Jugendleiter',s:'SG Golling/Scheffau'},
-    {y:2023,v:268,t:'U13',s:'SV Kuchl'},{y:2024,v:236,t:'U16',s:'SG Golling/Scheffau'},{y:2025,v:196,t:'U12',s:'SV Austria Salzburg'},{y:2026,v:126,t:'Co-Trainer KM',s:'FC Bergheim Damen',now:true}];
-  const X0=70,STEP=112;P.forEach((p,i)=>{p.x=X0+i*STEP;});const G={x:930,v:52};
+  const P=[{y:2018,v:332,t:'Start: Bambini',s:'SG Golling/Scheffau'},{y:2019,v:310,t:'U10',s:'SG Golling/Scheffau'},{y:2020,v:288,t:'+ Jugendleiter',s:'SG Golling/Scheffau'},
+    {y:2021,v:266,t:'U12',s:'SG Golling/Scheffau'},{y:2022,v:244,t:'U14',s:'SG Golling/Scheffau'},
+    {y:2023,v:222,t:'U13',s:'SV Kuchl'},{y:2024,v:200,t:'U16',s:'SG Golling/Scheffau'},{y:2025,v:174,t:'U12',s:'SV Austria Salzburg'},{y:2026,v:122,t:'Co-Trainer KM',s:'FC Bergheim Damen',now:true}];
+  const X0=96,STEP=90;P.forEach((p,i)=>{p.x=X0+i*STEP;});const G={x:930,v:52};
   const mk=(t,a,par)=>{const e=document.createElementNS(N,t);for(const k in a)e.setAttribute(k,a[k]);(par||svg).appendChild(e);return e;};
   const defs=mk('defs',{});const lg=mk('linearGradient',{id:'cg',x1:'0',y1:'0',x2:'1',y2:'0'},defs);mk('stop',{offset:'0','stop-color':'#7EA2F0'},lg);mk('stop',{offset:'1','stop-color':'#F2C230'},lg);
   const ag=mk('linearGradient',{id:'ca',x1:'0',y1:'0',x2:'0',y2:'1'},defs);mk('stop',{offset:'0','stop-color':'#F2C230','stop-opacity':'.28'},ag);mk('stop',{offset:'1','stop-color':'#F2C230','stop-opacity':'0'},ag);
@@ -5576,8 +5579,9 @@ function countUp(el){const to=NUMS[el.dataset.count]!=null?NUMS[el.dataset.count
   P.concat([{y:2036,x:G.x}]).forEach(p=>{const t=mk('text',{class:'yr',x:p.x,y:426});t.textContent=p.y;});
   P.forEach((p,i)=>{const g=mk('g',{class:'pt'+(p.now?' now':'')});g.style.transitionDelay=(0.25+i*0.28)+'s';
     if(p.now)mk('circle',{class:'pulse',cx:p.x,cy:p.v,r:9},g);mk('circle',{class:'core',cx:p.x,cy:p.v,r:p.now?10:7},g);
-    const up=i%2===0,w=Math.max(p.t.length*8.6,p.s.length*7.4)+24,h=42,lx=Math.min(980-w,Math.max(8,p.x-w/2)),ly=p.now?p.v-h-22:(up?p.v-h-18:p.v+18);
+    const up=i%2===0,w=Math.max(p.t.length*8.6,p.s.length*7.4)+24,h=42,lx=Math.min(980-w,Math.max(8,p.x-w/2)),ly=p.now?p.v-h-24:(up?p.v-h-36:p.v+36);
     const lb=mk('g',{class:'lb'+(p.now?' now':'')});lb.style.transitionDelay=(0.45+i*0.28)+'s';
+    const above=p.now||up;mk('line',{x1:p.x,y1:above?ly+h:ly,x2:p.x,y2:above?p.v-11:p.v+11,stroke:p.now?'#F2C230':'rgba(255,255,255,.45)','stroke-width':1.5},lb);
     mk('rect',{x:lx,y:ly,width:w,height:h,rx:6},lb);const t1=mk('text',{class:'t1',x:lx+11,y:ly+18},lb);t1.textContent=p.t;const t2=mk('text',{x:lx+11,y:ly+34},lb);t2.textContent=p.s;});
   const cr=mk('g',{class:'crown'});mk('path',{d:'M'+(G.x-26)+' '+(G.v+30)+' L'+(G.x-30)+' '+(G.v+2)+' L'+(G.x-14)+' '+(G.v+16)+' L'+G.x+' '+(G.v-6)+' L'+(G.x+14)+' '+(G.v+16)+' L'+(G.x+30)+' '+(G.v+2)+' L'+(G.x+26)+' '+(G.v+30)+' Z'},cr);
   mk('rect',{x:G.x-26,y:G.v+33,width:52,height:7,rx:2,fill:'#F2C230'},cr);
