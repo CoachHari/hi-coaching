@@ -559,6 +559,31 @@ body.is-home{background:#050B20;background-image:radial-gradient(90% 60% at 80% 
 .eq span{padding:8px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.3)}
 .eq i{font-style:normal;color:var(--gold)}
 .eq .res{background:var(--gold);border-color:var(--gold);color:#1B2440}
+/* Die fünf Säulen einer guten Übung */
+.sl-lead{margin:-14px 0 30px;max-width:52ch;color:rgba(255,255,255,.75);font-size:18px}
+.temple{max-width:1040px;margin:0 auto}
+.t-roof{height:clamp(40px,6vw,74px);margin:0 -1.5%;background:linear-gradient(180deg,rgba(242,194,48,.55),rgba(242,194,48,.25));clip-path:polygon(50% 0,100% 100%,0 100%)}
+.t-beam{margin:0 -1.5%;padding:11px 16px;background:var(--gold);color:#1B2440;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.1em;text-align:center;font-size:clamp(17px,2.2vw,24px);border-radius:2px}
+.pillars{list-style:none;margin:0;padding:0 2.5%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(16px,2.4vw,28px)}
+.pil{position:relative;display:flex;flex-direction:column;align-items:center;padding:34px 12px 34px;text-align:center;background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0 2px,transparent 2px 16px),linear-gradient(180deg,rgba(36,80,184,.5),rgba(255,255,255,.03));border-left:1px solid rgba(255,255,255,.16);border-right:1px solid rgba(255,255,255,.16);transition:background-color .2s}
+.pil::before,.pil::after{content:"";position:absolute;left:-7px;right:-7px;height:12px;background:rgba(255,255,255,.88);border-radius:2px}
+.pil::before{top:0}.pil::after{bottom:0}
+.pil .pn{font-family:var(--display);font-weight:700;font-size:38px;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--gold)}
+.pil h4{margin:10px 0 10px;color:#fff;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(17px,1.8vw,22px);line-height:1.05;hyphens:auto}
+.pil p{margin:0;color:rgba(255,255,255,.78);font-size:15px;line-height:1.45}
+.t-base{position:relative;margin:0 -1.5%;padding:12px 16px;text-align:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:clamp(14px,1.6vw,17px);color:#fff}
+.t-base::after{content:"";position:absolute;left:-2%;right:-2%;bottom:-11px;height:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-top:0}
+@media (max-width:820px){
+  .t-roof,.t-beam,.t-base{margin:0}
+  .t-base::after{left:-8px;right:-8px}
+  .pillars{grid-template-columns:1fr;gap:10px;padding:12px 0}
+  .pil{display:grid;grid-template-columns:auto 1fr;column-gap:16px;align-items:start;text-align:left;padding:16px 16px 16px 26px;border:1px solid rgba(255,255,255,.14);border-radius:0 8px 8px 0}
+  .pil::before{top:0;bottom:0;left:0;right:auto;width:6px;height:auto;background:var(--gold);border-radius:0}
+  .pil::after{display:none}
+  .pil .pn{grid-row:span 2;font-size:34px}
+  .pil h4{margin:2px 0 6px}
+}
+
 .nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
 .num{padding:20px 18px;border-left:3px solid var(--gold);background:rgba(255,255,255,.04);border-radius:0 8px 8px 0}
 .num b{display:block;font-family:var(--display);font-weight:700;font-size:clamp(44px,6vw,64px);line-height:1;color:#fff;font-variant-numeric:tabular-nums}
@@ -818,8 +843,26 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
       <div class="eq" data-rv aria-label="Individuelle Qualität plus Entwicklung plus Team ergibt Mannschaft"><span>Individuelle Qualität</span><i>+</i><span>Entwicklung</span><i>+</i><span>Team</span><i>=</i><span class="res">Mannschaft</span></div>
     </section>
 
+    <section class="hs" id="saeulen" aria-labelledby="saeulen-h">
+      <p class="hs-k" data-rv>04 · Methode</p>
+      <h3 class="hs-h" id="saeulen-h" data-rv>Die fünf Säulen einer guten Übung.</h3>
+      <p class="sl-lead" data-rv>Jede Übung muss alle fünf tragen. Fehlt eine, wackelt das Ganze.</p>
+      <div class="temple" data-rv>
+        <div class="t-roof" aria-hidden="true"></div>
+        <div class="t-beam">Die gute Übung</div>
+        <ol class="pillars">
+          <li class="pil"><span class="pn" aria-hidden="true">01</span><h4>Lernziel</h4><p>Jede Übung hat ein klares Ziel – was kann die Spielerin danach besser?</p></li>
+          <li class="pil"><span class="pn" aria-hidden="true">02</span><h4>Spielbezug</h4><p>So nah am echten Spiel wie möglich – mit Gegner, Entscheidung und Tor.</p></li>
+          <li class="pil"><span class="pn" aria-hidden="true">03</span><h4>Progression</h4><p>Leichter oder schwerer steuerbar – passend für jedes Niveau.</p></li>
+          <li class="pil"><span class="pn" aria-hidden="true">04</span><h4>Belastung</h4><p>Viele Ballkontakte statt Warten – Entwicklung durch Beteiligung.</p></li>
+          <li class="pil"><span class="pn" aria-hidden="true">05</span><h4>Coaching-Punkte</h4><p>Klare Hinweise, worauf wir achten – so wird Übung zu Lernen.</p></li>
+        </ol>
+        <div class="t-base">Fundament · H.I. – Coaching Methode</div>
+      </div>
+    </section>
+
     <section class="hs" id="angebot" aria-labelledby="angebot-h">
-      <p class="hs-k" data-rv>04 · Was H.I. – Coaching bietet</p>
+      <p class="hs-k" data-rv>05 · Was H.I. – Coaching bietet</p>
       <h3 class="hs-h" id="angebot-h" data-rv>Alles für das Training an einem Ort.</h3>
       <div class="nums">
         <div class="num" data-rv><b data-count="ex">0</b><span>Übungen mit animierten Skizzen</span></div>
@@ -835,7 +878,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     </section>
 
     <section class="hs contact" id="kontakt" aria-labelledby="kontakt-h">
-      <p class="hs-k" data-rv>05 · Kontakt</p>
+      <p class="hs-k" data-rv>06 · Kontakt</p>
       <h3 class="hs-h big" id="kontakt-h" data-rv>Fragen, Ideen oder Austausch unter Trainern?</h3>
       <p class="ct-lead" data-rv>Schreib mir. Ich freue mich über jede Nachricht.</p>
       <div class="ct-row" data-rv><a class="cta gold" href="mailto:04coach.hari@gmail.com">04coach.hari@gmail.com</a><button type="button" class="cta ghost" id="copy-mail">Adresse kopieren</button></div>
