@@ -748,6 +748,9 @@ footer,body.is-home footer{color:rgba(255,255,255,.45);margin-top:40px}
 @keyframes spLine{to{width:38px}}
 @media (prefers-reduced-motion:reduce){.sp-pitch,.sp-pass{animation:none;stroke-dashoffset:0}.sp-link,.sp-k span{animation:none;opacity:1}.sp-node{animation:none;transform:none}.sp-glow,.sp-ball{display:none}.sp-hi .m span{animation:none;transform:none}.sp-k::before,.sp-k::after{animation:none;width:38px}.splash.out .sp-inner{transform:none}}
 .sp-hi .m{opacity:1;transform:none;animation:none}
+.ttreff{display:block;margin-top:3px;font-size:14px;font-weight:600;color:var(--spiel-ink)}
+.wev .wtreff{font-weight:600;opacity:1}
+.treff-row input[type=time]{flex:0 0 120px}
 </style>
 <style>
 body{margin:0}
@@ -968,9 +971,10 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
       <label class="fld">Datum<input type="date" name="datum" required></label>
       <label class="fld">Ort / Platz<input type="text" name="ort" placeholder="z. B. Kunstrasen Bergheim"></label>
       <div class="fld wide"><span>Uhrzeit</span><div class="row2"><input type="time" name="zeit" aria-label="Beginn"><span aria-hidden="true">bis</span><input type="time" name="ende" aria-label="Ende"></div></div>
+      <div class="fld wide" id="t-treff" hidden><span>Treffpunkt</span><div class="row2 treff-row"><input type="time" name="treffzeit" aria-label="Treffpunkt Uhrzeit"><input type="text" name="treffort" placeholder="z. B. Parkplatz Sportplatz Bergheim" aria-label="Treffpunkt Ort"></div></div>
       <label class="fld wide">Einheit hinterlegen<select name="einheit"></select></label>
       <div class="fld wide" id="t-repeat"><span>Wiederholen</span><div class="row2"><select name="wdh" aria-label="Wiederholen"><option value="nein">Nicht wiederholen</option><option value="woche">Jede Woche</option></select><label class="inl" id="t-until-wrap" hidden>bis <input type="date" name="bis" aria-label="Wiederholen bis"></label></div></div>
-      <label class="fld wide">Notiz<textarea name="notiz" rows="2" placeholder="z. B. Treffpunkt 18:15, Leibchen mitnehmen"></textarea></label>
+      <label class="fld wide">Notiz<textarea name="notiz" rows="2" placeholder="z. B. Leibchen und Ausweise mitnehmen"></textarea></label>
     </div>
     <div class="tfoot"><button type="submit" class="btn primary" id="t-save">Speichern</button><button type="button" class="btn ghost" id="t-del">Löschen</button><button type="button" class="btn ghost" id="t-del-series">Serie ab hier löschen</button><p id="t-msg" role="status" aria-live="polite"></p></div>
   </form>
@@ -5440,6 +5444,8 @@ let calMonth=(()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth
 const calEl=document.getElementById('cal'),calGrid=document.getElementById('cal-grid'),calDay=document.getElementById('cal-day'),calNext=document.getElementById('cal-next');
 function calNote(){const el=document.getElementById('cal-note');el.textContent=termStore.col?(termStore.writable?'Synchronisiert: auf allen Geräten sichtbar, auf denen du angemeldet bist.':'Du kannst den Kalender ansehen. Eigene Einträge werden nur auf diesem Gerät gespeichert.'):(termStore.ready?(window.HI_CONFIG&&window.HI_CONFIG.supabaseUrl?'Gespeichert nur auf diesem Gerät. Melde dich oben mit „Anmelden für Sync“ an, damit alles auf Handy und PC gleich ist.':'Gespeichert nur in diesem Browser auf diesem Gerät.'):'Kalender wird geladen …');}
 function evHtml(t){const s=sessByLink(t.einheit);return '<span class="ev '+(t.art||'training')+'" title="'+esc(timeStr(t)+' '+(t.titel||artName(t.art))+(s?' · Einheit: '+((s.meta||{}).thema||'Trainingseinheit'):''))+'">'+(s?'<i class="ok" aria-hidden="true">✓</i>':'')+esc((t.zeit?t.zeit+' ':'')+(t.titel||artName(t.art)))+'</span>';}
+function treffStr(t){return t&&t.art==='spiel'?[t.treffZeit?t.treffZeit+' Uhr':'',t.treffOrt||''].filter(Boolean).join(' · '):'';}
+function treffHtml(t,cls){const x=treffStr(t);return x?'<span class="'+cls+'">Treffpunkt: '+esc(x)+'</span>':'';}
 function tcardHtml(t,showDate){const s=sessByLink(t.einheit),k=tKey(t),ed=termStore.canEdit(t);
   let ein;
   if(s){const m=s.meta||{};ein='<div class="tein"><div><span class="tlbl">Einheit</span><b>'+esc(m.thema||'Trainingseinheit')+'</b><small>'+esc([lvName(m.lv),(s.total||0)+' min',(s.count||0)+(s.count===1?' Übung':' Übungen')].filter(Boolean).join(' · '))+'</small></div>'+
@@ -5447,7 +5453,7 @@ function tcardHtml(t,showDate){const s=sessByLink(t.einheit),k=tKey(t),ed=termSt
   else if(t.einheit)ein='<div class="tein missing"><span>Die verknüpfte Einheit gibt es nicht mehr.</span>'+(ed?'<button type="button" class="btn sm" data-t-edit="'+k+'">Andere wählen</button>':'')+'</div>';
   else ein=(t.art||'training')==='training'&&ed?'<div class="tein empty-ein"><span>Noch keine Einheit hinterlegt.</span><div class="tactions"><button type="button" class="btn sm primary" data-t-plan="'+k+'">Einheit planen</button><button type="button" class="btn sm" data-t-edit="'+k+'" data-focus="einheit">Gespeicherte wählen</button></div></div>':'';
   return '<article class="tcard"><span class="tbar '+(t.art||'training')+'" aria-hidden="true"></span><div class="tbody"><div class="thead"><div><span class="ttime">'+esc((showDate?shortDate(t.datum)+' · ':'')+(timeStr(t)||'ganztägig'))+'</span>'+
-    '<h4 class="ttitle">'+esc(t.titel||artName(t.art))+(t.titel?'<span class="tart">'+artName(t.art)+'</span>':'')+'</h4>'+(t.ort?'<span class="tort">'+esc(t.ort)+'</span>':'')+'</div>'+
+    '<h4 class="ttitle">'+esc(t.titel||artName(t.art))+(t.titel?'<span class="tart">'+artName(t.art)+'</span>':'')+'</h4>'+(t.ort?'<span class="tort">'+esc(t.ort)+'</span>':'')+treffHtml(t,'ttreff')+'</div>'+
     (ed?'<button type="button" class="btn ghost sm" data-t-edit="'+k+'">Bearbeiten</button>':'')+'</div>'+(t.notiz?'<p class="tnote">'+esc(t.notiz)+'</p>':'')+ein+'</div></article>';}
 function renderCal(){calNote();const all=termStore.all(),by={};all.forEach(t=>{(by[t.datum]=by[t.datum]||[]).push(t);});Object.values(by).forEach(a=>a.sort((x,y)=>(x.zeit||'')<(y.zeit||'')?-1:1));
   const td=today();calModeBtns();
@@ -5455,7 +5461,7 @@ function renderCal(){calNote();const all=termStore.all(),by={};all.forEach(t=>{(
     document.getElementById('cal-title').innerHTML='<span class="kw">KW '+isoWeek(mon)+'</span>'+mon.getDate()+'.'+(mon.getMonth()!==sun.getMonth()?' '+MON[mon.getMonth()]:'')+' – '+sun.getDate()+'. '+MON[sun.getMonth()]+' '+sun.getFullYear();
     let h='';for(let i=0;i<7;i++){const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i),k=ymd(d),ev=by[k]||[];
       h+='<div class="wcol'+(k===td?' today':'')+(k===calSel?' sel':'')+'"><button type="button" class="wcol-h" data-day="'+k+'" aria-pressed="'+(k===calSel)+'" aria-label="'+esc(longDate(k))+'"><span>'+WD[d.getDay()]+'</span><b>'+d.getDate()+'.'+(d.getMonth()+1)+'.</b></button>'+
-        (ev.length?ev.map(t=>{const s2=sessByLink(t.einheit);return '<button type="button" class="wev '+(t.art||'training')+'" data-day="'+k+'"><span class="wt">'+esc(timeStr(t)||'ganztägig')+'</span><b>'+esc(t.titel||artName(t.art))+'</b>'+(t.ort?'<small>'+esc(t.ort)+'</small>':'')+
+        (ev.length?ev.map(t=>{const s2=sessByLink(t.einheit);return '<button type="button" class="wev '+(t.art||'training')+'" data-day="'+k+'"><span class="wt">'+esc(timeStr(t)||'ganztägig')+'</span><b>'+esc(t.titel||artName(t.art))+'</b>'+(t.ort?'<small>'+esc(t.ort)+'</small>':'')+(treffStr(t)?'<small class="wtreff">Treff: '+esc(treffStr(t))+'</small>':'')+
           ((t.art||'training')==='training'||s2?(s2?'<span class="we ok">✓ '+esc((s2.meta||{}).thema||'Einheit')+'</span>':'<span class="we">Keine Einheit</span>'):'')+'</button>';}).join(''):'<span class="wfree">frei</span>')+'</div>';}
     calGrid.className='cal week';calGrid.innerHTML=h;}
   else{document.getElementById('cal-title').textContent=MONL[calMonth.getMonth()]+' '+calMonth.getFullYear();
@@ -5503,11 +5509,13 @@ const tf=n=>tform.elements[n];
 function fillEinheitSelect(sel){const ss=allSessions().slice().sort((a,b)=>(((b.meta||{}).datum||'')<((a.meta||{}).datum||''))?-1:1);
   tf('einheit').innerHTML='<option value="">Keine Einheit</option>'+ss.map(s=>{const m=s.meta||{};return '<option value="'+esc(s.src+':'+s.id)+'">'+esc((m.datum?shortDate(m.datum)+' · ':'')+(m.thema||'Trainingseinheit')+' ('+(s.total||0)+' min)')+'</option>';}).join('');
   tf('einheit').value=sel||'';}
+function syncArt(){document.getElementById('t-treff').hidden=tf('art').value!=='spiel';}
 function syncRepeat(){document.getElementById('t-until-wrap').hidden=tf('wdh').value!=='woche';}
 function openTdlg(t,date,focus){tEdit=t;let last={};try{last=JSON.parse(localStorage.getItem('uebungsmappe-termin-last'))||{};}catch(_){}
   document.getElementById('tdlg-title').textContent=t?'Termin bearbeiten':'Termin eintragen';
   tf('art').value=t?t.art||'training':'training';tf('titel').value=t?t.titel||'':'';tf('datum').value=t?t.datum:(date||today());
   tf('zeit').value=t?t.zeit||'':(last.zeit||'18:30');tf('ende').value=t?t.ende||'':(last.ende||'20:00');tf('ort').value=t?t.ort||'':(last.ort||'');tf('notiz').value=t?t.notiz||'':'';
+  tf('treffzeit').value=t?t.treffZeit||'':'';tf('treffort').value=t?t.treffOrt||'':'';syncArt();
   fillEinheitSelect(t&&t.einheit?t.einheit.src+':'+t.einheit.id:'');
   tf('wdh').value='nein';const u=parseYmd(tf('datum').value);if(u)tf('bis').value=ymd(new Date(u.getFullYear(),u.getMonth()+2,u.getDate()));
   document.getElementById('t-repeat').hidden=!!t;syncRepeat();
@@ -5515,12 +5523,14 @@ function openTdlg(t,date,focus){tEdit=t;let last={};try{last=JSON.parse(localSto
   if(tdlg.showModal)tdlg.showModal();else tdlg.setAttribute('open','');if(focus==='einheit')tf('einheit').focus();}
 function closeTdlg(){if(tdlg.close)tdlg.close();else tdlg.removeAttribute('open');}
 tf('wdh').addEventListener('change',syncRepeat);
+tf('art').addEventListener('change',syncArt);
 document.getElementById('t-cancel').addEventListener('click',closeTdlg);
 tdlg.addEventListener('click',e=>{if(e.target===tdlg)closeTdlg();});
 tform.addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('t-msg');
   if(!tf('datum').value){msg.textContent='Bitte ein Datum wählen.';return;}
   const ev=tf('einheit').value,link=ev?{src:ev.slice(0,ev.indexOf(':')),id:ev.slice(ev.indexOf(':')+1)}:null;
-  const base={art:tf('art').value,titel:tf('titel').value.trim(),zeit:tf('zeit').value,ende:tf('ende').value,ort:tf('ort').value.trim(),notiz:tf('notiz').value.trim(),einheit:link};
+  const base={art:tf('art').value,titel:tf('titel').value.trim(),zeit:tf('zeit').value,ende:tf('ende').value,ort:tf('ort').value.trim(),notiz:tf('notiz').value.trim(),einheit:link,
+    treffZeit:tf('art').value==='spiel'?tf('treffzeit').value:'',treffOrt:tf('art').value==='spiel'?tf('treffort').value.trim():''};
   try{localStorage.setItem('uebungsmappe-termin-last',JSON.stringify({zeit:base.zeit,ende:base.ende,ort:base.ort}));}catch(_){}
   const sb=document.getElementById('t-save');sb.disabled=true;
   try{
