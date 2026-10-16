@@ -817,8 +817,8 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
       <ol class="stations" aria-label="Stationen">
         <li data-rv><span class="st-y">seit 07/2026</span><b>Co-Trainer · FC Bergheim Damen</b><small>Kampfmannschaft</small></li>
         <li data-rv><span class="st-y">09/2025 – 07/2026</span><b>Trainer U12 · SV Austria Salzburg</b></li>
-        <li data-rv><span class="st-y">2022 – 2023</span><b>Trainer U16 · SG Golling/Scheffau</b></li>
-        <li data-rv><span class="st-y">2021 – 2022</span><b>Trainer U13 · SV Kuchl</b></li>
+        <li data-rv><span class="st-y">2024/25</span><b>Trainer U16 · SG Golling/Scheffau</b></li>
+        <li data-rv><span class="st-y">2023/24</span><b>Trainer U13 · SV Kuchl</b></li>
         <li data-rv><span class="st-y">2019 – 2021</span><b>Trainer U10 · SG Golling/Scheffau</b><small>im zweiten Jahr zusätzlich Jugendleiter</small></li>
         <li data-rv><span class="st-y">2018</span><b>Start als Bambini-Trainer</b><small>SG Golling/Scheffau</small></li>
         <li data-rv class="extra"><span class="st-y">laufend</span><b>Individualtrainer</b><small>für einige höherklassige Spieler</small></li>
@@ -5563,7 +5563,7 @@ function countUp(el){const to=NUMS[el.dataset.count]!=null?NUMS[el.dataset.count
 /* Werdegang-Diagramm */
 (function(){const svg=document.getElementById('chart');const N='http://www.w3.org/2000/svg';
   const P=[{y:2018,v:370,t:'Start: Bambini',s:'SG Golling/Scheffau'},{y:2019,v:330,t:'U10',s:'SG Golling/Scheffau'},{y:2020,v:300,t:'+ Jugendleiter',s:'SG Golling/Scheffau'},
-    {y:2021,v:268,t:'U13',s:'SV Kuchl'},{y:2022,v:236,t:'U16',s:'SG Golling/Scheffau'},{y:2025,v:196,t:'U12',s:'SV Austria Salzburg'},{y:2026,v:126,t:'Co-Trainer KM',s:'FC Bergheim Damen',now:true}];
+    {y:2023,v:268,t:'U13',s:'SV Kuchl'},{y:2024,v:236,t:'U16',s:'SG Golling/Scheffau'},{y:2025,v:196,t:'U12',s:'SV Austria Salzburg'},{y:2026,v:126,t:'Co-Trainer KM',s:'FC Bergheim Damen',now:true}];
   const X0=70,STEP=112;P.forEach((p,i)=>{p.x=X0+i*STEP;});const G={x:930,v:52};
   const mk=(t,a,par)=>{const e=document.createElementNS(N,t);for(const k in a)e.setAttribute(k,a[k]);(par||svg).appendChild(e);return e;};
   const defs=mk('defs',{});const lg=mk('linearGradient',{id:'cg',x1:'0',y1:'0',x2:'1',y2:'0'},defs);mk('stop',{offset:'0','stop-color':'#7EA2F0'},lg);mk('stop',{offset:'1','stop-color':'#F2C230'},lg);
