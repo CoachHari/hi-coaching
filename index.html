@@ -751,6 +751,7 @@ footer,body.is-home footer{color:rgba(255,255,255,.45);margin-top:40px}
 .ttreff{display:block;margin-top:3px;font-size:14px;font-weight:600;color:var(--spiel-ink)}
 .wev .wtreff{font-weight:600;opacity:1}
 .treff-row input[type=time]{flex:0 0 120px}
+.chip.saeulen{border-color:#D4AF37;background:linear-gradient(180deg,#FFF6D8,#F6E3A6);color:#5A4300;font-weight:600}
 </style>
 <style>
 body{margin:0}
@@ -1055,20 +1056,30 @@ function animator(id,cfg,opts){opts=opts||{};const thumb=!!opts.thumb;
 /* ---------- Animationen ---------- */
 const A={};
 
-/* 01 Passraute */
-A.raute={vb:'140 8 410 400',cycle:6.8,mirrorAxis:345,mirrorLabel:'Gegen Uhrzeigersinn',
-  draw(s){field(s,140,8,410,400);},
+/* 01 Passraute (Grundform und Stufe 3 mit Gegnerin) */
+(function(){
+const QA1=[[0,340,365],[1.2,340,365],[1.8,340,330]],QA2=[[0,375,378],[1.9,375,378],[2.5,340,365]],
+  AA=[[0,340,330],[1.0,290,255],[2.6,290,255],[3.6,190,195]],
+  BB=[[0,190,195],[1.5,190,195],[2.8,268,30],[4.6,290,40],[5.3,340,60]];
+A.raute={vb:'140 8 410 400',cycle:6.8,mirrorAxis:345,mirrorLabel:'Gegen Uhrzeigersinn',scLabels:{a:'Stufe 1 · Grundform',b:'Stufe 3 · Gegnerin + Abschluss'},
+  draw(s){field(s,140,8,410,400);this.gR=mtor(s,534,268,12,40);this.gL=mtor(s,144,268,12,40);},
+  tick(t,{st}){const b=st.sc==='b';this.gR.style.display=b&&!st.mir?'':'none';this.gL.style.display=b&&st.mir?'':'none';},
   cones:[[368,334],[190,166],[368,52],[490,224]],
-  ents:[{id:'QA1',wait:1},{id:'QA2',wait:1},{id:'QB',wait:1},{id:'QC',wait:1},{id:'QD',wait:1},{id:'A',label:'A'},{id:'B',label:'B'},{id:'C',label:'C'},{id:'D',label:'D'}],
-  sc:{a:{QA1:[[0,340,365],[1.2,340,365],[1.8,340,330]],QA2:[[0,375,378],[1.9,375,378],[2.5,340,365]],
-    QB:[[0,172,230],[1.6,172,230],[2.2,190,195]],QC:[[0,302,40],[4.0,302,40],[4.6,340,60]],QD:[[0,518,168],[5.0,518,168],[5.6,490,195]],
-    A:[[0,340,330],[1.0,290,255],[2.6,290,255],[3.6,172,230]],
-    B:[[0,190,195],[1.5,190,195],[2.8,268,30],[4.6,268,30],[5.1,302,40]],
-    C:[[0,340,60],[3.0,340,60],[3.4,360,82],[4.0,360,82],[5.0,520,130],[5.6,520,130],[6.1,518,168]],
+  ents:[{id:'QA1',wait:1},{id:'QA2',wait:1},{id:'G',fill:RED},{id:'A',label:'A'},{id:'B',label:'B'},{id:'C',label:'C'},{id:'D',label:'D'}],
+  sc:{a:{QA1,QA2,A:AA,B:BB,G:[[0,-80,-80]],
+    C:[[0,340,60],[3.0,340,60],[3.4,360,82],[4.0,360,82],[5.0,520,130],[5.6,505,170],[6.1,490,195]],
     D:[[0,490,195],[4.8,490,195],[6.0,375,378]],
     BALL:[[0,340,314],[0.6,206,195],[1.0,206,195],[1.5,300,243],[2.0,300,243],[2.6,340,76],[3.0,340,76],[3.4,366,96],[3.5,366,96],[4.0,474,195],[4.2,474,195],[4.8,340,314]],
     P:[[0,0.6],[1.0,1.5],[2.0,2.6],[3.5,4.0],[4.2,4.8]],
-    L:[[1,'1 · A passt zu B und startet nach'],[2,'2 · B lässt direkt auf A prallen'],[3,'3 · A spielt steil auf C, läuft zu Position B'],[3.5,'4 · C dreht mit dem 1. Kontakt offen auf'],[4.2,'5 · C passt zu D'],[6.0,'6 · D spielt zurück zum Start, die Wartenden rücken nach'],[99,'Jede ist eine Position weiter, nächste Runde']]}}};
+    L:[[1,'1 · A passt zu B und startet nach'],[2,'2 · B lässt direkt auf A prallen'],[3,'3 · A spielt steil auf C, läuft zu Position B'],[3.5,'4 · C dreht mit dem 1. Kontakt offen auf'],[4.2,'5 · C passt zu D'],[6.0,'6 · D spielt zurück zum Start'],[99,'Jede rückt eine Position weiter: A → B → C → D → hinten bei A']]},
+  b:{QA1,QA2,A:AA,B:BB,
+    G:[[0,285,140],[2.2,285,140],[2.9,316,94],[3.4,328,98],[4.2,348,126],[5.6,300,140],[6.8,285,140]],
+    C:[[0,340,60],[3.0,340,60],[3.4,362,80],[4.0,366,86],[5.0,520,130],[5.6,505,170],[6.1,490,195]],
+    D:[[0,490,195],[4.0,490,195],[4.25,492,200],[4.7,506,236],[5.1,506,236],[6.2,375,378]],
+    BALL:[[0,340,314],[0.6,206,195],[1.0,206,195],[1.5,300,243],[2.0,300,243],[2.6,340,76],[3.0,340,76],[3.4,368,92],[3.5,368,92],[4.0,476,198],[4.25,480,205],[4.7,508,250],[4.75,508,250],[5.05,540,290],[6.72,540,290],[6.78,340,314]],
+    P:[[0,0.6],[1.0,1.5],[2.0,2.6],[3.5,4.0],[4.75,5.05]],
+    L:[[1,'1 · A passt zu B und startet nach'],[2,'2 · B lässt direkt auf A prallen'],[2.9,'3 · A spielt steil auf C, die Gegnerin presst von links'],[3.5,'4 · C dreht weg vom Druck nach rechts auf'],[4.7,'5 · Pass auf D, D nimmt Richtung Minitor mit'],[5.6,'6 · Abschluss mit maximal 2 Kontakten'],[99,'Die Gegnerin wechselt, alle rücken eine Position weiter']]}}};
+})();
 
 /* 02 Dritte Frau */
 (function(){
@@ -5033,6 +5044,78 @@ Object.entries(LVX2).forEach(([k,v])=>{LVX[k]=Object.assign(LVX[k]||{},v);});
 EX.forEach(e=>{const x=LVX[e.id];if(!x)return;e.lv=(e.lv||[]).concat(Object.keys(x).filter(k=>!(e.lv||[]).includes(k)));e.ad=Object.assign({},e.ad||{},x);});
 EX.forEach(e=>{const g=AGE[e.id]||{lv:e.lv,ad:e.ad||{}};e.lv=g.lv;e.ad=g.ad||{};
   e.chips.push(['Alter',LV.filter(l=>e.lv.includes(l.id)).map(l=>l.short).join(' · ')]);});
+/* ---------- 5-Säulen-Überarbeitung: Passen (KM) ---------- */
+const UPG={
+raute:{saeulen:true,chip1:'18 Spielerinnen · 3 Rauten à 6',
+ legend:['aktiv','wartend','gegner','minitor','ball','cone'],
+ ziel:'Die Spielerin kann einen Ball unter Zeitdruck sauber prallen lassen, mit dem ersten Kontakt offen aufdrehen und je nach Druck der Gegnerin die richtige Seite wählen. Grundlage für das Spiel über die dritte Frau im Aufbau.',
+ org:['3 Rauten nebeneinander, je 6 Spielerinnen','Start A mit 3 Spielerinnen, B, C und D mit je 1','Ab Stufe 2: pro Raute eine Gegnerin bei C, ab Stufe 3 ein Minitor hinter D','Bälle bei A, Ersatzbälle hinter jeder Raute, Abstände 12–15 m'],
+ rot:'Jede rückt nach ihrer Aktion eine Position weiter: A → B → C → D → hinten bei A anstellen. Die Gegnerin wechselt nach jedem Durchgang.',
+ ablauf:['A passt flach zu B und startet nach.','B lässt direkt auf A prallen.','A spielt steil auf C und läuft zu Position B.','C dreht mit dem ersten Kontakt offen auf, weg vom Druck.','C passt zu D.','D spielt zurück zum Start (Stufe 3: D schließt mit maximal 2 Kontakten auf das Minitor ab).'],
+ stufen:[['Stufe 1 · Grundform','Fester Ablauf ohne Gegnerin. Fokus auf Passqualität, Laufwege und den ersten Kontakt.'],['Stufe 2 · Passive Gegnerin','Eine Gegnerin steht bei C und zeigt mit ihrer Position eine Seite an. C muss vor der Annahme hinsehen und zur freien Seite aufdrehen.'],['Stufe 3 · Aktive Gegnerin + Abschluss','Die Gegnerin presst C. C entscheidet: aufdrehen und zu D oder bei Druck im Rücken direkt auf A prallen lassen. D schließt mit maximal 2 Kontakten auf das Minitor ab.']],
+ coach:[['Vor der Annahme','Schulterblick, bevor der Ball kommt. Erkennbar: Der Kopf dreht sich vor dem Pass. Korrektur: Die Trainerin zeigt hinter C eine Zahl mit den Fingern, C ruft sie vor der Annahme.'],['Erster Kontakt','in Laufrichtung und weg von der Gegnerin. Fehlerbild: Der Ball wird gestoppt und liegt unter dem Körper. Korrektur: Hütchentor 2 m neben C, durch das der erste Kontakt gehen muss.'],['Prallpass B','direkt mit der Innenseite in den Lauf von A, nicht auf die Füße. Erkennbar: A muss nicht abbremsen.'],['Passqualität','flach und scharf auf den Fuß, der vom Druck weg ist.'],['Entscheidung C','Druck von der Seite: zur anderen Seite aufdrehen. Druck im Rücken: prallen lassen. Nach dem Durchgang fragen: „Woher kam der Druck?“']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute aktive Pause','Wartezeit: bei 6 pro Raute warten höchstens 2 Spielerinnen kurz','Pro Spielerin: ca. 20–25 Ballkontakte pro Durchgang','Intensität: mittel im Aufwärmen, hoch ab Stufe 3 (Antritt nach jedem Pass)'],
+ leicht:['Abstände auf 10 m verkürzen','2 Kontakte für alle erlaubt','Gegnerin bleibt passiv (Stufe 2)','Nur in eine Richtung, starker Fuß'],
+ steig:['B nur direkt, C maximal 2 Kontakte','Nur schwacher Fuß','Gegnerin startet erst beim Pass auf C, aber mit vollem Tempo','Raute gegen Raute: mehr Treffer in 90 Sekunden']},
+dreieck:{saeulen:true,
+ ziel:'Die Spielerin nimmt den Ball mit dem ersten Kontakt in die neue Spielrichtung mit und spielt danach einen flachen, scharfen Innenseitpass auf den richtigen Fuß, auch im Tempo. Grundlage für jedes Passspiel unter Druck.',
+ org:['3 Dreiecke mit 10–12 m Seitenlänge, je 6 Spielerinnen','Je 2 Spielerinnen an jedem Hütchen, ein Ball pro Dreieck, Start bei A','Ab Stufe 3: eine Gegnerin in der Mitte und 2 Hütchentore außerhalb des Dreiecks'],
+ stufen:[['Stufe 1 · Grundform','Pass und folge mit 2 Kontakten, Fokus auf die Ballmitnahme in die neue Richtung.'],['Stufe 2 · Anspielen auf Zuruf','Die Empfängerin ruft „links“ oder „rechts“. Angespielt wird auf den gerufenen Fuß.'],['Stufe 3 · Gegnerin in der Mitte','Eine Gegnerin läuft nach jedem Pass die Empfängerin an. Die Empfängerin nimmt weg von ihr mit. Erobert die Gegnerin den Ball, dribbelt sie durch ein Hütchentor und tauscht mit der Spielerin, die den Ball verloren hat.']],
+ coach:[['Annahme','Fuß weg von der Passgeberin, Ball in die neue Richtung. Fehlerbild: Der Ball wird gestoppt. Korrektur: Hütchentor 1 m neben der Station, durch das der erste Kontakt gehen muss.'],['Pass','Innenseite, Fußgelenk fest, Standbein neben dem Ball. Fehlerbild: Der Ball springt. Korrektur: Oberkörper leicht über den Ball, Treffpunkt Ballmitte.'],['Vor der Annahme','kurzer Schulterblick zur nächsten Station. Erkennbar: Der Kopf dreht sich, bevor der Ball kommt.'],['Nachlaufen','nach dem Pass sofort antreten, nicht austraben. Das Tempo macht die Übung.']],
+ last:['Dauer: 3 × 3 Minuten, 45 Sekunden Pause','Wartezeit: kurz, jede ist etwa alle 6–8 Sekunden am Ball','Pro Spielerin: ca. 25 Ballkontakte pro Durchgang','Intensität: niedrig bis mittel (Aufwärmen), Stufe 3 mittel'],
+ leicht:['Abstände 8 m','3 Kontakte erlaubt','Nur starker Fuß, nur eine Laufrichtung'],
+ steig:['Nur direkt spielen','Annahme links, Pass rechts (und umgekehrt)','Zweiter Ball ins Dreieck','Gegnerin in der Mitte (Stufe 3)']},
+ypass:{saeulen:true,
+ ziel:'Die Spielerinnen beherrschen das Muster „Klatsch – Dreh – Verlagern“ im Aufbau: Die Mittelspielerin lässt prallen, rollt ab und verlagert nach der Ablage aufgedreht auf die andere Seite. Im Spiel kommt die Mannschaft so schneller über die Mitte auf die ballferne Seite.',
+ stufen:[['Stufe 1 · Grundform','Fester Ablauf, Fokus auf Laufwege und Passrhythmus.'],['Stufe 2 · Entscheidung','Halbaktive Gegnerin hinter M. Steht sie eng, lässt M prallen (Klatsch). Steht sie weg, dreht M direkt auf und verlagert sofort.'],['Stufe 3 · Abschluss','R nimmt die Verlagerung mit, dribbelt an und schließt auf ein Tor mit Torfrau ab. Die Gegnerin presst aktiv.']],
+ coach:[['M','Gegenbewegung vor dem Anbieten. Fehlerbild: M steht still und wird zugestellt. Korrektur: zwei Schritte weg vom Ball, dann explosiv entgegen.'],['Ablage L','weich in den Vorlauf der M, nicht auf den Körper. Erkennbar: M muss nicht abbremsen.'],['Verlagerung','flach und scharf, Kopf hoch vor dem Pass. Fehlerbild: halbhoher Ball, den R erst stoppen muss.'],['Kommunikation','„Klatsch“ und „Dreh“ laut ansagen. In Stufe 2 coacht die Spielerin hinter der Aktion.']],
+ last:['Dauer: 4 × 4 Minuten, 1 Minute Pause','Wartezeit: 3 am Start, jede ist etwa alle 20 Sekunden dran','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel, in Stufe 3 hoch'],
+ leicht:['Abstände 10–12 m','M darf 2 Kontakte machen','Verlagerung halbhoch statt flach'],
+ steig:['Alle Pässe direkt außer bei R','Halbaktive Gegnerin hinter M (Stufe 2)','R schließt aufs Tor ab, Gegnerin aktiv (Stufe 3)']},
+quadrat:{saeulen:true,
+ ziel:'Die Zentrumsspielerin orientiert sich vor jedem Ball neu und legt unter Zeitdruck mit einem Kontakt in den Lauf ab. Die Außenspielerinnen lösen sich vom Hütchen und stellen ein gutes Passdreieck her.',
+ stufen:[['Stufe 1 · Grundform','Z lässt immer prallen, fester Rhythmus.'],['Stufe 2 · Signal','Die Trainerin zeigt eine Ecke an. Z muss vor der Annahme hinsehen und genau diese Ecke anspielen.'],['Stufe 3 · Gegnerin im Quadrat','Eine Gegnerin presst Z. Ohne Druck dreht Z auf und spielt die gegenüberliegende Ecke an, bei Druck lässt sie prallen. Ballgewinn der Gegnerin = Rollenwechsel mit Z.']],
+ coach:[['Z','vor jedem Ball Schulterblick, Körper zur Passgeberin öffnen. Fehlerbild: Z steht frontal und kann nur zurückspielen.'],['Prallpass','leicht seitlich in den Lauf ablegen, nicht zurück in den Fuß. Erkennbar: Die Ecke spielt ohne Stopp weiter.'],['Ecke','sich vor dem Prallpass vom Hütchen lösen. Korrektur: Hütchen 2 m nach innen versetzen, damit die Laufbewegung nötig wird.'],['Tempo','Pass zur nächsten Ecke scharf, damit Z kurz durchatmen kann.']],
+ last:['Dauer: 6 × 90 Sekunden, 30 Sekunden Pause (Wechsel Z)','Wartezeit: keine, alle 6 sind ständig in Bewegung','Pro Spielerin: Z ca. 30 Ballkontakte, Ecken ca. 15 pro Durchgang','Intensität: hoch für Z, mittel für die Ecken'],
+ leicht:['Quadrat 12 × 12 m','Z darf 2 Kontakte machen','Z lässt nur prallen, keine Entscheidung'],
+ steig:['Zwei Bälle gleichzeitig (Start A und C)','Z nur mit dem schwachen Fuß','Gegnerin im Quadrat (Stufe 3)','Wettkampf: Wie viele Ecken in 90 Sekunden?']},
+verlagerung:{saeulen:true,
+ ziel:'Die Spielerinnen erkennen nach zwei kurzen Pässen den Moment für die Spielverlagerung, spielen einen langen Ball über 30 m präzise und verarbeiten ihn mit dem ersten Kontakt in die freie Richtung.',
+ stufen:[['Stufe 1 · Grundform','Kurz – kurz – lang ohne Gegnerin.'],['Stufe 2 · Herauslocken','In jeder Zone eine Gegnerin, die zum Ball schiebt. Erst wenn sie herausgelockt ist, darf verlagert werden.'],['Stufe 3 · 3 gegen 1 mit Ziel','Nach der Verlagerung spielt die Empfängerzone 3 gegen 1 auf ein Hütchentor an der Stirnseite. Ballgewinn der Gegnerin = Punkt für sie.']],
+ coach:[['Langer Ball','leicht schräger Anlauf, Standbein neben dem Ball, Kopf hoch vor dem Schuss. Fehlerbild: Der Ball steigt zu hoch, weil der Oberkörper zu weit zurück ist.'],['Moment','verlagert wird, wenn die Gegnerin auf der Ballseite gebunden ist. Nach dem Durchgang fragen: „Warum genau jetzt?“'],['Verarbeitung','früh entgegengehen, erster Kontakt weg von der Gegnerin. Erkennbar: Nach der Annahme ist der Ball sofort spielbar.'],['Kurze Pässe','schnell und scharf, um die Gegnerin herauszulocken.']],
+ last:['Dauer: 4 × 4 Minuten, 1 Minute Pause','Wartezeit: kurz, 3 pro Zone, jede ist etwa alle 10 Sekunden beteiligt','Pro Spielerin: ca. 15 Ballkontakte, davon 3–4 lange Bälle pro Durchgang','Intensität: mittel, in Stufe 3 hoch'],
+ leicht:['Distanz 20–25 m','Langer Ball halbhoch erlaubt','Verarbeitung mit 2 Kontakten'],
+ steig:['Distanz auf 40 m erhöhen','Langer Ball nur flach','Ziel-Quadrat 5 × 5 m in der Zone: Der Ball muss dort landen','Gegnerin in jeder Zone (Stufe 2 und 3)']},
+schiene:{saeulen:true,
+ ziel:'Halbverteidigerin, Achterin und Schienenspielerin finden im 1-3-5-2 das Timing für Ablage und Tiefenlauf: Wer prallen lässt, startet sofort in die Tiefe und bekommt den Ball in den Lauf.',
+ stufen:[['Stufe 1 · Grundform','Fester Ablauf, Fokus auf das Timing des Tiefenlaufs.'],['Stufe 2 · Gegenspielerin an der Schiene','Halbaktive Außenverteidigerin. Rückt sie mit nach vorne, geht die Schiene in die Tiefe. Bleibt sie tief, nimmt die Schiene den Ball zum Andribbeln mit.'],['Stufe 3 · Flanke und Abschluss','Die Schiene flankt auf 2 Stürmerinnen gegen 1 Verteidigerin und Torfrau.']],
+ coach:[['Schiene','kurz entgegenkommen, Ablage mit der Innenseite, dann sofort Tempo- und Richtungswechsel in die Tiefe. Fehlerbild: Die Schiene startet erst nach dem Steilpass.'],['8er','offen im Halbraum anbieten, Steilpass in den Lauf, nicht auf den Körper.'],['HV','Pass auf den Außenfuß der Schiene, damit sie offen prallen lassen kann.'],['Timing','Die Schiene startet, wenn die 8er den Ball hat, nicht früher (Abseits) und nicht später.']],
+ last:['Dauer: 4 × 4 Minuten, 1 Minute Pause, Seitenwechsel nach jedem Durchgang','Wartezeit: 3 bei der HV, ein Durchgang etwa alle 10 Sekunden','Pro Spielerin: ca. 12–15 Ballkontakte und 4–5 Sprints pro Durchgang','Intensität: hoch durch die Tiefenläufe'],
+ leicht:['Ablage mit 2 Kontakten','Kürzerer Tiefenlauf (15 m)','Ohne Gegenspielerin'],
+ steig:['Ablage nur direkt','Halbaktive Gegenspielerin an der Schiene (Stufe 2)','Abschluss mit Flanke auf 2 Stürmerinnen (Stufe 3)']},
+endlos:{saeulen:true,
+ ziel:'Die Spielerinnen halten einen hohen Passrhythmus mit wenigen Kontakten, lösen sich aktiv vom Hütchen und stehen bei jeder Annahme offen zum nächsten Pass.',
+ stufen:[['Stufe 1 · Grundform','Fester Ablauf, 2 Kontakte erlaubt.'],['Stufe 2 · Direkt','Prallpässe nur direkt, Pass in die Spitze mit maximal 2 Kontakten.'],['Stufe 3 · Schattengegnerin','Pro Hälfte läuft eine Gegnerin die Prallspielerin an. Die Prallspielerin entscheidet: direkt prallen lassen oder aufdrehen und selbst in die Spitze spielen.']],
+ coach:[['Lösen','mit einer Konterbewegung aktiv vom Hütchen lösen. Fehlerbild: Die Spielerin wartet am Hütchen und kommt zu spät.'],['Stellung','offen zu Ball und Mitspielerin stehen. Erkennbar: Sie sieht beide Passwege.'],['Kontakte','möglichst wenige, am besten direkt.'],['Rhythmus','Prallpass weich, Pass in die Spitze scharf: „leise – laut“.']],
+ last:['Dauer: 3 × 4 Minuten, 1 Minute Pause','Wartezeit: keine, jede ist pro Durchlauf zweimal aktiv','Pro Spielerin: ca. 30 Ballkontakte pro Durchgang','Intensität: mittel, mit zwei Bällen hoch'],
+ leicht:['Abstände 8–10 m','2 Kontakte überall erlaubt','Nur ein Ball'],
+ steig:['Zwei Bälle gleichzeitig (A und D starten)','Alles direkt','Nur schwacher Fuß','Schattengegnerinnen (Stufe 3)']},
+dritte:{saeulen:true,
+ ziel:'Die Spielerinnen kombinieren durchs Zentrum über die dritte Frau und entscheiden je nach Druck der Gegnerin richtig: klatschen lassen oder aufdrehen. Im Spiel werden so Linien flach überspielt, statt den Ball nach außen zu spielen.',
+ last:['Dauer: 3 × 5 Minuten, 90 Sekunden Pause','Wartezeit: gering, der Rückweg mit Ball zählt als aktive Erholung','Pro Spielerin: ca. 15 Ballkontakte pro Durchgang','Intensität: mittel, in Stufe 3 hoch'],
+ leicht:['Nur die Klatsch-Lösung','Abstände 8–10 m','Gegnerin bleibt passiv']},
+neutrale:{saeulen:true,
+ ziel:'Die Spielerinnen stellen unter Gegnerdruck Anspielstationen her, verlagern den Ball weg vom Druck und spielen über die zentrale Neutrale in die Tiefe.',
+ coach:[['Anspielstationen','Die Ballbesitzerin hat immer mindestens zwei Optionen. Fehlerbild: Zwei Mitspielerinnen stehen auf einer Linie.'],['Freilaufen','seitlich absetzen statt entgegenkommen, das schafft Räume.'],['Staffelung','Tiefe und Breite durch die Rautenform mit den Neutralen. Erkennbar: Es entstehen Dreiecke statt Linien.'],['Coaching','geschlossene Mitspielerin mit „Dreh“ oder „Klatsch“ unterstützen.']],
+ last:['Dauer: 4 × 4 Minuten, 2 Minuten Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Neutrale ohne Kontaktbegrenzung','Feld größer (25 × 35 m)','Punkt schon beim Pass auf die zentrale Neutrale']},
+linien:{saeulen:true,
+ ziel:'Die Spielerinnen erkennen, wann sich in einer verschiebenden Linie eine Lücke öffnet, und spielen dann flach und scharf hindurch. Die Empfängerin bietet sich in der Lücke an und nimmt offen an.',
+ coach:[['Zirkulation','schnell spielen, um den Mittelblock zu verschieben. Fehlerbild: lange Ballkontakte, der Block steht sauber.'],['Wahrnehmung','Lücke erkennen, bevor der Ball kommt.'],['Linienpass','flach und scharf auf den richtigen Fuß.'],['Empfängerin','sich in der Lücke anbieten, offen stehen. Erkennbar: Sie kann mit dem ersten Kontakt weiterspielen.']],
+ last:['Dauer: 4 × 4 Minuten, 90 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch','Punkte: Linienpass = 1 Punkt für Blau, Ballgewinn = 1 Punkt für Rot'],
+ leicht:['Nur 2 Rote in der Mitte','Keine pressende Gegnerin in der Startzone','Feld breiter (30 m)']}
+};
+EX.forEach(e=>{const u=UPG[e.id];if(!u)return;const {chip1,...rest}=u;Object.assign(e,rest);if(chip1&&e.chips[1])e.chips[1][1]=chip1;});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 const LKEY='uebungsmappe-altersbereich';
@@ -5054,7 +5137,7 @@ function card(e){const a=A[e.id];
   return '<article class="card" id="ex-'+e.id+'" hidden>'+
    '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
    '<div class="card-head"><h3>'+e.title+'</h3><div class="meta">'+
-     e.chips.map(c=>'<span class="chip">'+(c[0]?c[0]+' ':'')+'<b>'+c[1]+'</b></span>').join('')+'</div></div>'+
+     e.chips.map(c=>'<span class="chip">'+(c[0]?c[0]+' ':'')+'<b>'+c[1]+'</b></span>').join('')+(e.saeulen?'<span class="chip saeulen" title="Lernziel, Spielbezug, Progression, Belastung und Coaching-Punkte überarbeitet">✓ 5 Säulen</span>':'')+'</div></div>'+
    '<div class="grid"><div class="pitch"><svg id="svg-'+e.id+'" viewBox="'+a.vb+'" role="img" aria-label="Animierte Skizze: '+e.title+'"></svg>'+
      '<div class="legend">'+leg+'</div><div class="controls">'+ctr+'</div><div class="step" id="step-'+e.id+'" aria-live="polite"></div></div>'+
    '<div class="side"><section><h4>Ziel</h4><p>'+e.ziel+'</p></section><section><h4>Organisation</h4>'+li(e.org)+'</section><section><h4>'+(e.rotTitle||'Rotation')+'</h4><p>'+e.rot+'</p></section></div></div>'+
@@ -5062,7 +5145,8 @@ function card(e){const a=A[e.id];
      '<section><h4>Coachingpunkte</h4>'+li(e.coach.map(c=>'<b>'+c[0]+':</b> '+c[1]))+'</section>'+
      (e.stufen?'<section><h4>Methodische Stufen</h4><dl>'+e.stufen.map(s=>'<dt>'+s[0]+'</dt><dd>'+s[1]+'</dd>').join('')+'</dl></section>':'')+
      '<section><h4>'+(e.lastTitle||'Belastung')+'</h4>'+li(e.last)+'</section>'+
-     (e.steig?'<section><h4>'+(e.steigTitle||'Steigerungen')+'</h4>'+li(e.steig)+'</section>':'')+
+     (e.leicht?'<section><h4>Leichter</h4>'+li(e.leicht)+'</section>':'')+
+     (e.steig?'<section><h4>'+(e.leicht?'Schwerer':(e.steigTitle||'Steigerungen'))+'</h4>'+li(e.steig)+'</section>':'')+
      (e.src?'<section class="full src"><h4>Inspiration</h4>'+e.src+'</section>':'')+
    '</div></article>';}
 
@@ -5302,7 +5386,9 @@ async function buildPdf(p){
       head(e.ablaufTitle||'Ablauf');list(e.ablauf,{num:true,gap:2});
       head('Coachingpunkte');list(e.coach.map(c=>c[0]+': '+c[1]),{gap:2});
       head(e.lastTitle||'Belastung');list(e.last,{gap:2});
-      if(e.steig&&e.steig.length){head(e.steigTitle||'Steigerungen');list(e.steig,{gap:2});}
+      if(e.stufen&&e.stufen.length){head('Methodische Stufen');list(e.stufen.map(x=>x[0]+': '+x[1]),{gap:2});}
+      if(e.leicht&&e.leicht.length){head('Leichter');list(e.leicht,{gap:2});}
+      if(e.steig&&e.steig.length){head(e.leicht?'Schwerer':(e.steigTitle||'Steigerungen'));list(e.steig,{gap:2});}
       const ad=e.ad&&e.ad[lv];
       if(ad){const h=measure(ad,CW-8)+LH(8.5)+5;ensure(h);doc.setFillColor(...SOFT);doc.roundedRect(M,y,CW,h,1.5,1.5,'F');y+=2.5;head('Anpassung für '+lvName(lv),{x:M+4,noBreak:true});para(ad,{x:M+4,w:CW-8,noBreak:true});y+=3;}
     }}
