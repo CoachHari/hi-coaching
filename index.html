@@ -1273,7 +1273,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     <!-- SPIELE -->
     <div class="kb-pane" id="kb-v-spiele" hidden>
       <div class="kb-season" id="kb-season"></div>
-      <div class="kb-mpbar"><button type="button" class="kb-btn kb-gold" id="kb-g-new">+ Spiel aus Aufstellung eintragen</button></div>
+      <div class="kb-mpbar"><button type="button" class="kb-btn kb-gold" id="kb-g-new">+ Spiel aus Aufstellung eintragen</button><button type="button" class="kb-btn" id="kb-g-free">+ Vergangenes Spiel eintragen</button></div>
       <div class="kb-panel" id="kb-g-edit" hidden></div>
       <div id="kb-g-list"></div>
     </div>
@@ -6781,7 +6781,7 @@ function renderGames(){
     const sc=(g.goals||[]).map(t=>{const p=pById(t.pid);return p?p.name+(t.min?' '+t.min+'\'':''):'';}).filter(Boolean).join(', ');
     return '<button type="button" class="kb-game" data-g="'+g.id+'"><span class="kb-res '+r+'">'+(g.us??'–')+':'+(g.them??'–')+'</span><span style="min-width:0"><h5>vs. '+esc(g.gegner||'Gegner')+'</h5><p>'+(sc?'Tore: '+esc(sc):'Keine Torschützinnen eingetragen')+'</p></span><small>'+fmtDate(g.datum)+' · '+esc(g.formation||'')+'</small></button>';}).join(''):'<p class="kb-none">Noch keine Spiele eingetragen. Nach dem Spiel „Spiel aus Aufstellung eintragen“ antippen.</p>';
 }
-function newGame(){const L=S.lineup;return{id:uid(),datum:L.datum||todayIso(),gegner:L.gegner||'',formation:L.formation,dauer:90,us:'',them:'',starters:L.slots.filter(Boolean),bank:L.bank.slice(),subs:[],goals:[]};}
+function newGame(free){const L=S.lineup;return free?{id:uid(),datum:'',gegner:'',formation:L.formation,dauer:90,us:'',them:'',starters:[],bank:[],subs:[],goals:[]}:{id:uid(),datum:L.datum||todayIso(),gegner:L.gegner||'',formation:L.formation,dauer:90,us:'',them:'',starters:L.slots.filter(Boolean),bank:L.bank.slice(),subs:[],goals:[]};}
 function pOpts(ids,selId,empty){return(empty?'<option value="">'+empty+'</option>':'')+ids.map(pById).filter(Boolean).map(p=>'<option value="'+p.id+'"'+(p.id===selId?' selected':'')+'>'+esc(p.nr+' '+p.name)+'</option>').join('');}
 function renderGEdit(){
   const box=$('kb-g-edit');if(!gEdit){box.hidden=true;box.innerHTML='';return;}
@@ -6790,8 +6790,9 @@ function renderGEdit(){
   const all=sorted();
   box.innerHTML='<h4>'+(isNew?'Spiel eintragen':'Spiel bearbeiten')+'</h4>'+
    '<div class="kb-grid"><label class="kb-g2">Gegner<input data-gf="gegner" value="'+esc(g.gegner)+'"></label><label>Datum<input type="date" data-gf="datum" value="'+esc(g.datum)+'"></label><label>Spieldauer (Min.)<input type="number" min="1" max="130" data-gf="dauer" value="'+esc(g.dauer)+'"></label>'+
+   '<label>Formation<select data-gf="formation">'+Object.keys(FORM).map(f=>'<option'+(f===g.formation?' selected':'')+'>'+f+'</option>').join('')+'</select></label>'+
    '<label class="kb-g2">Ergebnis (FC Bergheim : Gegner)<span class="kb-score"><input type="number" min="0" data-gf="us" value="'+esc(g.us)+'" aria-label="Tore FC Bergheim"> : <input type="number" min="0" data-gf="them" value="'+esc(g.them)+'" aria-label="Tore Gegner"></span></label></div>'+
-   '<hr class="kb-hr"><h5>Aufgebot</h5><p class="kb-sub">Antippen wechselt: Startelf (blau) → Bank (gold) → nicht dabei. Startelf: '+g.starters.length+'</p>'+
+   '<hr class="kb-hr"><h5>Aufgebot</h5><p class="kb-sub">Antippen wechselt: Startelf (blau) → Bank (gold) → nicht dabei. Startelf: '+g.starters.length+', Bank: '+g.bank.length+'</p>'+
    '<div class="kb-tri">'+all.map(p=>'<button type="button" data-tri="'+p.id+'" data-st="'+(g.starters.includes(p.id)?'s':g.bank.includes(p.id)?'b':'')+'">'+esc(p.nr+' '+p.name)+'</button>').join('')+'</div>'+
    '<h5>Wechsel</h5><div class="kb-rows">'+g.subs.map((s,i)=>'<div class="kb-rowx"><input type="number" min="0" max="130" placeholder="Min." data-sub="'+i+'" data-k="min" value="'+esc(s.min)+'" aria-label="Minute"><select data-sub="'+i+'" data-k="out" aria-label="raus">'+pOpts(squadIds,s.out,'raus …')+'</select><select data-sub="'+i+'" data-k="in" aria-label="rein">'+pOpts(g.bank,s.in,'rein …')+'</select><button type="button" class="kb-x" data-subdel="'+i+'" aria-label="Wechsel entfernen">×</button></div>').join('')+'</div>'+
    '<button type="button" class="kb-btn" data-subadd>+ Wechsel</button>'+
@@ -6799,7 +6800,8 @@ function renderGEdit(){
    '<button type="button" class="kb-btn" data-goaladd>+ Tor</button>'+
    '<hr class="kb-hr"><div class="kb-foot"><span id="kb-g-delwrap">'+(isNew?'':'<button type="button" class="kb-btn kb-danger" data-gdel>Spiel löschen</button>')+'</span><div class="kb-r"><button type="button" class="kb-btn kb-plain" data-gcancel>Abbrechen</button><button type="button" class="kb-btn kb-gold" data-gsave>Speichern</button></div></div><p class="kb-err" id="kb-g-err" hidden></p>';
 }
-$('kb-g-new').onclick=()=>{gEdit=newGame();renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
+$('kb-g-new').onclick=()=>{gEdit=newGame(false);renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
+$('kb-g-free').onclick=()=>{gEdit=newGame(true);renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
 $('kb-g-list').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const g=S.games.find(x=>x.id===b.dataset.g);if(!g)return;gEdit=JSON.parse(JSON.stringify(g));renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});});
 const gBox=$('kb-g-edit');
 gBox.addEventListener('input',e=>{if(!gEdit)return;const t=e.target;
