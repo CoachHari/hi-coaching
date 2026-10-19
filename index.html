@@ -984,6 +984,17 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-chk{display:flex!important;align-items:center;gap:10px;margin-top:12px;font-size:15px!important;color:#fff!important;cursor:pointer}
 #kader .kb-chk input{width:20px;height:20px;padding:0;accent-color:#F2C230;flex:0 0 auto}
 #kader .kb-score input[readonly]{opacity:.7}
+.xf{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 20px;align-items:center;margin-top:40px;padding:16px 18px;border-radius:12px;border:1px dashed rgba(255,255,255,.25);color:#fff}
+.xf h4{margin:0 0 4px;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:19px}
+.xf p{margin:0;font-size:14px;color:rgba(255,255,255,.72);max-width:70ch}
+.xf-act{display:flex;flex-wrap:wrap;gap:8px}
+.xf-act label{cursor:pointer}
+.xf .xf-msg{grid-column:1/-1;color:#fff}
+.xf h4{color:#fff}
+.xf .kb-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;opacity:1}
+.xf .kb-btn.kb-gold{background:#F2C230;border-color:#F2C230;color:#1B2440}
+.xf .xf-msg:empty{display:none}
+@media (max-width:640px){.xf{grid-template-columns:1fr}}
 /* ---------- Ende Kabine ---------- */
 </style>
 
@@ -1171,7 +1182,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
   </section>
   <section id="kader" hidden aria-labelledby="kader-h">
     <div class="plan-head" data-bg="Kader">
-      <div><p class="step-lbl">FC Bergheim Damen</p><h2 id="kader-h">Kader &amp; Spieltag</h2><p class="lead">Kader an der Stange, Aufstellung, Matchplan und Spielstatistik für die Saison.</p><p class="store-note">Gespeichert nur in diesem Browser auf diesem Gerät.</p></div>
+      <div><p class="step-lbl">FC Bergheim Damen</p><h2 id="kader-h">Kader &amp; Spieltag</h2><p class="lead">Kader an der Stange, Aufstellung, Matchplan und Spielstatistik für die Saison.</p><p class="store-note">Gespeichert nur in diesem Browser auf diesem Gerät. Zum Übertragen auf ein anderes Gerät: ganz unten „Daten sichern“.</p></div>
       <div class="kb-head-tools"><div class="seg kb-seg" id="kb-tabs" role="group" aria-label="Ansicht"><button type="button" data-kbtab="kader" aria-pressed="true">Kabine</button><button type="button" data-kbtab="auf" aria-pressed="false">Aufstellung</button><button type="button" data-kbtab="mp" aria-pressed="false">Matchplan</button><button type="button" data-kbtab="spiele" aria-pressed="false">Spiele</button></div></div>
     </div>
     <div class="kb-demo" id="kb-demo" hidden>
@@ -1281,6 +1292,11 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
       <div id="kb-g-list"></div>
     </div>
   </section>
+  <div class="xf" id="xf" aria-labelledby="xf-h">
+    <div class="xf-txt"><h4 id="xf-h">Daten übertragen</h4><p>Kader, Spiele, Matchplan, Trainingseinheiten und Termine sind nur in diesem Browser gespeichert. Sichere sie hier in eine Datei und spiel die Datei auf dem anderen Gerät ein.</p></div>
+    <div class="xf-act"><button type="button" class="kb-btn kb-gold" id="xf-save">Daten sichern</button><label class="kb-btn" for="xf-file">Datei einspielen</label><input type="file" id="xf-file" accept=".json,application/json" hidden></div>
+    <p class="xf-msg" id="xf-msg" role="status"></p>
+  </div>
   <footer>Übungsmappe · wird laufend ergänzt · Stand Oktober 2026</footer>
 </div>
 <dialog class="picker" id="picker" aria-labelledby="pk-title">
@@ -6858,5 +6874,52 @@ window.__kbShow=function(){showTab(tab);};
 })();
 </script>
 <!-- ---------- Ende Kabine-Skript ---------- -->
+<script>
+/* ---------- Daten übertragen (Sichern / Einspielen) ---------- */
+(function(){
+const PRE=['uebungsmappe-','hi-kabine-'];
+const mine=k=>PRE.some(p=>k.indexOf(p)===0);
+const msg=t=>{document.getElementById('xf-msg').innerHTML=t;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function keys(){const out=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(mine(k))out.push(k);}}catch(e){}return out;}
+function summary(d){
+  const parts=[];const j=k=>{try{return JSON.parse(d[k]);}catch(e){return null;}};
+  const kb=j('hi-kabine-v1');if(kb&&Array.isArray(kb.players)){const g=(kb.games||[]).length;parts.push(kb.players.length+(kb.players.length===1?' Spielerin':' Spielerinnen')+(kb.demo?' (Beispielkader)':'')+', '+g+(g===1?' Spiel':' Spiele'));}
+  const e=j('uebungsmappe-einheiten');if(Array.isArray(e))parts.push(e.length+(e.length===1?' Trainingseinheit':' Trainingseinheiten'));
+  const t=j('uebungsmappe-termine');if(Array.isArray(t))parts.push(t.length+(t.length===1?' Termin':' Termine'));
+  return parts.join(' · ')||'keine erkennbaren Inhalte';
+}
+document.getElementById('xf-save').addEventListener('click',()=>{
+  const data={};keys().forEach(k=>{data[k]=localStorage.getItem(k);});
+  if(!Object.keys(data).length){msg('Auf diesem Gerät sind noch keine Daten gespeichert.');return;}
+  const d=new Date(),day=new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  const blob=new Blob([JSON.stringify({app:'hi-coaching',v:1,created:d.toISOString(),data},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='HI-Coaching-Daten-'+day+'.json';document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+  msg('Gesichert: '+esc(summary(data))+'. Die Datei liegt bei deinen Downloads. Übertrag sie auf das andere Gerät (z. B. per Mail oder USB-Stick) und tippe dort auf „Datei einspielen“.');
+});
+let pending=null;
+document.getElementById('xf-file').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    let j=null;try{j=JSON.parse(r.result);}catch(_){}
+    if(!j||j.app!=='hi-coaching'||!j.data||typeof j.data!=='object'){msg('Diese Datei ist keine Datensicherung von H.I. – Coaching. Wähle die Datei „HI-Coaching-Daten-….json“.');return;}
+    pending=j.data;
+    msg('In der Datei vom '+esc(new Date(j.created).toLocaleString('de-AT',{dateStyle:'short',timeStyle:'short'}))+': '+esc(summary(j.data))+'.<br>Die Daten auf diesem Gerät werden dadurch ersetzt. <button type="button" class="kb-btn kb-gold" id="xf-yes">Jetzt einspielen</button> <button type="button" class="kb-btn" id="xf-no">Abbrechen</button>');
+  };
+  r.onerror=()=>msg('Die Datei konnte nicht gelesen werden.');
+  r.readAsText(f);
+});
+document.getElementById('xf-msg').addEventListener('click',e=>{
+  if(e.target.id==='xf-no'){pending=null;msg('');}
+  if(e.target.id==='xf-yes'&&pending){
+    try{keys().forEach(k=>localStorage.removeItem(k));Object.keys(pending).filter(mine).forEach(k=>localStorage.setItem(k,pending[k]));}
+    catch(_){msg('Speichern im Browser ist fehlgeschlagen. Ist der private Modus aktiv?');return;}
+    msg('Eingespielt. Die Seite lädt neu …');setTimeout(()=>location.reload(),600);
+  }
+});
+})();
+</script>
 </body>
 </html>
