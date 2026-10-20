@@ -2431,6 +2431,101 @@ const krRing=(s,c,r)=>el('circle',{cx:c[0],cy:c[1],r,fill:'none',stroke:'#FFFFFF
   R.S.L=[[te,'4 gegen 1: Die Kinder außen passen sich den Ball zu'],[te+0.5,'Abgefangen!'],[99,'Das Kind, das den Ball verloren hat, jagt sofort hinterher, bevor er aus dem Feld gedribbelt wird']];
   A.rjagd={vb:'0 0 360 360',cycle:6.0,draw(s){field(s,0,0,360,360);krBox(s,c,100);},ents:R.ents,sc:{a:R.S}};
 })();
+/* ---------- Mit Ball Bambini – U9: acht neue Spielformen (5 Säulen) ---------- */
+const kmBall=(kf,C,d)=>ballOf(ktDense(kf,C),d||14);
+const kmCut=(bl,t0,t1)=>bl.filter(r=>r[0]>=t0-1e-9&&r[0]<=t1+1e-9);
+const kmTail=(arr,C)=>arr.concat([[C,...arr[arr.length-1].slice(1)]]);
+
+/* Flügel-Spiel */
+(function(){const C=4.8;
+  const S={L:[[1.4,'In der Flügelzone darf niemand angreifen'],[2.9,'Pass auf den Flügel, Flügel dribbelt nach vorne und passt in die Mitte'],[99,'… und ab ins Minitor']],
+    b1:[[0,170,300],[0.8,170,250],[1.6,170,250],[2.6,150,150],[C,150,150]],b2:[[0,235,195],[1.8,235,195],[3.0,205,80],[C,205,80]],
+    w:[[0,322,270],[1.0,322,250],[2.2,322,110],[C,322,110]],
+    r1:[[0,180,180],[1.0,180,205],[1.8,245,250],[2.6,258,165],[3.0,262,130],[C,262,130]],r2:[[0,150,110],[1.5,160,150],[2.6,170,110],[3.4,170,100],[C,170,100]]};
+  S.BALLS=[[[0,170,286],[0.8,170,236],[0.9,170,236],[1.4,308,250],[1.5,322,236],[2.2,322,96],[2.4,322,96],[2.9,214,86],[3.0,205,66],[3.3,205,66],[3.7,182,14],[C,182,14]]];
+  A.mbflugel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);[6,290].forEach(x=>el('rect',{x,y:6,width:64,height:348,fill:'#FFFFFF',opacity:'.12'},s));
+    line(s,70,6,70,354,'6 5','.6');line(s,290,6,290,354,'6 5','.6');mgoal(s,160,6,40,12);mgoal(s,160,342,40,12);txt(s,322,24,'middle','12').textContent='Flügel';},
+    ents:[{id:'b1'},{id:'b2'},{id:'w'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+
+/* Zielspieler-Spiel */
+(function(){const C=4.6,f=(p,q)=>toward(p,q,14);
+  const B1=[150,260],B2a=[240,230],B2b=[230,150],Z=[200,36],B1b=[160,170];
+  const S={L:[[2.0,'Pass nach vorne suchen'],[2.8,'Pass zum Zielspieler in der Endzone = Punkt'],[99,'Der Zielspieler spielt zurück, weiter geht’s']],
+    b1:[[0,...B1],[1.6,...B1],[3.0,...B1b],[C,...B1b]],b2:[[0,...B2a],[1.0,...B2a],[2.0,...B2b],[C,...B2b]],
+    z:[[0,180,36],[1.8,180,36],[2.4,...Z],[C,...Z]],zr:[[0,180,330]],
+    r1:[[0,190,200],[1.0,205,200],[2.0,195,175],[C,195,175]],r2:[[0,160,110],[1.6,190,110],[2.4,175,100],[C,175,100]]};
+  S.BALLS=[[[0,...f(B1,B2a)],[0.3,...f(B1,B2a)],[0.8,...f(B2a,B1)],[1.0,...f(B2a,B2b)],[2.0,B2b[0],B2b[1]-14],[2.1,B2b[0],B2b[1]-14],[2.6,...f(Z,B2b)],[3.4,...f(Z,B1b)],[4.0,...f(B1b,Z)],[C,...f(B1b,Z)]]];
+  A.mbziel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('rect',{x:6,y:6,width:348,height:52,fill:'#F2C230',opacity:'.18'},s);el('rect',{x:6,y:302,width:348,height:52,fill:'#F2C230',opacity:'.18'},s);
+    line(s,6,58,354,58,'6 5','.7');line(s,6,302,354,302,'6 5','.7');},
+    ents:[{id:'b1'},{id:'b2'},{id:'z',fill:NEU,label:'Z'},{id:'zr',fill:NEU,label:'Z'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+
+/* Rundum-Tor */
+(function(){const C=4.4;
+  const S={L:[[1.0,'Das Tor in der Mitte zählt von beiden Seiten'],[2.6,'Steht der Gegner unten, auf die andere Seite spielen'],[99,'Von oben durchs Tor dribbeln = Punkt']],
+    b1:[[0,170,290],[1.4,170,290],[2.6,100,230],[C,100,230]],b2:[[0,300,220],[1.0,300,220],[2.2,200,110],[2.6,180,120],[3.3,180,236],[C,180,236]],
+    d:[[0,180,225],[1.2,215,235],[2.4,262,180],[3.4,240,130],[C,240,130]],r2:[[0,130,250],[2.6,120,198],[C,120,198]]};
+  const b2b=kmBall(S.b2.slice(0,4),2.6);
+  S.BALLS=[[[0,176,277],[0.3,176,277],[0.9,286,221],[1.0,286,221]].concat(kmCut(b2b,1.1,2.6),[[2.9,180,180],[3.3,180,250],[C,180,250]])];
+  A.mbrundum={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);cone(s,160,180);cone(s,200,180);el('line',{x1:160,y1:180,x2:200,y2:180,stroke:'#F2C230','stroke-width':'2','stroke-dasharray':'4 3'},s);},
+    ents:[{id:'b1'},{id:'b2'},{id:'d',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+
+/* Wellen-Angriff */
+(function(){const C=4.4;
+  const S={L:[[1.2,'3 gegen 1: schnell nach vorne'],[2.2,'Ampel grün: Der zweite Verteidiger läuft ein'],[99,'Vorher abschließen!']],
+    b1:[[0,100,320],[1.6,110,190],[2.6,120,150],[C,120,150]],b2:[[0,180,320],[1.2,180,210],[2.6,175,200],[C,175,200]],b3:[[0,260,320],[1.4,250,190],[1.9,245,160],[C,245,160]],
+    d1:[[0,180,120],[1.2,170,160],[1.8,206,158],[2.4,215,140],[C,215,140]],d2:[[0,345,230],[1.6,345,230],[2.4,290,175],[3.0,278,140],[C,278,140]]};
+  S.BALLS=[[[0,180,306],[1.2,180,196],[1.3,180,196],[1.8,246,152],[2.1,245,144],[2.2,245,144],[2.6,188,14],[C,188,14]]];
+  A.mbwelle={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);mgoal(s,160,6,40,12);line(s,10,334,350,334,'6 5','.6');
+      el('rect',{x:328,y:250,width:20,height:36,rx:4,fill:'#2C2C2A'},s);this._r=el('circle',{cx:338,cy:259,r:6,fill:'#E5484D'},s);this._g=el('circle',{cx:338,cy:277,r:6,fill:'#3B5B3B'},s);},
+    tick(t){const g=t>=1.6;this._r.setAttribute('fill',g?'#5A2A2A':'#E5484D');this._g.setAttribute('fill',g?'#3CCB5A':'#3B5B3B');},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'d1',fill:RED},{id:'d2',fill:RED}],sc:{a:S}};
+})();
+
+/* Ball halten */
+(function(){const c=[180,190],pos=[[180,85],[85,265],[275,265]];
+  const R=kRondo({pos,c,seq:[0,1,2,0,1,2],C:6.0,mids:[{type:'block',pull:0.25,start:[150,170]},{type:'center',pull:-0.25,start:[210,200]}]});const ev=R.evs.map(e=>e[0]);
+  R.S.L=[[ev[2],'3 gegen 2: Ball in den eigenen Reihen halten'],[ev[4],'Ein großes Dreieck bilden, laut zählen'],[99,'5 Pässe = Punkt']];
+  A.mbballhalten={vb:'0 0 360 360',cycle:6.0,draw(s){field(s,0,0,360,360);this._n=txt(s,180,30,'middle','26');this._n.setAttribute('fill','#F2C230');},
+    tick(t){const n=ev.filter(x=>t>=x).length;this._n.textContent=n?(n>=5?'5 = PUNKT!':String(n)):'';},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Ping-Pong-Duell */
+(function(){const C=4.8;
+  const S={L:[[1.8,'1 gegen 1 aufs Minitor'],[2.8,'Tor! Das andere Kind holt sofort einen neuen Ball und greift an'],[99,'Wer geschossen hat, läuft schnell zurück und verteidigt']],
+    b:[[0,180,290],[1.2,150,190],[1.7,140,120],[2.2,140,120],[3.2,165,240],[C,170,262]],
+    r:[[0,180,150],[1.2,172,166],[1.7,178,138],[2.3,220,62],[2.6,220,62],[4.0,200,200],[C,196,222]]};
+  const bb=kmBall(S.b.slice(0,3),1.7);
+  S.BALLS=[kmTail(kmCut(bb,0,1.7).concat([[1.8,138,106],[2.2,172,14]]),C),
+    kmTail([[0,236,40],[2.6,236,40]].concat(kmCut(kmBall(S.r.slice(4),C).map(r=>r),2.7,C)),C)];
+  A.mbpingpong={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);mgoal(s,160,6,40,12);mgoal(s,160,342,40,12);
+      [[250,40],[110,320],[96,320]].forEach(([x,y])=>el('circle',{cx:x,cy:y,r:5.5,fill:'#FFFFFF',stroke:'#2C2C2A','stroke-width':'1'},s));},
+    ents:[{id:'b'},{id:'r',fill:RED}],sc:{a:S}};
+})();
+
+/* Banden-Fußball */
+(function(){const C=4.4;
+  const S={L:[[1.4,'Die Bank ist ein Mitspieler: Pass gegen die Bande'],[2.4,'Abpraller hinter dem Gegner mitnehmen'],[99,'… und aufs Minitor']],
+    b1:[[0,110,250],[0.6,110,250],[1.4,106,152],[2.4,140,80],[C,140,80]],b2:[[0,250,190],[2.0,240,130],[C,240,130]],
+    r1:[[0,150,200],[1.0,138,205],[2.0,152,140],[C,152,140]],r2:[[0,275,150],[2.0,272,110],[C,272,110]]};
+  const bb=kmBall(S.b1.slice(2),C);
+  S.BALLS=[[[0,104,237],[0.4,104,237],[0.9,40,190],[1.4,96,140]].concat(kmCut(bb,1.5,2.4),[[2.6,146,66],[3.0,176,14],[C,176,14]])];
+  A.mbbande={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);[[18,40],[326,40]].forEach(([x,y])=>el('rect',{x,y,width:16,height:280,rx:3,fill:'#9A6B3F',stroke:'#5C3A1E','stroke-width':'1.5'},s));mgoal(s,160,6,40,12);mgoal(s,160,342,40,12);},
+    ents:[{id:'b1'},{id:'b2'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+
+/* Drei-Tore-Spiel */
+(function(){const C=4.6;
+  const S={L:[[1.0,'Drei Tore: Der Gegner schiebt zur Ballseite'],[2.4,'Schnell auf die andere Seite spielen'],[99,'Durchs freie Tor dribbeln = Punkt']],
+    b1:[[0,90,250],[1.0,80,170],[C,80,170]],b2:[[0,180,260],[1.4,180,190],[C,180,190]],b3:[[0,280,260],[2.0,280,190],[3.0,300,100],[3.6,300,46],[C,300,46]],
+    r1:[[0,90,110],[1.0,85,108],[C,85,108]],r2:[[0,180,120],[1.0,130,125],[2.2,200,120],[3.0,250,100],[C,250,100]],r3:[[0,270,130],[1.0,215,128],[2.2,240,118],[3.0,268,72],[C,268,72]]};
+  const b3=kmBall(S.b3.slice(1,4),3.6);
+  S.BALLS=[[[0,90,236],[1.0,80,156],[1.1,80,156],[1.6,166,190],[1.9,166,190],[2.4,266,190],[2.5,280,176]].concat(kmCut(b3,2.6,3.6),[[C,300,32]])];
+  A.mbdreitore={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);[[40,80],[160,200],[280,320]].forEach(([a,b])=>{cone(s,a,40);cone(s,b,40);});line(s,10,40,350,40,'6 5','.5');},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED}],sc:{a:S}};
+})();
 
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
@@ -4716,6 +4811,99 @@ EX.push(...[
  leicht:['Breiterer Rand','Nur Rondo (Stufe 1)','Die Mitte darf nur gehen'],
  steig:['Ball zurück (Stufe 2)','Schmalerer Rand','Nur zwei Kontakte','Zwei jagen (Stufe 3)']}
 ].map(e=>Object.assign({},KR2,e)));
+/* ---------- Mit Ball Bambini – U9: acht neue Spielformen, Inhalte (5 Säulen) ---------- */
+Object.assign(LEG,{fluegel:['Flügelzone','#FFFFFF',.35],zielkind:['Zielspieler',NEU,1],endzone:['Endzone','#F2C230',.5],ampel:['Ampel','#3CCB5A',1]});
+const KM2={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'mitball',lv:['kinder'],saeulen:true};
+EX.push(...[
+{id:'mbflugel',title:'Flügel-Spiel',legend:['teamblau','teamrot','ball','fluegel','minitor'],
+ chips:[['Schwerpunkt','Breite nutzen · Flügelspiel'],['','6–10 Kinder, 2 gegen 2 + Flügelspieler'],['Feld','20 × 25 m mit zwei Flügelzonen'],['Dauer','8–10 min'],['Material','Bälle, 2 Minitore, Hütchen, Leibchen']],
+ ziel:'Das Kind erkennt, dass außen auf dem Flügel Platz ist, spielt den Ball dorthin und läuft in die Mitte, um den Ball zurückzubekommen. Im Spiel: das Feld breit machen und über außen angreifen.',
+ org:['Feld 20 × 25 m, an beiden Seiten eine Flügelzone (ca. 3 m breit)','2 gegen 2 im Mittelfeld, je ein Flügelspieler pro Team in einer Flügelzone','Ein Minitor an jeder Grundlinie'],
+ rot:'Nach jedem Tor wechselt ein Kind aus der Mitte auf den Flügel.',
+ ablauf:['2 gegen 2 im Mittelfeld, der Flügelspieler hilft seinem Team.','In der Flügelzone darf niemand angreifen.','Pass auf den Flügel, der Flügel dribbelt nach vorne.','Pass zurück in die Mitte und aufs Minitor.'],
+ stufen:[['Stufe 1 · Ohne Gegner','Der Ball muss einmal über den Flügel, dann aufs Tor, Gegner nur passiv.'],['Stufe 2 · Spiel','2 gegen 2 + Flügel, Tor nach Flügelpass zählt doppelt.'],['Stufe 3 · Flügel verteidigen','Ein Verteidiger darf in die Flügelzone, Tor nur nach Flügelpass.']],
+ coach:[['Breit machen','Der Flügelspieler bleibt außen. Erkennbar: Der Flügel ist immer anspielbar. Fehlerbild: Der Flügel läuft in die Mitte zum Ball.'],['Nach dem Pass laufen','In die Mitte vor das Tor laufen.'],['Pass in die Mitte','Flach und vor das Kind.'],['Abschluss','Ruhig mit der Innenseite.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine, mehrere Felder','Pro Kind: ca. 15–20 Ballkontakte pro Spiel','Intensität: mittel bis hoch'],
+ leicht:['Breitere Flügelzonen','Gegner nur passiv (Stufe 1)','Größere Minitore'],
+ steig:['Tor nach Flügelpass doppelt (Stufe 2)','Flügel nur zwei Kontakte','Schmaleres Feld','Verteidiger darf auf den Flügel (Stufe 3)']},
+{id:'mbziel',title:'Zielspieler-Spiel',legend:['teamblau','teamrot','zielkind','ball','endzone'],
+ chips:[['Schwerpunkt','Nach vorne spielen · Freilaufen'],['','8–10 Kinder, 3 gegen 3 + 2 Zielspieler'],['Feld','20 × 25 m mit Endzonen'],['Dauer','8–10 min'],['Material','1 Ball, Hütchen, Leibchen']],
+ ziel:'Das Kind sucht den Pass nach vorne zum Zielspieler und bietet sich so an, dass es den Ball zurückbekommt. Im Spiel: nach vorne spielen statt nur quer.',
+ org:['Feld 20 × 25 m, an jedem Ende eine Endzone (ca. 3 m)','3 gegen 3 im Feld','In jeder Endzone ein Zielspieler eines Teams'],
+ rot:'Wer einen Punkt erzielt (Pass zum Zielspieler), tauscht mit dem Zielspieler.',
+ ablauf:['Beide Teams spielen auf ihren Zielspieler in der gegnerischen Endzone.','Pass zum Zielspieler, der den Ball stoppt = Punkt.','Der Zielspieler passt zurück ins Feld.','Das Kind, das den Punkt gemacht hat, wird neuer Zielspieler.'],
+ stufen:[['Stufe 1 · Überzahl','Ein Joker spielt immer mit dem Team am Ball.'],['Stufe 2 · Spiel','3 gegen 3, Pass zum Zielspieler = Punkt.'],['Stufe 3 · Zielspieler und Tor','Der Zielspieler muss den Ball zurücklegen, erst der Abschluss aufs Minitor zählt.']],
+ coach:[['Nach vorne schauen','Kopf hoch: Ist der Zielspieler frei? Erkennbar: Der Pass nach vorne kommt, sobald der Weg frei ist.'],['Zielspieler','In der Endzone hin und her bewegen, damit kein Gegner dazwischen steht. Fehlerbild: Der Zielspieler steht hinter einem Gegner.'],['Pass','Flach und fest genug.'],['Nachrücken','Nach dem Pass nach vorne laufen.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Spiel','Intensität: mittel bis hoch'],
+ leicht:['Joker (Stufe 1)','Breitere Endzone','Zielspieler darf in der ganzen Endzone laufen'],
+ steig:['3 gegen 3 ohne Joker (Stufe 2)','Schmalere Endzone','Nur zwei Kontakte im Feld','Zielspieler legt zurück, dann Abschluss (Stufe 3)']},
+{id:'mbrundum',title:'Rundum-Tor',legend:['teamblau','teamrot','ball','cone'],
+ chips:[['Schwerpunkt','Spielverlagerung · Entscheiden'],['','8–12 Kinder, 2 gegen 2'],['Feld','15 × 15 m mit Tor in der Mitte'],['Dauer','6–8 min'],['Material','1 Ball, 2 Hütchen pro Feld, Leibchen']],
+ ziel:'Das Kind erkennt, auf welcher Seite des Tores der Gegner steht, und spielt den Ball auf die andere Seite, um von dort durchs Tor zu kommen. Im Spiel: dorthin spielen, wo der Gegner nicht ist.',
+ org:['Feld 15 × 15 m, in der Mitte ein Hütchentor (ca. 2 m breit)','2 gegen 2, das Tor zählt von beiden Seiten'],
+ rot:'Nach jedem Spiel gegen ein anderes Team.',
+ ablauf:['Beide Teams spielen auf dasselbe Tor in der Mitte.','Ein Tor zählt von beiden Seiten, durch Pass zum Mitspieler oder Dribbling.','Steht der Gegner auf einer Seite, auf die andere Seite spielen.','Nach einem Tor bekommt das andere Team den Ball.'],
+ stufen:[['Stufe 1 · Überzahl','2 gegen 1, das Kind ohne Team verteidigt.'],['Stufe 2 · Spiel','2 gegen 2, Tor durch Dribbling oder Pass.'],['Stufe 3 · Zwei Tore','Zwei Tore in der Mitte, nach einem Tor muss das andere Tor angegriffen werden.']],
+ coach:[['Hinschauen','Wo steht der Gegner? Erkennbar: Das Kind dribbelt um das Tor herum auf die freie Seite.'],['Verlagern','Pass zum Mitspieler auf der anderen Seite. Fehlerbild: Alle versuchen es auf der gleichen Seite.'],['Anbieten','Mitspieler stellt sich auf die freie Seite.'],['Verteidigen','Zwischen Ball und Tor stellen, mitlaufen.']],
+ last:['Dauer: 4 Spiele à 90 Sekunden, 30 Sekunden Pause','Wartezeit: keine, mehrere Felder','Pro Kind: ca. 20 Ballkontakte pro Spiel','Intensität: hoch'],
+ leicht:['Überzahl 2 gegen 1 (Stufe 1)','Breiteres Tor','Größeres Feld'],
+ steig:['2 gegen 2 (Stufe 2)','Schmaleres Tor','Tor nur durch Pass','Zwei Tore (Stufe 3)']},
+{id:'mbwelle',title:'Wellen-Angriff',legend:['teamblau','teamrot','ball','minitor','ampel'],
+ chips:[['Schwerpunkt','Schnell angreifen · Überzahl nutzen'],['','9–12 Kinder, 3 Angreifer, 2 Verteidiger'],['Feld','15 × 20 m mit Minitor'],['Dauer','8 min'],['Material','Bälle, 1–2 Minitore, Hütchen']],
+ ziel:'Das Kind greift mit zwei anderen schnell an, solange nur ein Verteidiger da ist, und schließt ab, bevor der zweite Verteidiger zurück ist. Im Spiel: Überzahl schnell nutzen.',
+ org:['Feld 15 × 20 m, Minitor an einem Ende','3 Angreifer starten an der Grundlinie, Verteidiger 1 im Feld, Verteidiger 2 an der Seite','Trainerin gibt das Signal (Ampel)'],
+ rot:'Nach jeder Welle rücken die Angreifer zu den Verteidigern, neue Angreifer starten.',
+ ablauf:['3 gegen 1: Die Angreifer starten mit Ball.','Auf das Signal (Ampel grün) läuft der zweite Verteidiger ein.','Die Angreifer versuchen, vorher abzuschließen.','Nächste Welle startet sofort.'],
+ stufen:[['Stufe 1 · 3 gegen 1','Nur ein Verteidiger, kein zweiter.'],['Stufe 2 · Zweiter kommt','Zweiter Verteidiger startet nach 4 Sekunden.'],['Stufe 3 · Schnell','Zweiter Verteidiger startet nach 2 Sekunden. Erobern die Verteidiger den Ball, dürfen sie über die Grundlinie dribbeln.']],
+ coach:[['Schnell nach vorne','Nicht quer passen. Erkennbar: Abschluss in wenigen Sekunden.'],['Breit','Die Angreifer laufen in drei Bahnen. Fehlerbild: Alle drei laufen zum Ball.'],['Verteidiger binden','Auf den Verteidiger zudribbeln, dann passen.'],['Abschluss','Früh schießen, bevor der zweite Verteidiger da ist.']],
+ last:['Dauer: 8–10 Wellen, ca. 8 Minuten','Wartezeit: mittel, deshalb zwei Felder oder Wellen sofort hintereinander','Pro Kind: ca. 3–5 Ballkontakte pro Welle','Intensität: hoch'],
+ leicht:['Nur 3 gegen 1 (Stufe 1)','Größeres Minitor','Kürzeres Feld'],
+ steig:['Zweiter Verteidiger nach 4 Sekunden (Stufe 2)','Zweiter Verteidiger nach 2 Sekunden (Stufe 3)','Tor nur nach Pass']},
+{id:'mbballhalten',title:'Ball halten 3 gegen 2',legend:['kind','teamrot','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Anbieten'],['','10 Kinder in Gruppen zu 5'],['Feld','12 × 12 m'],['Dauer','6–8 min'],['Material','1 Ball pro Feld, Hütchen, Leibchen']],
+ ziel:'Das Kind bildet mit seinen Mitspielern ein großes Dreieck, bietet sich frei an und hält den Ball gegen zwei Jäger. Im Spiel: den Ball in den eigenen Reihen behalten.',
+ org:['Feld 12 × 12 m','3 Kinder mit Ball, 2 Jäger'],
+ rot:'Erobern die Jäger den Ball, tauschen sie mit den beiden Kindern, die zuletzt am Ball waren.',
+ ablauf:['Die drei Kinder passen sich den Ball zu und bewegen sich frei im Feld.','Die zwei Jäger versuchen, den Ball zu erobern.','5 Pässe in Folge = Punkt.','Ballverlust: Tausch.'],
+ stufen:[['Stufe 1 · Ein Jäger','3 gegen 1, freie Kontaktzahl.'],['Stufe 2 · Zwei Jäger','3 gegen 2, 5 Pässe = Punkt.'],['Stufe 3 · Ausbrechen','Nach 5 Pässen darf über eine Linie gedribbelt werden = 2 Punkte. Die Jäger dürfen nach Ballgewinn auf ein Minitor schießen.']],
+ coach:[['Dreieck','Groß machen, nicht auf eine Linie. Erkennbar: Das Kind mit Ball hat immer zwei Anspielstationen.'],['Anbieten','Nach dem Pass sofort neu frei laufen. Fehlerbild: Ein Kind steht hinter einem Jäger.'],['Zählen','Laut mitzählen.'],['Jäger','Zusammen jagen: einer zum Ball, einer stellt den Pass zu.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Ein Jäger (Stufe 1)','Größeres Feld','3 Pässe = Punkt'],
+ steig:['Zwei Jäger (Stufe 2)','Kleineres Feld','Nur zwei Kontakte','Ausbrechen (Stufe 3)']},
+{id:'mbpingpong',title:'Ping-Pong-Duell',legend:['teamblau','teamrot','ball','minitor'],
+ chips:[['Schwerpunkt','1 gegen 1 · Abschluss · Umschalten'],['','8–12 Kinder in Paaren'],['Feld','je Paar 10 × 15 m'],['Dauer','6–8 min'],['Material','Mehrere Bälle pro Paar, 2 Minitore pro Feld']],
+ ziel:'Das Kind setzt sich im 1 gegen 1 durch und schließt ab. Nach dem Schuss läuft es sofort zurück und verteidigt, weil das andere Kind gleich mit einem neuen Ball angreift. Im Spiel: Mut im Duell und schnelles Umschalten.',
+ org:['Pro Paar ein Feld mit zwei Minitoren gegenüber','Neben jedem Minitor liegen 3–4 Bälle'],
+ rot:'Nach jeder Runde gegen ein anderes Kind spielen.',
+ ablauf:['Ein Kind greift mit Ball an, das andere verteidigt.','Nach dem Abschluss (Tor oder daneben) holt das verteidigende Kind sofort einen neuen Ball neben seinem Tor.','Jetzt greift es an, das andere läuft zurück und verteidigt.','Wer hat nach der Runde mehr Tore?'],
+ stufen:[['Stufe 1 · Langsamer Wechsel','Nach jedem Abschluss kurz zurück zur Grundlinie, dann startet das andere Kind.'],['Stufe 2 · Ping-Pong','Neuer Ball sofort, ohne Pause.'],['Stufe 3 · Zeitlimit','Abschluss innerhalb von 6 Sekunden, sonst bekommt das andere Kind den Ball.']],
+ coach:[['Mut','Auf den Gegner zudribbeln. Erkennbar: Das Kind versucht vorbeizugehen, statt aus weiter Entfernung zu schießen.'],['Abschluss','Innenseite ins freie Eck.'],['Zurück','Nach dem Schuss sofort zurück. Fehlerbild: Das Kind freut sich und bleibt stehen.'],['Verteidigen','Seitlich stellen, auf den Ball schauen.']],
+ last:['Dauer: 4 Runden à 60–90 Sekunden, 60 Sekunden Pause','Wartezeit: keine, beide Kinder sind ständig aktiv','Pro Kind: ca. 20–30 Ballkontakte pro Runde','Intensität: hoch'],
+ leicht:['Langsamer Wechsel (Stufe 1)','Größere Minitore','Kürzeres Feld'],
+ steig:['Ping-Pong ohne Pause (Stufe 2)','Schmalere Minitore','Tor nur mit dem schwachen Fuß','Zeitlimit (Stufe 3)']},
+{id:'mbbande',title:'Banden-Fußball',legend:['teamblau','teamrot','ball','bank','minitor'],
+ chips:[['Schwerpunkt','Doppelpass mit der Bande · Vorbeigehen'],['','8–10 Kinder, 2 gegen 2'],['Feld','12 × 20 m mit Langbänken an den Seiten'],['Dauer','6–8 min'],['Material','1 Ball, 2 Minitore, 2–4 umgedrehte Langbänke']],
+ ziel:'Das Kind spielt den Ball gegen die Bande, läuft am Gegner vorbei und nimmt den Abpraller wieder mit. Im Spiel: der Doppelpass, um an einem Gegner vorbeizukommen.',
+ org:['Feld 12 × 20 m, an den Seiten Langbänke als Bande','Ein Minitor an jedem Ende','2 gegen 2'],
+ rot:'Nach jedem Spiel gegen ein anderes Team.',
+ ablauf:['2 gegen 2 auf die Minitore.','Die Bande ist ein Mitspieler: Pass gegen die Bank, Abpraller mitnehmen.','Tor nach einem Bandenpass zählt doppelt.','Ball über die Bank: Einwurf mit dem Fuß.'],
+ stufen:[['Stufe 1 · Bandenpass üben','1 gegen 1 mit passivem Gegner: gegen die Bande passen, vorbei, Abpraller mitnehmen.'],['Stufe 2 · Spiel','2 gegen 2, Tor nach Bandenpass zählt doppelt.'],['Stufe 3 · Mitspieler statt Bande','Auf einer Seite wird die Bank durch einen Wandspieler ersetzt, der den Ball direkt zurücklegt.']],
+ coach:[['Pass und Lauf','Nach dem Bandenpass sofort am Gegner vorbei. Erkennbar: Das Kind ist vor dem Gegner am Abpraller.'],['Winkel','Schräg nach vorne gegen die Bank spielen. Fehlerbild: Der Ball prallt zurück zum Gegner.'],['Tempo','Fest genug passen.'],['Abschluss','Nach dem Abpraller schnell aufs Tor.']],
+ last:['Dauer: 4 Spiele à 90 Sekunden, 30 Sekunden Pause','Wartezeit: keine, mehrere Felder','Pro Kind: ca. 20 Ballkontakte pro Spiel','Intensität: hoch'],
+ leicht:['Bandenpass üben (Stufe 1)','Breiteres Feld','Größere Minitore'],
+ steig:['Tor nach Bandenpass doppelt (Stufe 2)','Schmaleres Feld','Nur zwei Kontakte vor dem Bandenpass','Wandspieler statt Bande (Stufe 3)']},
+{id:'mbdreitore',title:'Drei-Tore-Spiel',legend:['teamblau','teamrot','ball','cone'],
+ chips:[['Schwerpunkt','Spielverlagerung · freies Tor finden'],['','6–8 Kinder, 3 gegen 3'],['Feld','20 × 20 m mit drei Toren pro Seite'],['Dauer','8–10 min'],['Material','1 Ball, Hütchen für 6 Tore, Leibchen']],
+ ziel:'Das Kind erkennt, dass sich die Gegner zur Ballseite schieben, und spielt den Ball schnell auf die andere Seite zum freien Tor. Im Spiel: Spielverlagerung.',
+ org:['Feld 20 × 20 m','An jeder Grundlinie drei Hütchentore (links, Mitte, rechts)','3 gegen 3'],
+ rot:'Nach jedem Spiel gegen ein anderes Team.',
+ ablauf:['Beide Teams greifen die drei Tore des Gegners an.','Punkt durch Dribbling durch ein Tor.','Der Gegner schiebt zur Ballseite.','Schnell auf die andere Seite spielen und durch das freie Tor dribbeln.'],
+ stufen:[['Stufe 1 · Überzahl','3 gegen 2.'],['Stufe 2 · Spiel','3 gegen 3, Dribbling durch ein Tor = Punkt.'],['Stufe 3 · Seitenwechsel','Ein Tor zählt doppelt, wenn vorher der Ball von einer Seite auf die andere gespielt wurde.']],
+ coach:[['Hinschauen','Wo sind die Gegner? Erkennbar: Das Team spielt den Ball weg von der vollen Seite.'],['Breit stehen','Ein Kind links, eins in der Mitte, eins rechts. Fehlerbild: Alle drei sind auf einer Seite.'],['Schnell verlagern','Zwei schnelle Pässe zur anderen Seite.'],['Verteidigen','Gemeinsam zur Ballseite schieben.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Spiel','Intensität: mittel bis hoch'],
+ leicht:['3 gegen 2 (Stufe 1)','Breitere Tore','Größeres Feld'],
+ steig:['3 gegen 3 (Stufe 2)','Schmalere Tore','Tor nur nach Pass','Seitenwechsel zählt doppelt (Stufe 3)']}
+].map(e=>Object.assign({},KM2,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -6881,6 +7069,83 @@ rwechsel:{ziel:'Das Kind wechselt nach Ballverlust sofort in die Mitte und jagt 
  steig:['Fliegender Wechsel (Stufe 2)','Nur zwei Kontakte','Wer dreimal in der Mitte war, macht eine Zusatzaufgabe','Zwei in der Mitte (Stufe 3)']}
 };
 EX.forEach(e=>{const u=UPG_KR[e.id];if(!u)return;Object.assign(e,u,{saeulen:true});});
+/* ---------- 5-Säulen-Überarbeitung: Mit Ball Bambini – U9 ---------- */
+const UPG_KM={
+durchbruch:{ziel:'Das Kind erkennt, welches der zwei Minitore die Verteidigerin nicht abdeckt, täuscht das andere an und schließt ins freie Tor ab. Im Spiel: im 1 gegen 1 die freie Seite finden.',
+ stufen:[['Stufe 1 · Passive Verteidigerin','Die Verteidigerin steht vor einem Tor und bewegt sich nur langsam.'],['Stufe 2 · Aktive Verteidigerin','Die Verteidigerin verteidigt beide Tore und darf den Ball erobern.'],['Stufe 3 · Konter','Erobert die Verteidigerin den Ball, kontert sie über die Startlinie. Zeitlimit 6 Sekunden für die Angreiferin.']],
+ coach:[['Freies Tor','Kopf hoch: Welches Tor ist frei? Erkennbar: Das Kind schießt ins Tor, vor dem die Verteidigerin nicht steht.'],['Täuschen','Mit dem Körper ein Tor antäuschen, dann zum anderen. Fehlerbild: Das Kind dribbelt direkt in die Verteidigerin.'],['Tempo','Nach der Finte schnell vorbei.'],['Verteidigen','Zwischen Ball und beide Tore stellen, seitlich laufen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, Rollen tauschen','Wartezeit: kurz, Paare abwechselnd','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: hoch'],
+ leicht:['Minitore weiter auseinander','Passive Verteidigerin (Stufe 1)','Breiteres Feld'],
+ steig:['Aktive Verteidigerin (Stufe 2)','Minitore enger zusammen','Verteidigerin startet von der Seite','Konter mit Zeitlimit (Stufe 3)']},
+zweieins_a:{ziel:'Das Kind mit Ball zieht die Verteidigerin auf sich und passt im richtigen Moment zur freien Partnerin. Im Spiel: Überzahl ausspielen.',
+ stufen:[['Stufe 1 · Passive Verteidigerin','Die Verteidigerin geht nur und darf den Ball nicht erobern.'],['Stufe 2 · Aktive Verteidigerin','Die Verteidigerin verteidigt richtig.'],['Stufe 3 · Verteidigerin von hinten','Die Verteidigerin startet hinter den Angreiferinnen und holt auf. Tor nur nach Pass.']],
+ coach:[['Andribbeln','Auf die Verteidigerin zudribbeln, damit sie kommen muss. Erkennbar: Die Verteidigerin entscheidet sich für ein Kind.'],['Moment','Passen, wenn die Verteidigerin kommt, nicht vorher. Fehlerbild: Pass zu früh, die Verteidigerin kann beide decken.'],['Partnerin','Neben und leicht hinter dem Ball bleiben.'],['Abschluss','Schnell aufs Minitor.']],
+ last:['Dauer: 8–10 Durchgänge pro Gruppe, ca. 6–8 Minuten','Wartezeit: kurz, zwei Felder nebeneinander','Pro Kind: ca. 3–5 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Passive Verteidigerin (Stufe 1)','Breiteres Feld','Größeres Minitor'],
+ steig:['Aktive Verteidigerin (Stufe 2)','Tor nur nach Pass','Verteidigerin von hinten (Stufe 3)','2 gegen 2']},
+dreizwei:{ziel:'Das Kind nutzt mit zwei Mitspielerinnen die Überzahl: breit stehen, schnell passen und abschließen. Im Spiel: 3 gegen 2 in Tornähe.',
+ stufen:[['Stufe 1 · 3 gegen 1','Nur eine Verteidigerin, die zweite wartet.'],['Stufe 2 · 3 gegen 2','Zwei Verteidigerinnen, Zeitlimit 10 Sekunden.'],['Stufe 3 · Verzögerte Dritte','Eine dritte Verteidigerin startet nach 4 Sekunden. Erobern die Verteidigerinnen den Ball, kontern sie über die Linie.']],
+ coach:[['Breit','Drei Bahnen: links, Mitte, rechts. Erkennbar: Die Verteidigerinnen können nicht alle decken. Fehlerbild: Alle drei laufen zum Ball.'],['Schnell','Wenige Kontakte, dann Pass.'],['Freie Spielerin','Kopf hoch, die freie Mitspielerin suchen.'],['Abschluss','Ins freie Eck, am Torwartkind vorbei.']],
+ last:['Dauer: 8–10 Angriffe, ca. 8 Minuten','Wartezeit: mittel, Gruppen wechseln sich ab','Pro Kind: ca. 3–5 Ballkontakte pro Angriff','Intensität: hoch'],
+ leicht:['3 gegen 1 (Stufe 1)','Breiteres Feld','Größeres Tor'],
+ steig:['3 gegen 2 mit Zeitlimit (Stufe 2)','Tor nur nach Pass von außen','Dritte Verteidigerin (Stufe 3)']},
+dribbelkoenig:{ziel:'Das Kind dribbelt mutig durch freie Hütchentore und weicht den Verteidigern aus. Im Spiel: freie Räume erkennen und mit Ball hineindribbeln.',
+ stufen:[['Stufe 1 · Ohne Verteidiger','Durch möglichst viele Tore dribbeln, laut zählen.'],['Stufe 2 · Zwei Verteidiger','Zwei Verteidiger bewachen Tore, Ball weggespielt: holen und weiter.'],['Stufe 3 · Drei Verteidiger','Drei Verteidiger, nur Tore in einer bestimmten Farbe zählen.']],
+ coach:[['Kopf hoch','Freie Tore suchen. Erkennbar: Das Kind dribbelt weg vom Verteidiger zu einem freien Tor.'],['Mut','Auch an einem Verteidiger vorbei versuchen.'],['Ball nah','Vor dem Tor kleine Kontakte. Fehlerbild: Der Ball wird durchs Tor geschossen und rollt weg.'],['Verteidiger','Sich vor das Tor stellen, in dessen Nähe der Ball ist.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 60 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Ohne Verteidiger (Stufe 1)','Mehr Tore','Breitere Tore'],
+ steig:['Zwei Verteidiger (Stufe 2)','Drei Verteidiger (Stufe 3)','Nur bestimmte Farbe','Durch das Tor nur mit dem schwachen Fuß']},
+viergegenzwei:{ziel:'Das Kind bietet sich in der großen Überzahl frei an und sucht schnell den Abschluss. Im Spiel: Freilaufen und Mut zum Torschuss.',
+ stufen:[['Stufe 1 · 4 gegen 1','Eine Verteidigerin, viele Abschlüsse.'],['Stufe 2 · 4 gegen 2','Zwei Verteidigerinnen, Tor nur nach mindestens 2 Pässen.'],['Stufe 3 · Zeitlimit','Abschluss innerhalb von 8 Sekunden. Erobern die Verteidigerinnen den Ball, dürfen sie auf zwei Minitore kontern.']],
+ coach:[['Freilaufen','Weg von der Verteidigerin. Erkennbar: Das Kind mit Ball hat immer zwei Anspielstationen.'],['Nicht alle zum Ball','Fehlerbild: Vier Kinder stehen um den Ball herum.'],['Abschluss','Mut zum Schuss, sobald frei.'],['Loben','Jeden Torschuss loben, auch daneben.']],
+ last:['Dauer: 8–10 Angriffe, ca. 8 Minuten','Wartezeit: mittel, zwei Gruppen abwechselnd','Pro Kind: ca. 3–5 Ballkontakte pro Angriff','Intensität: hoch'],
+ leicht:['4 gegen 1 (Stufe 1)','Größeres Tor','Ohne Torwartkind'],
+ steig:['Tor nach 2 Pässen (Stufe 2)','Nur 3 Kontakte','Zeitlimit mit Konter (Stufe 3)']},
+vierviertw:{ziel:'Das Kind erlebt Angriff und Verteidigung im echten Spiel und sucht mit seinem Team den Weg zum Tor. Im Spiel: alles zusammen, mit vielen Torerlebnissen.',
+ stufen:[['Stufe 1 · Überzahl','Ein Joker spielt immer mit dem Team am Ball.'],['Stufe 2 · 3 gegen 3','Mit Torwartkindern, jedes Kind darf einmal ins Tor.'],['Stufe 3 · Aufgabe','Tor zählt doppelt nach einem Pass. Abstoß nur flach zum Mitspieler.']],
+ coach:[['Weg zum Tor','Kopf hoch: dribbeln oder passen? Erkennbar: Das Kind dribbelt, wenn frei, und passt, wenn ein Gegner kommt.'],['Breit','Nicht alle zum Ball. Fehlerbild: Ein Knäuel um den Ball.'],['Umschalten','Nach Ballverlust sofort zurück.'],['Torwartkind','Flach abwerfen oder abstoßen zum freien Kind.']],
+ last:['Dauer: 4 Spiele à 2–3 Minuten, 1 Minute Pause','Wartezeit: keine, bei mehr Kindern zwei Felder','Pro Kind: ca. 15–20 Ballkontakte pro Spiel','Intensität: hoch'],
+ leicht:['Joker (Stufe 1)','Größere Tore','Ein Team mit einem Kind mehr'],
+ steig:['3 gegen 3 (Stufe 2)','Tor nach Pass doppelt (Stufe 3)','Abstoß nur flach','Kleineres Feld']},
+joker_a:{ziel:'Das Kind nutzt den Joker, um in Überzahl zu kommen, und sucht nach dem Pass zum Joker sofort eine freie Position. Im Spiel: Überzahl schaffen und nutzen.',
+ stufen:[['Stufe 1 · Zwei Joker','Zwei Joker, große Überzahl.'],['Stufe 2 · Ein Joker','3 + 1 gegen 3, der Joker darf nicht selbst schießen.'],['Stufe 3 · Joker nur zwei Kontakte','Joker nur zwei Kontakte, Tor zählt doppelt, wenn der Joker beteiligt war.']],
+ coach:[['Joker anspielen','Erkennbar: Das Team spielt den Joker an, wenn es eng wird.'],['Freilaufen','Nach dem Pass zum Joker in eine Lücke laufen. Fehlerbild: Das Kind bleibt nach dem Pass stehen.'],['Joker','Immer zum Team mit Ball laufen und offen anbieten.'],['Abschluss','Schnell auf das freie Minitor.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Spiel','Intensität: mittel bis hoch'],
+ leicht:['Zwei Joker (Stufe 1)','Größeres Feld','Größere Minitore'],
+ steig:['Ein Joker (Stufe 2)','Joker nur zwei Kontakte (Stufe 3)','Tor mit Joker-Beteiligung doppelt','Kleineres Feld']},
+doppelpass_k:{ziel:'Das Kind spielt den Ball zur Wand-Partnerin, läuft sofort los und nimmt den zurückgelegten Ball im Lauf mit zum Tor. Im Spiel: der Doppelpass, um an einem Gegner vorbeizukommen.',
+ orgAdd:['Für Stufe 3: ein Verteidiger pro Bahn'],
+ stufen:[['Stufe 1 · Stehende Wand','Die Wand-Partnerin steht, der Ball darf gestoppt werden.'],['Stufe 2 · Direkt','Die Wand spielt direkt zurück, Abschluss nach höchstens zwei Kontakten.'],['Stufe 3 · Mit Verteidiger','Ein Verteidiger steht vor der Angreiferin. Doppelpass, um vorbeizukommen, dann aufs Minitor.']],
+ coach:[['Pass und los','Nach dem Pass sofort loslaufen. Erkennbar: Die Angreiferin ist am Rückpass, bevor er ausrollt. Fehlerbild: Sie wartet, bis der Ball zurückkommt.'],['Wand','Ball in den Lauf vorlegen, nicht in die Füße.'],['Annahme','Im Lauf mitnehmen.'],['Abschluss','Innenseite ins freie Eck.']],
+ last:['Dauer: 6–8 Durchgänge pro Kind, ca. 6 Minuten','Wartezeit: kurz, höchstens 2 Paare pro Bahn','Pro Kind: ca. 3–4 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Stehende Wand (Stufe 1)','Kürzerer Abstand zur Wand','Größeres Minitor'],
+ steig:['Wand spielt direkt (Stufe 2)','Wand bewegt sich','Abschluss direkt','Mit Verteidiger (Stufe 3)']},
+linienfussball:{ziel:'Das Kind erkennt freie Räume und dribbelt mutig über die Linie des Gegners. Im Spiel: Raum nach vorne gewinnen.',
+ stufen:[['Stufe 1 · Überzahl','Ein Joker spielt immer mit dem Team am Ball.'],['Stufe 2 · 3 gegen 3','Punkt, wenn der Ball über die gegnerische Linie gedribbelt wird.'],['Stufe 3 · Punkt nach Pass','Punkt nur, wenn vor dem Dribbling über die Linie mindestens ein Pass gespielt wurde. Linie nur in der Mitte gültig.']],
+ coach:[['Mut','Mit Ball in den freien Raum dribbeln. Erkennbar: Das Kind dribbelt nach vorne, wenn vor ihm Platz ist.'],['Breit','Die Linie ist breit: Platz außen nutzen. Fehlerbild: Alle dribbeln durch die Mitte in die Gegner.'],['Ball stoppen','Über der Linie den Ball mit der Sohle stoppen.'],['Verteidigen','Zurück zur eigenen Linie, wenn der Ball weg ist.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 20 Ballkontakte pro Spiel','Intensität: hoch'],
+ leicht:['Joker (Stufe 1)','Breiteres Feld','Kürzeres Feld'],
+ steig:['3 gegen 3 (Stufe 2)','Punkt nur nach Pass (Stufe 3)','Linie nur in der Mitte gültig','4 gegen 4']},
+zweizweitw:{ziel:'Das Kind spielt mit seiner Partnerin zusammen, bietet sich an und schießt mutig aufs große Tor. Im Spiel: Zusammenspiel zu zweit gegen zwei Gegner.',
+ stufen:[['Stufe 1 · 2 gegen 1','Nur eine Verteidigerin, die zweite wartet am Rand.'],['Stufe 2 · 2 gegen 2','Beide Verteidigerinnen, Zeitlimit 10 Sekunden.'],['Stufe 3 · Tor nur nach Pass','Tor zählt nur nach einem Pass. Verteidigerinnen starten hinter den Angreiferinnen.']],
+ coach:[['Anbieten','Neben die Partnerin, nicht hinter den Gegner. Erkennbar: Die Ballführende hat immer eine Anspielstation.'],['Entscheiden','Selbst dribbeln oder passen? Fehlerbild: Pass, obwohl der Weg zum Tor frei ist.'],['Abschluss','Mutig aufs große Tor, flach ins Eck.'],['Verteidigen','Eine zum Ball, eine zur freien Angreiferin.']],
+ last:['Dauer: 8–10 Angriffe, ca. 6–8 Minuten','Wartezeit: mittel, Gruppen wechseln sich ab','Pro Kind: ca. 3–5 Ballkontakte pro Angriff','Intensität: hoch'],
+ leicht:['2 gegen 1 (Stufe 1)','Größeres Tor','Ohne Torwartkind'],
+ steig:['2 gegen 2 mit Zeitlimit (Stufe 2)','Tor nur nach Pass (Stufe 3)','Verteidigerinnen starten hinter den Angreiferinnen']},
+ballrennen:{ziel:'Das Kind startet schnell, ist vor dem anderen Kind am Ball, schirmt ihn ab und schließt ab. Im Spiel: Laufduell um den freien Ball gewinnen.',
+ stufen:[['Stufe 1 · Ballrennen','Wer zuerst am Ball ist, schießt aufs Minitor, ohne Verteidigung.'],['Stufe 2 · Duell','Die andere verteidigt das Minitor.'],['Stufe 3 · Verschiedene Starts','Start aus Bauchlage oder mit dem Rücken zum Ball, der Ball wird von der Trainerin zugerollt.']],
+ coach:[['Antritt','Kleine schnelle Schritte. Erkennbar: Das Kind ist mit dem ersten Schritt vorne.'],['Körper zwischen','Am Ball sofort den Körper zwischen Gegnerin und Ball. Fehlerbild: Das Kind läuft am Ball vorbei.'],['Abschluss','Schnell aufs Minitor.'],['Pause','Erst wieder starten, wenn erholt.']],
+ last:['Dauer: 6–8 Starts pro Kind, ca. 6 Minuten','Wartezeit: kurz, mehrere Felder, 45 Sekunden Erholung zwischen den Starts','Pro Kind: ca. 3–5 Ballkontakte pro Start','Intensität: hoch'],
+ leicht:['Ohne Verteidigung (Stufe 1)','Ball näher an der Startlinie','Größeres Minitor'],
+ steig:['Duell (Stufe 2)','Start aus Bauchlage','Rücken zum Ball (Stufe 3)','Ball zugerollt']},
+endlosspiel:{ziel:'Das Kind spielt ohne Pause mit und findet nach jedem neuen Ball sofort wieder ins Spiel: angreifen, verteidigen, abschließen. Im Spiel: Ausdauer entsteht durch das Spiel selbst.',
+ stufen:[['Stufe 1 · Überzahl','Ein Joker spielt immer mit dem Team am Ball.'],['Stufe 2 · 4 gegen 4','Ohne Pause, neuer Ball sofort von der Trainerin.'],['Stufe 3 · Zwei Bälle','Zwei Bälle gleichzeitig im Spiel.']],
+ coach:[['Sofort weiter','Neuer Ball: sofort reagieren. Erkennbar: Kein Kind bleibt nach einem Tor stehen.'],['Freies Tor','Vier Minitore: das freie suchen. Fehlerbild: Alle spielen auf dasselbe Tor.'],['Breit','Nicht alle zum Ball.'],['Trainerin','Neuen Ball immer zum Team spielen, das gerade verteidigt hat.']],
+ last:['Dauer: 3 Spiele à 3 Minuten, 1 Minute Trinkpause','Wartezeit: keine','Pro Kind: ca. 20–25 Ballkontakte pro Spiel','Intensität: hoch'],
+ leicht:['Joker (Stufe 1)','Größere Minitore','Kürzere Spiele'],
+ steig:['4 gegen 4 ohne Pause (Stufe 2)','Zwei Bälle (Stufe 3)','Tore nur aus der Schusszone']}
+};
+EX.forEach(e=>{const u=UPG_KM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 /* Reiter nach Spielphasen (Okt 2026): Mit Ball, Gegen den Ball, Umschalten, Torabschluss, Athletik */
