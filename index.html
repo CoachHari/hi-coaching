@@ -5574,6 +5574,57 @@ prallwand:{saeulen:true,
  steig:['Nur direkt','Größerer Abstand','Mit Zeitwettkampf','Mit Gegnerin (Stufe 3)']}
 };
 EX.forEach(e=>{const u=UPG_T[e.id];if(!u)return;const {chip1,...rest}=u;Object.assign(e,rest);if(chip1&&e.chips[1])e.chips[1][1]=chip1;});
+/* ---------- 5-Säulen-Überarbeitung: Aufwärmen (KM) ---------- */
+const UPG_W={
+paarpass:{saeulen:true,
+ ziel:'Die Spielerin passt und nimmt in Bewegung an, ohne stehen zu bleiben, und hält dabei den Kopf oben, um Lücken zwischen anderen Paaren zu sehen. Der Körper ist danach für das Training vorbereitet.',
+ org:['Feld 30 × 30 m','Paare mit einem Ball','Ab Stufe 3: 2–3 Spielerinnen ohne Ball als Störerinnen'],
+ rot:'Nach jedem Durchgang neue Paare. In Stufe 3 wechseln die Störerinnen nach jedem Durchgang.',
+ stufen:[['Stufe 1 · Aktivierung','Lockeres Traben mit Pässen zur Partnerin, dazwischen Mobilisation ohne Ball.'],['Stufe 2 · Lücken','Pass nur durch eine Lücke zwischen zwei anderen Spielerinnen. Nach dem Pass Antritt in einen neuen Raum.'],['Stufe 3 · Störerinnen','2–3 Störerinnen laufen Pässe an. Abgefangener Ball = Tausch mit der Passgeberin.']],
+ coach:[['Pass','flach, scharf, auf den Fuß, der von der Partnerin weg zeigt. Fehlerbild: Pass in die Füße, die Partnerin muss stehen bleiben.'],['Annahme','in Bewegung nach vorne mitnehmen. Erkennbar: Die Spielerin wird bei der Annahme nicht langsamer.'],['Raum','Kopf hoch, nicht durch andere Paare passen.'],['Kommunikation','Blickkontakt oder Zuruf vor jedem Pass.']],
+ last:['Dauer: 3 × 3 Minuten, dazwischen 1 Minute Mobilisation','Wartezeit: keine','Pro Spielerin: ca. 30–40 Ballkontakte pro Durchgang','Intensität: steigend von niedrig (Traben) bis mittel (Antritte)'],
+ leicht:['Feld größer (40 × 40 m)','2–3 Kontakte erlaubt','Ohne Störerinnen'],
+ steig:['Nur direkt','Pass nur durch eine Lücke (Stufe 2)','Nach dem Pass 5 m Antritt','Störerinnen (Stufe 3)']},
+laufschule:{saeulen:true,
+ ziel:'Die Spielerinnen bereiten Muskeln, Sehnen und Gelenke gezielt auf das Training vor und üben eine saubere Lande- und Lauftechnik. Angelehnt an das FIFA 11+, das nachweislich Verletzungen vorbeugt. Am Ende kommt der Spielbezug über Reaktionssprints.',
+ org:['4–5 Bahnen à 25 m','Je zwei Spielerinnen pro Bahn hintereinander','Ab Stufe 3: am Ende jeder Bahn 2 Hütchentore links und rechts'],
+ stufen:[['Stufe 1 · Laufschule','Knieheben, Anfersen, Seitgalopp, Überkreuzlauf, Hüfte öffnen und schließen. Hin mit Übung, zurück locker außen.'],['Stufe 2 · Sprünge und Steigerungen','Sprünge mit sauberer Landung (Knie über dem Fuß), Steigerungsläufe auf 80–90 %.'],['Stufe 3 · Reaktion','Sprint auf Zuruf: Die Trainerin ruft „links“ oder „rechts“, die Spielerin sprintet durch das passende Tor. Paarweise als Wettlauf.']],
+ coach:[['Haltung','aufrecht, Knie über dem Fuß. Fehlerbild: Knie knickt bei der Landung nach innen. Korrektur: langsamer, auf beidbeinige Landung zurückgehen.'],['Landung','weich über den Vorfuß, Knie leicht gebeugt. Erkennbar: leise Landung.'],['Tempo','von locker zu zügig steigern, nicht gleich zu Beginn sprinten.'],['Reaktion','Blick zur Trainerin, erster Schritt explosiv in die richtige Richtung.']],
+ last:['Dauer: 10–12 Minuten, 8–10 Übungen à 2 Bahnen','Wartezeit: kurz, die zweite Spielerin startet, wenn die erste zurückläuft','Intensität: steigend von niedrig bis hoch (Stufe 3)','Hinweis: Das FIFA 11+ wirkt nur, wenn es regelmäßig (2× pro Woche) gemacht wird'],
+ leicht:['Nur Stufe 1 und 2','Steigerungsläufe bis 70 %','Sprünge beidbeinig statt einbeinig'],
+ steig:['Sprungübungen mit Partnerkontakt','Steigerungsläufe bis 90 %','Reaktionssprints als Wettlauf (Stufe 3)','Mit Ball am Ende jeder Bahn']},
+farbpassen:{saeulen:true,
+ ziel:'Die Spielerin weiß vor der Annahme durch den Schulterblick, wo die nächste Farbe steht, und nimmt den Ball schon in diese Richtung mit. Fördert Orientierung, Kommunikation und das Spiel mit Kopf hoch.',
+ org:['Feld 30 × 30 m','Drei Gruppen à 4–5 in verschiedenen Farben','Zwei Bälle im Spiel','Ab Stufe 3: eine Farbe wird zu Jägerinnen'],
+ stufen:[['Stufe 1 · Farbreihenfolge','Blau passt zu Rot, Rot zu Gelb, Gelb zu Blau. Nach dem Pass weiterlaufen.'],['Stufe 2 · Mehr Bälle','Zweiter und dritter Ball, maximal 2 Kontakte.'],['Stufe 3 · Jägerinnen','Eine Farbe wird zu Jägerinnen, die anderen zwei spielen sich die Bälle zu. Abgefangener Ball = Farbwechsel mit der Gruppe, die ihn verloren hat.']],
+ coach:[['Schulterblick','vor der Annahme wissen, wo die nächste Farbe ist. Fehlerbild: Die Spielerin sucht erst nach der Annahme.'],['Erster Kontakt','in Richtung der nächsten Farbe.'],['Rufen','den Namen rufen, wenn man anspielbar ist.'],['Freilaufen','sich in eine Lücke bewegen, nicht hinter anderen verstecken. Erkennbar: freie Passlinie zur Ballführerin.']],
+ last:['Dauer: 3 × 3 Minuten, 45 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte pro Durchgang','Intensität: niedrig bis mittel, in Stufe 3 mittel bis hoch'],
+ leicht:['Nur ein Ball','Freie Kontaktzahl','Feld größer'],
+ steig:['Maximal 2 Kontakte','Dritter Ball','Joker-Regel: Eine Farbe darf nicht angespielt werden','Eine Farbe jagt (Stufe 3)']},
+sternpass:{saeulen:true,
+ ziel:'Die Spielerin spielt präzise Pässe über 15 m auf den richtigen Fuß und läuft nach dem Pass sofort weiter. Grundlage für „Pass und Bewegung“ im Spiel.',
+ org:['5 Hütchen als Stern (Fünfeck), Abstand ca. 15 m','An einer Station zwei Spielerinnen, sonst je eine','Ab Stufe 3: eine Gegnerin in der Mitte'],
+ stufen:[['Stufe 1 · Stern','Pass zur übernächsten Station, hinterherlaufen und dort anstellen.'],['Stufe 2 · Doppelpass','Doppelpass mit der Station dazwischen, dann Pass zur übernächsten Station.'],['Stufe 3 · Gegnerin in der Mitte','Eine Gegnerin versucht Pässe abzufangen. Abgefangener Ball = Tausch mit der Passgeberin.']],
+ coach:[['Annahme','offen, mit dem Fuß weg von der Passgeberin. Erkennbar: Der Ball liegt sofort für den nächsten Pass bereit.'],['Pass','zum richtigen Fuß, flach und scharf. Fehlerbild: zu weich, die Empfängerin muss entgegenlaufen.'],['Laufweg','außen herum, nicht durch die Mitte.'],['Tempo','nach dem Pass sofort antreten.']],
+ last:['Dauer: 4 × 2 Minuten, 30 Sekunden Pause, Richtung wechseln','Wartezeit: kurz, bei 6 Spielerinnen etwa 5 Sekunden','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: niedrig bis mittel'],
+ leicht:['Abstände 10–12 m','2 Kontakte erlaubt','Nur ein Ball'],
+ steig:['Zweiter Ball','Nur direkt','Doppelpass mit der Station dazwischen (Stufe 2)','Gegnerin in der Mitte (Stufe 3)']},
+aufwrondo:{saeulen:true,
+ ziel:'Die Spielerinnen halten unter leichtem Druck den Ball, spielen durch die Lücke zwischen den Jägerinnen und stellen sich offen an. Bringt von Beginn an Spielnähe und Wettkampf ins Aufwärmen.',
+ stufen:[['Stufe 1 · Locker','5 gegen 2, Jägerinnen nur halbaktiv, freie Kontaktzahl.'],['Stufe 2 · Spannung','Jägerinnen aktiv, 10 Pässe in Folge = Punkt, maximal 2 Kontakte.'],['Stufe 3 · Konter','Erobern die Jägerinnen den Ball, dribbeln sie über eine Linie 5 m außerhalb = Punkt für sie.']],
+ coach:[['Körper','offene Stellung, Ball auf den hinteren Fuß annehmen. Fehlerbild: Annahme frontal, die Spielerin kann nur zurückspielen.'],['Passwege','durch die Lücke zwischen den Jägerinnen. Erkennbar: Ein Pass überspielt beide Jägerinnen.'],['Anbieten','Nachbarinnen bewegen sich so, dass immer zwei Passwege offen sind.'],['Jägerinnen','zusammenarbeiten: eine presst, eine stellt den Pass durch die Mitte zu.']],
+ last:['Dauer: 5 × 90 Sekunden, 30 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel, für die Jägerinnen hoch'],
+ leicht:['Feld größer (15 m)','Jägerinnen nur halbaktiv','Freie Kontaktzahl'],
+ steig:['Nur direkt','Feld kleiner','3 Jägerinnen gegen 6','Konter über die Linie (Stufe 3)']},
+kopfballhand:{saeulen:true,
+ ziel:'Die Spielerinnen laufen sich frei, schaffen Räume und köpfen nach Zuwurf aktiv aufs Tor. Ein spielerisches Aufwärmen mit Gegner, Entscheidung und Tor, das Freilaufen und Kopfballtechnik verbindet.',
+ stufen:[['Stufe 1 · Handball','Werfen und Fangen, maximal 3 Schritte mit Ball, Tor per Kopf nach Zuwurf.'],['Stufe 2 · Nur Kopf','Pässe nur noch per Kopf nach Zuwurf der Mitspielerin („Werfen – Köpfen – Fangen“).'],['Stufe 3 · Fuß und Kopf','Ball am Boden mit dem Fuß, Tor nur per Kopf nach Flanke oder Zuwurf aus dem Lauf.']],
+ coach:[['Freilaufen','Raum schaffen, nicht zur Ballführerin laufen. Fehlerbild: Alle laufen zum Ball.'],['Kopfball','Augen offen, Stirn, aktiv zum Ball. Erkennbar: Die Spielerin geht dem Ball entgegen.'],['Tempo','schnell werfen, bevor die Gegnerin dran ist.'],['Fairness','keine Zweikämpfe am Körper, Abfangen nur in der Luft.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 10–15 Ballaktionen pro Durchgang','Intensität: mittel, Kopfbälle wohldosiert'],
+ leicht:['Leichterer Ball','Tor auch per Wurf erlaubt','Tore größer'],
+ steig:['Tor auch per Volley','Nur Bodenpässe mit der Hand','Fang mit nur einer Hand','Fuß und Kopf (Stufe 3)']}
+};
+EX.forEach(e=>{const u=UPG_W[e.id];if(!u)return;const {chip1,...rest}=u;Object.assign(e,rest);if(chip1&&e.chips[1])e.chips[1][1]=chip1;});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 const LKEY='uebungsmappe-altersbereich';
