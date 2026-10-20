@@ -2300,6 +2300,137 @@ const ktDense=(kf,C)=>{const o=[];for(let k=0;k<=Math.round(C*10);k++){const t=k
     tick(t){const n=NUM[Math.min(NUM.length-1,Math.floor(t/1.4))];if(this._n.textContent!==String(n))this._n.textContent=String(n);},
     ents:kidEnts(8).concat([{id:'tr',fill:'#2C2C2A',label:'T'}]),sc:{a:S}};
 })();
+/* ---------- Rondo Bambini – U9: zehn neue Spiele (5 Säulen) ---------- */
+const krL=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];
+const krM=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+const krCircle=(c,r,n,a0)=>Array.from({length:n},(_,k)=>{const a=(a0==null?-90:a0)+k*360/n;return[c[0]+r*Math.cos(a*Math.PI/180),c[1]+r*Math.sin(a*Math.PI/180)];});
+function kRondo(o){const S={BALLS:[]},ents=[],pd=o.pd||0.5,hold=o.hold||0.45;
+  o.pos.forEach((p,i)=>{S['o'+i]=[[0,...p]];ents.push(Object.assign({id:'o'+i},o.fill?o.fill(i):{}));});
+  const foot=i=>toward(o.pos[i],o.c,15);
+  const Bl=[[0,...foot(o.seq[0])]],evs=[];let t=o.t0||0.3;
+  for(let k=1;k<o.seq.length;k++){const a=o.seq[k-1],b=o.seq[k];Bl.push([t,...foot(a)],[t+pd,...foot(b)]);evs.push([t+pd,a,b,t]);t+=pd+hold;}
+  Bl.push([o.C,...foot(o.seq[o.seq.length-1])]);S.BALLS.push(Bl);
+  (o.mids||[]).forEach((m,j)=>{const K=[[0,...(m.start||o.c)]];
+    evs.forEach(([ta,p,r],k)=>{const R=o.pos[r],P=o.pos[p];const pull=o.mpull?o.mpull(k,m.pull):(m.pull==null?0.25:m.pull);
+      let q=m.type==='block'?krL(krM(P,R),o.c,pull):krL(o.c,R,pull);if(m.off)q=[q[0]+m.off[0],q[1]+m.off[1]];
+      K.push([ta-0.1,...K[K.length-1].slice(1)],[ta+0.35,...q]);});
+    K.push([o.C,...K[K.length-1].slice(1)]);S['m'+j]=K;ents.push({id:'m'+j,fill:m.fill||RED});});
+  return{S,ents,evs,foot,end:t};}
+const krBox=(s,c,h)=>el('rect',{x:c[0]-h,y:c[1]-h,width:2*h,height:2*h,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.5'},s);
+const krRing=(s,c,r)=>el('circle',{cx:c[0],cy:c[1],r,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.5'},s);
+
+/* Drei-Farben-Rondo */
+(function(){const c=[180,180],pos=krCircle(c,118,6);
+  const R=kRondo({pos,c,seq:[0,1,2,3,4,5,0,1],C:7.6,fill:i=>({fill:i%2?NEU:BLUE}),mids:[{type:'block',pull:0.25,start:[180,140]},{type:'center',pull:0.25,start:[212,192]},{type:'center',pull:-0.3,start:[148,200]}]});
+  R.S.L=[[2.2,'Blau und Gelb spielen zusammen gegen Rot in der Mitte'],[5.0,'Immer zur anderen Farbe passen'],[99,'Erobert Rot den Ball, geht die Farbe in die Mitte, die ihn verloren hat']];
+  A.rdreifarben={vb:'0 0 360 360',cycle:7.6,draw(s){field(s,0,0,360,360);krRing(s,c,140);},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Zwei-Bälle-Rondo */
+(function(){const c=[180,180],pos=[[95,95],[265,95],[265,265],[95,265]];
+  const R=kRondo({pos,c,seq:[0,1,0,1,0,1,0],C:6.0,mids:[{type:'center',pull:0.28}]});
+  const foot=R.foot,B=[[0,...foot(2)]];let t=0.75;const sq=[2,3,2,3,2,3];
+  for(let k=1;k<sq.length;k++){B.push([t,...foot(sq[k-1])],[t+0.5,...foot(sq[k])]);t+=0.95;}B.push([6.0,...foot(3)]);R.S.BALLS.push(B);
+  R.S.L=[[2.4,'Zwei Bälle gleichzeitig im Spiel'],[99,'Das Kind in der Mitte darf jeden Ball erobern: Augen auf beide Bälle!']];
+  A.rzweiball={vb:'0 0 360 360',cycle:6.0,draw(s){field(s,0,0,360,360);krBox(s,c,100);},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Rondo mit Minitor-Ausgang */
+(function(){const c=[180,190],pos=[[180,90],[95,240],[265,240]];
+  const R=kRondo({pos,c,seq:[0,1,2,0],C:5.2,mids:[{type:'block',pull:0.3}]});const te=R.evs[R.evs.length-1][0]+0.2;
+  R.S.o0=[[0,180,90],[te,180,90],[te+0.6,180,50],[5.2,180,50]];
+  R.S.BALLS[0]=R.S.BALLS[0].filter(r=>r[0]<te).concat([[te,180,104],[te+0.6,180,36],[te+0.7,180,36],[te+1.1,180,16],[5.2,180,16]]);
+  const m=R.S.m0;R.S.m0=m.filter(r=>r[0]<te).concat([[te+0.7,170,100],[5.2,170,100]]);
+  R.S.L=[[te-0.2,'3 gegen 1: dreimal passen'],[te+0.6,'Dann darf das Kind mit Ball aus dem Dreieck dribbeln'],[99,'… und ins Minitor treffen = Punkt']];
+  A.rminitor={vb:'0 0 360 360',cycle:5.2,draw(s){field(s,0,0,360,360);el('polygon',{points:'180,62 70,262 290,262',fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.5'},s);
+    mgoal(s,160,6,40,12);mgoal(s,160,342,40,12);el('rect',{x:6,y:170,width:12,height:40,fill:'rgba(255,255,255,.25)',stroke:'#FFFFFF','stroke-width':'2'},s);el('rect',{x:342,y:170,width:12,height:40,fill:'rgba(255,255,255,.25)',stroke:'#FFFFFF','stroke-width':'2'},s);},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Wandspieler-Rondo */
+(function(){const L=[64,180],Rr=[296,180],B1a=[140,130],B1b=[200,110],B2=[210,240];
+  const f=(p,q)=>toward(p,q,14);
+  const S={L:[[1.8,'2 gegen 2 in der Mitte, die gelben Wandspieler helfen immer dem Team mit Ball'],[3.6,'Über einen Wandspieler zurück ins Feld passen = Punkt'],[99,'Rot versucht, den Ball zu erobern']],
+    l:[[0,...L]],w:[[0,...Rr]],b1:[[0,...B1a],[0.5,...B1a],[1.6,...B1b],[4.4,...B1b]],b2:[[0,...B2]],
+    r1:[[0,180,180],[1.0,115,150],[2.0,170,190],[3.0,250,215],[3.9,225,150],[4.4,225,150]],r2:[[0,170,280],[1.0,175,268],[1.8,180,262],[2.8,240,272],[4.4,240,272]]};
+  S.BALLS=[[[0,...f(B1a,L)],[0.4,...f(B1a,L)],[0.9,...f(L,B1a)],[1.0,...f(L,B1a)],[1.3,...f(L,B2)],[1.8,...f(B2,L)],[1.9,...f(B2,L)],[2.2,...f(B2,Rr)],[2.7,...f(Rr,B2)],[2.8,...f(Rr,B2)],[3.1,...f(Rr,B1b)],[3.6,...f(B1b,Rr)],[4.4,...f(B1b,Rr)]]];
+  A.rwand={vb:'0 0 360 360',cycle:4.4,draw(s){field(s,0,0,360,360);el('rect',{x:64,y:64,width:232,height:232,fill:'none',stroke:'#FFFFFF','stroke-width':'2',opacity:'.7'},s);},
+    ents:[{id:'l',fill:NEU},{id:'w',fill:NEU},{id:'b1'},{id:'b2'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+
+/* Fünf-Ecken-Rondo */
+(function(){const c=[180,186],CO=krCircle(c,112,5),CN=krCircle(c,136,5),N=5,dt=1.2,C=6.4;
+  const at0={0:0,2:1,3:2,4:3};const K={0:[[0,...CO[0]]],1:[[0,...CO[2]]],2:[[0,...CO[3]]],3:[[0,...CO[4]]]};
+  const foot=i=>toward(CO[i],c,15);let h=0;const Bl=[[0,...foot(0)]],M=[[0,...c]];
+  for(let s=0;s<5;s++){const t=0.3+s*dt,r=(h+4)%5,f=(h+1)%5,kid=at0[h];
+    Bl.push([t,...foot(h)],[t+0.5,...foot(r)]);
+    const mp=krM(CO[h],CO[f]),out=toward(mp,c,-16);K[kid].push([t+0.3,...CO[h]],[t+0.7,...out],[t+1.1,...CO[f]]);
+    M.push([t+0.4,...M[M.length-1].slice(1)],[t+0.85,...krL(c,CO[r],0.25)]);
+    delete at0[h];at0[f]=kid;h=r;}
+  Bl.push([C,...foot(h)]);M.push([C,...M[M.length-1].slice(1)]);
+  const S={L:[[2.0,'Fünf Ecken, vier Kinder: eine Ecke ist immer frei'],[99,'Passen und sofort zur freien Ecke laufen']],BALLS:[Bl],m:M};
+  for(let k=0;k<4;k++){K[k].push([C,...K[k][K[k].length-1].slice(1)]);S['k'+k]=K[k];}
+  A.rfuenfeck={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);CN.forEach(([x,y])=>cone(s,x,y));},
+    ents:[{id:'k0'},{id:'k1'},{id:'k2'},{id:'k3'},{id:'m',fill:RED}],sc:{a:S}};
+})();
+
+/* Ketten-Rondo */
+(function(){const c=[180,180],pos=krCircle(c,110,5);
+  const R=kRondo({pos,c,seq:[0,1,2,3,4,0,1,2],C:7.6,mids:[{type:'center',pull:0.3,off:[-14,0],start:[166,180]},{type:'center',pull:0.3,off:[14,0],start:[194,180]}]});
+  R.S.L=[[2.6,'Die zwei Fänger halten sich an der Hand'],[99,'Sie müssen zusammenarbeiten, um den Ball zu erobern']];
+  A.rkette={vb:'0 0 360 360',cycle:7.6,draw(s){field(s,0,0,360,360);krRing(s,c,132);this._ch=el('line',{stroke:'#FFFFFF','stroke-width':'4','stroke-linecap':'round'},s);},
+    tick(t,{mx,S}){const a=at(S.m0,t),b=at(S.m1,t);this._ch.setAttribute('x1',mx(a[0]));this._ch.setAttribute('y1',a[1]);this._ch.setAttribute('x2',mx(b[0]));this._ch.setAttribute('y2',b[1]);},
+    ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Tunnel-Rondo */
+(function(){const c=[180,180],pos=[[95,95],[265,95],[265,265],[95,265]];
+  const R=kRondo({pos,c,seq:[0,1,2,0,3,2],C:5.6,mids:[{type:'center',pull:0.3}],mpull:k=>k===1?0:0.3});
+  const tt=R.evs[2][3];
+  R.S.L=[[tt,'4 gegen 1: Das Kind in der Mitte will den Ball'],[tt+1.2,'Tunnel! Pass durch die Beine = 3 Punkte'],[99,'Normaler Pass = 1 Punkt']];
+  A.rtunnel={vb:'0 0 360 360',cycle:5.6,draw(s){field(s,0,0,360,360);krBox(s,c,100);this._t=el('text',{x:180,y:140,'text-anchor':'middle','font-size':'22','font-weight':'700','font-family':'Barlow Condensed, Arial Narrow, sans-serif',fill:'#F2C230',opacity:'0'},s);this._t.textContent='TUNNEL! +3';},
+    tick(t){this._t.setAttribute('opacity',t>=tt+0.25&&t<tt+1.4?'1':'0');},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Wanderndes Dreieck */
+(function(){const OF=[[0,-45],[-60,35],[60,35]],C=5.2;
+  const cy=t=>300-210*Math.max(0,Math.min(1,(t-0.3)/4.0));const P=(i,t)=>[180+OF[i][0],cy(t)+OF[i][1]];
+  const cen=t=>[180,cy(t)+8];
+  const seq=[0,1,2,0,1,2],S={L:[[3.0,'Zu dritt nach vorne passen, das Dreieck wandert mit'],[4.6,'Über die Ziellinie dribbeln = Punkt'],[99,'Das rote Kind jagt den Ball von außen']],BALLS:[]};
+  for(let i=0;i<3;i++){const K=[];for(let k=0;k<=52;k++){const t=k/10;K.push([t,...P(i,t)]);}S['d'+i]=K;}
+  const foot=(i,t)=>toward(P(i,t),cen(t),14);const Bl=[],R=[];let ev=[];
+  for(let k=1;k<seq.length;k++)ev.push([0.4+(k-1)*0.75,seq[k-1],seq[k]]);
+  const outer=(i,t)=>{const p=P(i,t),q=cen(t),u=unit(q,p);return[p[0]+u[0]*44,p[1]+u[1]*44];};
+  for(let k=0;k<=52;k++){const t=k/10;let h=seq[0],inP=null;ev.forEach(e=>{if(t>=e[0]+0.4)h=e[2];else if(t>=e[0])inP=e;});
+    if(t>=4.3){const p=P(h,t);Bl.push([t,p[0],p[1]-14-Math.min(90,(t-4.3)*100)]);continue;}
+    if(inP){const u=ease((t-inP[0])/0.4),a=foot(inP[1],inP[0]),b=foot(inP[2],inP[0]+0.4);Bl.push([t,a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u]);}else Bl.push([t,...foot(h,t)]);}
+  S.BALLS.push(Bl);
+  const RK=[[0,...outer(0,0)]];ev.forEach(e=>{const tm=e[0]+0.52,c0=cen(tm),pa=P(e[1],tm),pb=P(e[2],tm),ua=unit(c0,pa),ub=unit(c0,pb),w=unit([0,0],[ua[0]+ub[0],ua[1]+ub[1]]);RK.push([e[0]+0.35,...outer(e[1],e[0]+0.35)],[tm,c0[0]+w[0]*115,c0[1]+w[1]*115],[e[0]+0.7,...outer(e[2],e[0]+0.7)]);});RK.push([C,...RK[RK.length-1].slice(1)]);
+  S.r=RK;S.d2=S.d2.map(r=>r[0]>=4.3?[r[0],r[1],r[2]-Math.min(90,(r[0]-4.3)*100)]:r);
+  A.rwander={vb:'0 0 360 360',cycle:C,linear:true,draw(s){field(s,0,0,360,360);line(s,10,40,350,40,'none','.85');txt(s,350,30,'end').textContent='Ziellinie';},
+    ents:[{id:'d0'},{id:'d1'},{id:'d2'},{id:'r',fill:RED}],sc:{a:S}};
+})();
+
+/* Schatz-Rondo */
+(function(){const c=[180,190],pos=[[95,105],[265,105],[265,275],[95,275]];
+  const R=kRondo({pos,c,seq:[0,1,2,3,0,1],C:6.0,mids:[{type:'center',pull:0.28}]});const ev=R.evs.map(e=>e[0]);
+  R.S.L=[[ev[3],'4 gegen 1: Pässe laut mitzählen'],[ev[4]+0.8,'5 Pässe geschafft: Das Team holt sich einen Schatz'],[99,'Wie viele Schätze sammelt ihr in einer Runde?']];
+  A.rschatz={vb:'0 0 360 360',cycle:6.0,draw(s){field(s,0,0,360,360);krBox(s,c,100);
+      this._n=txt(s,180,46,'middle','26');this._n.setAttribute('fill','#F2C230');
+      this._g=[0,1,2].map(k=>el('circle',{cx:300+k*0,cy:20,r:7,fill:'#F2C230',stroke:'#7A5A00','stroke-width':'1.5',opacity:'0'},s));
+      this._gem=el('circle',{cx:180,cy:20,r:9,fill:'#F2C230',stroke:'#7A5A00','stroke-width':'2',opacity:'0'},s);},
+    tick(t){const n=ev.filter(x=>t>=x).length;this._n.textContent=n?(n>=5?'5 = SCHATZ!':String(n)):'';this._gem.setAttribute('opacity',n>=5?'1':'0');},ents:R.ents,sc:{a:R.S}};
+})();
+
+/* Ball-zurück-Rondo */
+(function(){const c=[180,180],pos=[[95,95],[265,95],[265,265],[95,265]];
+  const R=kRondo({pos,c,seq:[0,1,2,3],C:6.0,mids:[{type:'center',pull:0.28}]});const te=R.end;
+  const h=pos[3],aim=pos[0],ip=krL(toward(h,c,15),toward(aim,c,15),0.45),mp=[ip[0]+14,ip[1]];
+  R.S.m0=R.S.m0.filter(r=>r[0]<te-0.3).concat([[te-0.3,...R.S.m0.filter(r=>r[0]<te-0.3).slice(-1)[0].slice(1)],[te+0.15,...mp],[te+0.6,...mp],[te+1.7,300,170],[te+2.2,330,150],[6.0,330,150]]);
+  R.S.BALLS[0]=R.S.BALLS[0].filter(r=>r[0]<te).concat([[te,...toward(h,c,15)],[te+0.3,ip[0],ip[1]+2],[te+0.4,ip[0],ip[1]+2],[te+0.6,mp[0]+14,mp[1]],[te+1.7,314,170],[te+2.2,344,150],[6.0,344,150]]);
+  R.S.o3=[[0,...h],[te+0.5,...h],[te+1.7,270,200],[te+2.3,300,178],[6.0,300,178]];
+  R.S.L=[[te,'4 gegen 1: Die Kinder außen passen sich den Ball zu'],[te+0.5,'Abgefangen!'],[99,'Das Kind, das den Ball verloren hat, jagt sofort hinterher, bevor er aus dem Feld gedribbelt wird']];
+  A.rjagd={vb:'0 0 360 360',cycle:6.0,draw(s){field(s,0,0,360,360);krBox(s,c,100);},ents:R.ents,sc:{a:R.S}};
+})();
 
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
@@ -4470,6 +4601,121 @@ EX.push(...[
  leicht:['Langsames Dribbeln','Zahl auch rufen','Nur Zahlen 1–3'],
  steig:['Zahl = Aufgabe (Stufe 2)','Zahl nur ganz kurz zeigen','Rechenaufgabe mit zwei Händen','Farbe zeigen mit Fängern (Stufe 3)']}
 ].map(e=>Object.assign({},KT2,e)));
+/* ---------- Rondo Bambini – U9: zehn neue Spiele, Inhalte (5 Säulen) ---------- */
+Object.assign(LEG,{wandkind:['Wandspieler',NEU,1],kette:['Fänger an der Hand',RED,1],schatz:['Schatz','#F2C230',1]});
+const KR2={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'rondo',lv:['kinder'],saeulen:true};
+EX.push(...[
+{id:'rdreifarben',title:'Drei-Farben-Rondo',legend:['teamblau','teamgelb','teamrot','ball'],
+ chips:[['Schwerpunkt','Passen · Anbieten · Umschalten'],['','9 Kinder in 3 Farben'],['Feld','Kreis mit ca. 12 m Durchmesser'],['Dauer','6–8 min'],['Material','1 Ball, Hütchen, Leibchen in 3 Farben']],
+ ziel:'Das Kind passt im Kreis immer zu einem Kind der anderen Farbe, bietet sich dafür frei an und wechselt nach einem Ballverlust sofort in die Mitte. Im Spiel: Zusammenspiel und schnelles Umschalten nach Ballverlust.',
+ org:['Kreis mit Hütchen markieren','Zwei Farben (je 3) abwechselnd außen, eine Farbe (3) in der Mitte'],
+ rot:'Erobert die Mitte den Ball, geht die Farbe in die Mitte, die den Ball verloren hat.',
+ ablauf:['Die zwei Farben außen spielen zusammen.','Pass immer zu einem Kind der anderen Farbe.','Die Farbe in der Mitte versucht, den Ball zu erobern.','Ballverlust: Die Farbe des Kindes, das den Ball verloren hat, geht in die Mitte.'],
+ stufen:[['Stufe 1 · Zwei Jäger','Nur zwei Kinder aus der Mitte jagen, freie Kontaktzahl.'],['Stufe 2 · Drei Jäger','Alle drei aus der Mitte jagen, Pass immer zur anderen Farbe.'],['Stufe 3 · Ausbrechen','Erobert die Mitte den Ball, darf sie ihn aus dem Kreis dribbeln oder passen = Punkt für die Mitte.']],
+ coach:[['Andere Farbe suchen','Kopf hoch vor dem Pass. Erkennbar: Das Kind weiß vor der Annahme, wer die andere Farbe ist.'],['Anbieten','Einen Schritt zur Seite, damit kein Jäger dazwischen steht. Fehlerbild: Das Kind steht hinter einem Jäger.'],['Sofort umschalten','Bei Ballverlust ohne Diskussion in die Mitte.'],['Jäger','Gemeinsam jagen: einer zum Ball, die anderen stellen Passwege zu.']],
+ last:['Dauer: 4 Runden à 2 Minuten','Wartezeit: keine, alle drei Farben sind beteiligt','Pro Kind: ca. 10–15 Ballkontakte pro Runde','Intensität: mittel, für die Mitte hoch'],
+ leicht:['Größerer Kreis','Nur zwei Jäger (Stufe 1)','Zwei Kontakte erlaubt, Ball darf gestoppt werden'],
+ steig:['Drei Jäger (Stufe 2)','Kleinerer Kreis','Nur zwei Kontakte','Ausbrechen (Stufe 3)']},
+{id:'rzweiball',title:'Zwei-Bälle-Rondo',legend:['kind','mitte','ball'],
+ chips:[['Schwerpunkt','Passen · Wahrnehmung'],['','8–12 Kinder, Gruppen zu 5'],['Feld','Quadrate ca. 10 × 10 m'],['Dauer','6–8 min'],['Material','2 Bälle pro Gruppe, Hütchen']],
+ ziel:'Das Kind behält zwei Bälle gleichzeitig im Blick, passt seinen Ball sicher weiter und ist bereit, wenn der zweite Ball kommt. Im Spiel: wahrnehmen, was um einen herum passiert.',
+ org:['Quadrate mit Hütchen abstecken','4 Kinder an den Ecken, 1 Kind in der Mitte','Zwei Bälle pro Gruppe'],
+ rot:'Berührt die Mitte einen Ball, tauscht sie mit dem Kind, das den Ball gespielt hat.',
+ ablauf:['Zwei Bälle sind gleichzeitig im Spiel.','Die Kinder außen passen beide Bälle weiter.','Die Mitte darf jeden der beiden Bälle erobern.','Nicht zwei Bälle zum gleichen Kind passen.'],
+ stufen:[['Stufe 1 · Ein Ball','Normales 4 gegen 1, dann kommt der zweite Ball dazu.'],['Stufe 2 · Zwei Bälle','Beide Bälle im Spiel, freie Kontaktzahl.'],['Stufe 3 · Zwei Jäger','Zwei Kinder in der Mitte, jedes jagt einen Ball.']],
+ coach:[['Augen auf','Wo sind beide Bälle? Erkennbar: Kein Kind bekommt zwei Bälle gleichzeitig.'],['Rufen','Namen rufen, bevor gepasst wird.'],['Pass','Flach mit der Innenseite. Fehlerbild: Hektischer, harter Pass, der vorbeirollt.'],['Mitte','Den Ball jagen, der gerade gespielt wird.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 20–25 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Mit einem Ball beginnen (Stufe 1)','Größeres Quadrat','Ball darf gestoppt werden'],
+ steig:['Zwei Bälle (Stufe 2)','Kleineres Quadrat','Nur zwei Kontakte','Zwei Jäger (Stufe 3)']},
+{id:'rminitor',title:'Rondo mit Minitor-Ausgang',legend:['kind','mitte','ball','minitor'],
+ chips:[['Schwerpunkt','Passen · Ausspielen · Abschluss'],['','8–12 Kinder, Gruppen zu 4'],['Feld','Dreieck ca. 8 m, 4 Minitore rundherum'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, Hütchen, 4 Minitore']],
+ ziel:'Das Kind spielt mit zwei anderen drei Pässe gegen ein Kind in der Mitte und dribbelt danach aus dem Dreieck zum freien Minitor. Im Spiel: Ball sichern und dann den Weg zum Tor suchen.',
+ org:['Dreieck mit Hütchen, außerhalb rundherum 4 Minitore im Abstand von ca. 6 m','3 Kinder an den Ecken, 1 Kind in der Mitte'],
+ rot:'Erobert die Mitte den Ball, tauscht sie mit dem Kind, das ihn verloren hat. Nach jedem Tor ein neues Kind in die Mitte.',
+ ablauf:['Drei Pässe im Dreieck, laut mitzählen.','Nach dem dritten Pass darf das Kind mit Ball rausdribbeln.','Es wählt ein Minitor, das die Mitte nicht verteidigt.','Tor = Punkt, dann wieder ins Dreieck.'],
+ stufen:[['Stufe 1 · Ohne Gegner','Drei Pässe, dann rausdribbeln und ins Minitor passen.'],['Stufe 2 · Mitte halbaktiv','Die Mitte geht nur, sie darf nach dem dritten Pass mitlaufen.'],['Stufe 3 · Mitte aktiv','Die Mitte jagt und darf nach Ballgewinn selbst auf ein Minitor schießen.']],
+ coach:[['Zählen','Alle zählen laut mit.'],['Freies Tor','Kopf hoch beim Rausdribbeln. Erkennbar: Das Kind dribbelt zum Tor auf der anderen Seite der Mitte.'],['Erst sichern','Pässe ruhig, nicht hetzen. Fehlerbild: Das Kind dribbelt los, bevor drei Pässe geschafft sind.'],['Abschluss','Ruhig mit der Innenseite ins Minitor.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Nur zwei Pässe','Mitte ohne Gegner (Stufe 1)','Größeres Dreieck'],
+ steig:['Mitte halbaktiv (Stufe 2)','Vier Pässe','Nur schwacher Fuß beim Abschluss','Mitte aktiv mit Konter (Stufe 3)']},
+{id:'rwand',title:'Wandspieler-Rondo',legend:['teamblau','teamrot','wandkind','ball'],
+ chips:[['Schwerpunkt','Passen · Freilaufen · Überzahl'],['','6 Kinder: 2 gegen 2 + 2 Wandspieler'],['Feld','10 × 10 m'],['Dauer','6–8 min'],['Material','1 Ball, Hütchen, Leibchen']],
+ ziel:'Das Kind nutzt die Wandspieler am Rand, um den Ball zu halten, und läuft sich nach dem Pass sofort frei, damit es den Ball zurückbekommt. Im Spiel: Überzahl nutzen und Doppelpass.',
+ org:['Feld 10 × 10 m','2 gegen 2 im Feld','Je ein Wandspieler (gelb) an zwei gegenüberliegenden Seiten, er hilft immer dem Team mit Ball'],
+ rot:'Nach 90 Sekunden tauschen die Wandspieler mit einem Team.',
+ ablauf:['2 gegen 2 im Feld, die Wandspieler spielen immer mit dem Team mit Ball.','Pass zu einem Wandspieler, dieser passt zurück ins Feld.','Pass über einen Wandspieler zurück zum eigenen Team = Punkt.','Ballverlust: Das andere Team nutzt jetzt die Wandspieler.'],
+ stufen:[['Stufe 1 · Langsame Gegner','Gegner gehen nur, Wandspieler dürfen den Ball mit der Hand zurückrollen.'],['Stufe 2 · Spiel','2 gegen 2 mit Wandspielern, Punkt für Pass über eine Wand.'],['Stufe 3 · Von Wand zu Wand','Punkt nur, wenn der Ball von einem Wandspieler über das Team zum anderen Wandspieler kommt.']],
+ coach:[['Freilaufen','Nach dem Pass zur Wand sofort in eine Lücke. Erkennbar: Die Wand kann direkt zurückpassen.'],['Wand nutzen','Bei Druck zur Wand passen. Fehlerbild: Das Kind dribbelt in beide Gegner.'],['Wandspieler','Den Ball stoppen und zum freien Kind passen.'],['Verteidigen','Einer zum Ball, einer zum freien Kind.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, 30 Sekunden Pause','Wartezeit: keine, Wandspieler sind ständig beteiligt','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: hoch im Feld, mittel für die Wandspieler'],
+ leicht:['Gegner gehen nur (Stufe 1)','Größeres Feld','Wandspieler mit der Hand'],
+ steig:['Spiel mit Punkten (Stufe 2)','Kleineres Feld','Wandspieler nur direkt','Von Wand zu Wand (Stufe 3)']},
+{id:'rfuenfeck',title:'Fünf-Ecken-Rondo',legend:['kind','mitte','ball','cone'],
+ chips:[['Schwerpunkt','Passen und Bewegen'],['','8–12 Kinder, Gruppen zu 5'],['Feld','Fünfeck mit ca. 7 m Seitenlänge'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, 5 Hütchen']],
+ ziel:'Das Kind passt zur Nachbarecke und läuft danach sofort zur freien Ecke, damit es wieder anspielbar ist. Im Spiel: Pass und Bewegung, nach dem Pass nicht stehen bleiben.',
+ org:['Fünf Hütchen als Fünfeck','4 Kinder an den Ecken, eine Ecke bleibt frei','1 Kind in der Mitte'],
+ rot:'Berührt die Mitte den Ball, tauscht sie mit dem Kind, das ihn gespielt hat.',
+ ablauf:['Eine Ecke ist immer frei.','Pass zu einem Nachbarkind.','Danach sofort zur freien Ecke laufen.','Das Kind in der Mitte versucht, den Ball zu berühren.'],
+ stufen:[['Stufe 1 · Ohne Mitte','Pass und zur freien Ecke laufen, ohne Gegner.'],['Stufe 2 · Mitte geht','Das Kind in der Mitte geht nur.'],['Stufe 3 · Mitte jagt','Das Kind in der Mitte jagt. Wer nach dem Pass stehen bleibt, gibt einen Punkt ab.']],
+ coach:[['Pass und los','Nach dem Pass sofort loslaufen. Fehlerbild: Das Kind schaut dem Ball hinterher.'],['Freie Ecke','Erkennbar: Die freie Ecke ist immer schnell wieder besetzt.'],['Pass','Flach zum Nachbarkind.'],['Mitte','Den Pass zum Nachbarkind zustellen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte und viele kurze Läufe pro Runde','Intensität: mittel'],
+ leicht:['Ohne Mitte (Stufe 1)','Größeres Fünfeck','Mitte geht nur (Stufe 2)'],
+ steig:['Mitte jagt (Stufe 3)','Kleineres Fünfeck','Nur zwei Kontakte','Pass auch zur übernächsten Ecke erlaubt']},
+{id:'rkette',title:'Ketten-Rondo',legend:['kind','kette','ball'],
+ chips:[['Schwerpunkt','Passen gegen zwei Jäger'],['','7 Kinder: 5 außen, 2 Fänger'],['Feld','Kreis mit ca. 12 m Durchmesser'],['Dauer','6–8 min'],['Material','1 Ball, Hütchen']],
+ ziel:'Das Kind spielt den Ball an zwei Fängern vorbei, die sich an der Hand halten, und lernt so den ersten Schritt zum 5 gegen 2. Im Spiel: Pass an zwei Gegnern vorbei.',
+ org:['Kreis mit Hütchen markieren','5 Kinder außen, 2 Fänger innen, die sich an der Hand halten'],
+ rot:'Berühren die Fänger den Ball, wird das Kind, das gepasst hat, mit einem Fänger getauscht.',
+ ablauf:['Die Kinder außen passen sich den Ball zu.','Die zwei Fänger halten sich an der Hand und jagen gemeinsam.','Ball berührt: Tausch.','Wie viele Pässe schafft das Team außen?'],
+ stufen:[['Stufe 1 · Kette','Fänger an der Hand, freie Kontaktzahl.'],['Stufe 2 · Kette und zählen','10 Pässe = Punkt, maximal 3 Kontakte.'],['Stufe 3 · Frei','Die Fänger lassen los und jagen frei (echtes 5 gegen 2).']],
+ coach:[['Lücke suchen','Zwischen oder neben der Kette vorbei passen. Erkennbar: Der Pass geht nicht in die Kette.'],['Anbieten','Neben die Kette stellen, nicht dahinter. Fehlerbild: Ein Kind steht im Schatten der Fänger.'],['Pass','Flach und fest genug.'],['Kette','Gemeinsam laufen und absprechen.']],
+ last:['Dauer: 4 Runden à 2 Minuten','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel, für die Kette hoch'],
+ leicht:['Größerer Kreis','Kette darf nur gehen','Zwei Kontakte zum Stoppen'],
+ steig:['Pässe zählen (Stufe 2)','Kleinerer Kreis','Nur zwei Kontakte','Fänger frei (Stufe 3)']},
+{id:'rtunnel',title:'Tunnel-Rondo',legend:['kind','mitte','ball'],
+ chips:[['Schwerpunkt','Passen · Pass durch die Mitte'],['','8–12 Kinder, Gruppen zu 5'],['Feld','Quadrate ca. 10 × 10 m'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, Hütchen']],
+ ziel:'Das Kind erkennt, wann das Kind in der Mitte die Beine offen hat, und passt mutig durch den Tunnel. Im Spiel: den Mut haben, durch die Linie des Gegners zu spielen.',
+ org:['Quadrate mit Hütchen abstecken','4 Kinder an den Ecken, 1 Kind in der Mitte'],
+ rot:'Berührt die Mitte den Ball, tauscht sie mit dem Kind, das ihn gespielt hat.',
+ ablauf:['Die Kinder außen passen sich den Ball zu.','Pass = 1 Punkt, Pass durch die Beine der Mitte = 3 Punkte.','Die Mitte versucht, den Ball zu berühren oder den Tunnel zu schließen.','Welche Gruppe hat die meisten Punkte?'],
+ stufen:[['Stufe 1 · Stehender Tunnel','Die Mitte steht mit offenen Beinen still, die Kinder zielen.'],['Stufe 2 · Wandernder Tunnel','Die Mitte bewegt sich langsam, Tunnel = 3 Punkte.'],['Stufe 3 · Echter Jäger','Die Mitte jagt den Ball. Tunnel = 3 Punkte, Ballgewinn = 2 Punkte für die Mitte.']],
+ coach:[['Hinschauen','Wo ist die Lücke? Erkennbar: Das Kind passt, wenn die Beine offen sind.'],['Flach','Innenseite, Ball rollt am Boden. Fehlerbild: Der Ball springt und trifft das Kind.'],['Seitlich passen','Wenn kein Tunnel frei ist, zur Seite passen.'],['Mitte','Beine zu, wenn der Ball kommt.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Stehender Tunnel (Stufe 1)','Kleineres Quadrat','Ball darf gestoppt werden'],
+ steig:['Wandernder Tunnel (Stufe 2)','Nur zwei Kontakte','Tunnel nur mit dem schwachen Fuß','Echter Jäger (Stufe 3)']},
+{id:'rwander',title:'Wanderndes Dreieck',legend:['kind','teamrot','ball'],
+ chips:[['Schwerpunkt','Passen in Bewegung · Raum gewinnen'],['','8–12 Kinder, Gruppen zu 4'],['Feld','15 × 20 m mit Ziellinie'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, Hütchen']],
+ ziel:'Drei Kinder halten beim Passen ihr Dreieck und bewegen sich dabei gemeinsam nach vorne bis über die Ziellinie. Im Spiel: gemeinsam mit Pässen Raum nach vorne gewinnen.',
+ org:['Feld 15 × 20 m, an einem Ende eine Ziellinie','3 Kinder im Dreieck am Start, 1 Jäger'],
+ rot:'Nach jedem Durchgang wird ein anderes Kind Jäger.',
+ ablauf:['Drei Kinder passen sich im Dreieck den Ball zu.','Dabei wandert das Dreieck nach vorne.','Am Ende dribbelt ein Kind über die Ziellinie = Punkt.','Der Jäger versucht, den Ball zu erobern.'],
+ stufen:[['Stufe 1 · Ohne Jäger','Zu dritt durch das Feld passen.'],['Stufe 2 · Jäger von hinten','Der Jäger startet 3 Sekunden später von der Startlinie.'],['Stufe 3 · Jäger von vorne','Der Jäger startet an der Ziellinie und verteidigt sie. Erobert er den Ball, dribbelt er über die Startlinie.']],
+ coach:[['Dreieck halten','Abstand 4–5 m, nicht auf eine Linie. Erkennbar: Das Kind mit Ball hat immer zwei Anspielstationen.'],['Nach vorne','Pass leicht nach vorne in den Weg. Fehlerbild: Alle bleiben stehen und warten.'],['Kopf hoch','Wo ist der Jäger?'],['Abschluss','Über die Linie dribbeln, nicht schießen.']],
+ last:['Dauer: 6–8 Durchgänge, ca. 6–8 Minuten','Wartezeit: kurz, mehrere Gruppen nebeneinander','Pro Kind: ca. 6–8 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Jäger (Stufe 1)','Breiteres Feld','Kürzere Strecke'],
+ steig:['Jäger von hinten (Stufe 2)','Mindestens 5 Pässe vor der Linie','Nur zwei Kontakte','Jäger von vorne (Stufe 3)']},
+{id:'rschatz',title:'Schatz-Rondo',legend:['kind','mitte','ball','schatz'],
+ chips:[['Schwerpunkt','Ballbesitz · Passen in Folge'],['','8–12 Kinder, Gruppen zu 5'],['Feld','Quadrate ca. 10 × 10 m'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, Hütchen, kleine Markierungen als Schätze']],
+ ziel:'Das Kind spielt mit seinem Team möglichst viele Pässe in Folge, ohne dass die Mitte den Ball berührt. Im Spiel: den Ball im Team halten.',
+ org:['Quadrate mit Hütchen abstecken','4 Kinder außen, 1 Kind in der Mitte','Neben jedem Quadrat eine Schatzkiste (Markierungen)'],
+ rot:'Berührt die Mitte den Ball, tauscht sie mit dem Kind, das ihn gespielt hat. Die Pässe beginnen wieder bei 0.',
+ ablauf:['Die Kinder außen passen, alle zählen laut.','5 Pässe in Folge = ein Schatz aus der Kiste.','Berührt die Mitte den Ball, wird getauscht und neu gezählt.','Welche Gruppe sammelt die meisten Schätze?'],
+ stufen:[['Stufe 1 · 3 Pässe','Ein Schatz schon nach 3 Pässen, freie Kontaktzahl.'],['Stufe 2 · 5 Pässe','5 Pässe in Folge, maximal 3 Kontakte.'],['Stufe 3 · Schatzräuber','Die Mitte darf nach Ballgewinn den Ball aus dem Quadrat dribbeln und einen Schatz zurückholen.']],
+ coach:[['Zählen','Laut mitzählen, alle sind dabei.'],['Ruhig bleiben','Erst stoppen, dann passen. Fehlerbild: Hektischer Pass bei Pass 4.'],['Anbieten','Erkennbar: Das Kind mit Ball hat immer zwei freie Mitspieler.'],['Mitte','Nicht aufgeben, auch bei vielen Pässen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Schatz nach 3 Pässen (Stufe 1)','Größeres Quadrat','Freie Kontaktzahl'],
+ steig:['5 Pässe (Stufe 2)','Nur zwei Kontakte','Kleineres Quadrat','Schatzräuber (Stufe 3)']},
+{id:'rjagd',title:'Ball-zurück-Rondo',legend:['kind','mitte','ball'],
+ chips:[['Schwerpunkt','Passen · Sofort zurückerobern'],['','8–12 Kinder, Gruppen zu 5'],['Feld','Quadrate ca. 10 × 10 m mit 5 m Rand'],['Dauer','6–8 min'],['Material','1 Ball pro Gruppe, Hütchen']],
+ ziel:'Das Kind spielt sichere Pässe und jagt nach einem Ballverlust sofort hinterher, um den Ball zurückzuholen, bevor die Mitte aus dem Feld dribbelt. Im Spiel: nach Ballverlust sofort nachsetzen.',
+ org:['Quadrate mit Hütchen, außen herum ein Rand von ca. 5 m mit Linie','4 Kinder an den Ecken, 1 Kind in der Mitte'],
+ rot:'Schafft es die Mitte über die Randlinie, tauscht sie mit dem Kind, das den Ball verloren hat.',
+ ablauf:['4 gegen 1 im Quadrat.','Erobert die Mitte den Ball, will sie über die Randlinie dribbeln.','Das Kind, das den Ball verloren hat, jagt sofort hinterher.','Holt es den Ball zurück, geht das Spiel ohne Tausch weiter.'],
+ stufen:[['Stufe 1 · Nur Rondo','Normales 4 gegen 1, freie Kontaktzahl.'],['Stufe 2 · Ball zurück','Nach Ballverlust jagt das Kind, das den Ball verloren hat, sofort hinterher.'],['Stufe 3 · Zwei jagen','Nach Ballverlust jagen zwei Kinder, die Mitte muss den Ball über die Randlinie dribbeln.']],
+ coach:[['Sofort los','Nicht ärgern, sofort hinterher. Erkennbar: Das Kind startet in der gleichen Sekunde.'],['Weg abschneiden','Zwischen Mitte und Randlinie laufen. Fehlerbild: Das Kind läuft nur hinterher.'],['Sichere Pässe','Erst gar nicht verlieren: flach und zum freien Kind.'],['Mitte','Nach Ballgewinn schnell weg vom Kind, das jagt.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde plus kurze Sprints','Intensität: mittel bis hoch'],
+ leicht:['Breiterer Rand','Nur Rondo (Stufe 1)','Die Mitte darf nur gehen'],
+ steig:['Ball zurück (Stufe 2)','Schmalerer Rand','Nur zwei Kontakte','Zwei jagen (Stufe 3)']}
+].map(e=>Object.assign({},KR2,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -6577,6 +6823,64 @@ abenteuer:{ziel:'Das Kind dribbelt einen Rundkurs mit verschiedenen Aufgaben (Sl
  steig:['Aufgaben an den Stationen (Stufe 2)','Gegenverkehr','Brücke schmaler','Räuber und Schatzkiste (Stufe 3)']}
 };
 EX.forEach(e=>{const u=UPG_KT[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
+/* ---------- 5-Säulen-Überarbeitung: Rondo Bambini – U9 ---------- */
+const UPG_KR={
+rhand:{ziel:'Das Kind versteht die Idee des Rondos: Es schaut, wer frei ist, und macht einen Schritt zur Seite, damit die Mitte nicht im Weg steht. Erst mit der Hand, dann mit dem Fuß. Im Spiel: anbieten und den freien Mitspieler finden.',
+ stufen:[['Stufe 1 · Werfen','Mit den Händen werfen und fangen, die Mitte darf abfangen.'],['Stufe 2 · Rollen und stoppen','Ball mit der Hand rollen, mit dem Fuß stoppen, dann aufheben und weiterrollen.'],['Stufe 3 · Mit dem Fuß','Ball mit dem Fuß passen, die Mitte jagt richtig.']],
+ coach:[['Schauen','Erst schauen, wer frei ist, dann werfen. Erkennbar: Das Kind dreht den Kopf vor dem Wurf.'],['Anbieten','Einen Schritt zur Seite, damit die Mitte nicht dazwischen steht. Fehlerbild: Das Kind steht direkt hinter der Mitte.'],['Mitte','Nicht aufgeben, immer zum Ball.'],['Loben','Jeden gelungenen Pass laut loben.']],
+ last:['Dauer: 4 Runden à 60–90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Größeres Quadrat','Mitte geht nur','Werfen erlaubt (Stufe 1)'],
+ steig:['Nur Bodenroller (Stufe 2)','Ball mit dem Fuß stoppen','Mit dem Fuß passen (Stufe 3)']},
+rdreieck:{ziel:'Das Kind passt im Dreieck zum Kind, zu dem die Mitte nicht steht, und bietet sich nach jedem Pass neu an. Im Spiel: die freie Mitspielerin erkennen.',
+ stufen:[['Stufe 1 · Mitte geht','Die Mitte geht nur, 2–3 Kontakte erlaubt.'],['Stufe 2 · Mitte jagt','Die Mitte jagt, Pässe zählen: 5 in Folge = Punkt.'],['Stufe 3 · Ausbruch','Erobert die Mitte den Ball, darf sie über eine Linie außerhalb dribbeln = Punkt für die Mitte.']],
+ coach:[['Annehmen','Ball erst stoppen, dann passen.'],['Freie Ecke','Zum Kind passen, zu dem die Mitte nicht steht. Erkennbar: Der Pass geht weg von der Mitte.'],['Bewegen','Kleiner Schritt zur Seite, wenn die Mitte im Weg steht. Fehlerbild: Alle stehen still.'],['Loben','Jeden gelungenen Pass loben.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 20 Ballkontakte pro Runde (sehr viele, weil nur 3 außen)','Intensität: mittel'],
+ leicht:['Größeres Dreieck','Mitte geht nur (Stufe 1)','Ball mit der Hand stoppen erlaubt'],
+ steig:['Mitte jagt (Stufe 2)','Kleineres Dreieck','Nur zwei Kontakte','Ausbruch (Stufe 3)']},
+rburg:{ziel:'Das Kind spielt den Ball so lange schnell weiter, bis der Weg zur Burg frei ist, und trifft dann die Burg. Im Spiel: geduldig passen, bis sich eine Lücke für den Torschuss öffnet.',
+ stufen:[['Stufe 1 · Langsamer Wächter','Der Wächter geht nur, Schuss jederzeit erlaubt.'],['Stufe 2 · Wächter läuft','Der Wächter läuft, Schuss erst nach 3 Pässen.'],['Stufe 3 · Zwei Burgen','Zwei Burgen und zwei Wächter. Erobert ein Wächter den Ball, tauscht er mit dem Kind, das ihn gespielt hat.']],
+ coach:[['Schnell passen','Damit der Wächter nicht mitkommt. Erkennbar: Der Wächter kommt zu spät.'],['Lücke','Erst schießen, wenn der Weg frei ist. Fehlerbild: Schuss in den Wächter.'],['Flach zielen','Innenseite, auf die Burg.'],['Wächter','Immer zwischen Ball und Burg bleiben.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, Burgtreffer zählen','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel, für den Wächter hoch'],
+ leicht:['Größere Burg (Kegel oder Ball auf Hütchen)','Wächter geht nur (Stufe 1)','Kleineres Quadrat'],
+ steig:['Schuss nach 3 Pässen (Stufe 2)','Torwartkind darf mit der Hand schützen','Nur schwacher Fuß','Zwei Burgen (Stufe 3)']},
+rtor:{ziel:'Das Kind passt geduldig seitlich, bis der Weg durch das Tor in der Mitte frei ist, und spielt dann quer durch. Im Spiel: der erste Pass durch die Mitte des Gegners.',
+ stufen:[['Stufe 1 · Mitte geht','Die Mitte geht nur, Pass durchs Tor = Punkt.'],['Stufe 2 · Mitte jagt','Die Mitte jagt den Ball und stellt das Tor zu.'],['Stufe 3 · Zwei in der Mitte','Zwei Kinder in der Mitte (bei 6 Kindern), Pass durchs Tor = 3 Punkte.']],
+ coach:[['Geduld','Erst seitlich passen, bis der Weg frei ist. Fehlerbild: Pass ins Tor, obwohl die Mitte davor steht.'],['Diagonal','Das gegenüberliegende Kind muss bereit sein. Erkennbar: Es steht offen und nimmt den Ball direkt an.'],['Pass','Flach und fest genug.'],['Mitte','Sich vor das Tor stellen, nicht nur dem Ball hinterherlaufen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, Punkte zählen','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Breiteres Tor','Mitte geht nur (Stufe 1)','Größeres Quadrat'],
+ steig:['Mitte jagt (Stufe 2)','Tor kleiner','Punkt nur mit dem schwachen Fuß','Zwei in der Mitte (Stufe 3)']},
+rjoker:{ziel:'Das Kind spielt auch in die Mitte zum Joker, und der Joker nimmt den Ball offen an und spielt weiter. Im Spiel: der Pass ins Zentrum zu einer Mitspielerin zwischen den Gegnern.',
+ stufen:[['Stufe 1 · Joker frei','Der Jäger geht nur, Joker hat freie Kontaktzahl.'],['Stufe 2 · Joker zählt doppelt','Der Jäger jagt, Pass über den Joker zählt doppelt.'],['Stufe 3 · Zwei Jäger','Zwei Jäger, der Joker darf nur zwei Kontakte.']],
+ coach:[['Joker','Sich in eine Lücke stellen, weg vom Jäger. Erkennbar: Der Joker ist anspielbar, ohne dass der Jäger dazwischen steht.'],['Außen','Auch in die Mitte zum Joker passen. Fehlerbild: Der Ball läuft nur außen herum.'],['Annahme','Joker nimmt offen an, mit Blick zum nächsten Kind.'],['Jäger','Den Pass zum Joker zustellen.']],
+ last:['Dauer: 5 Runden à 60–90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Größeres Dreieck','Jäger geht nur (Stufe 1)','Joker darf den Ball stoppen und mit der Hand zurechtlegen'],
+ steig:['Joker zählt doppelt (Stufe 2)','Joker nur zwei Kontakte','Kleineres Dreieck','Zwei Jäger (Stufe 3)']},
+rfuchs:{ziel:'Das Kind passt den Ball weg von den Füchsen zum freien Hasen, und die Füchse lernen, gemeinsam zu jagen. Im Spiel: Ball halten gegen zwei Gegner.',
+ stufen:[['Stufe 1 · Ein Fuchs','Ein Fuchs jagt, der zweite startet erst nach 5 Pässen.'],['Stufe 2 · Zwei Füchse','Beide Füchse jagen, freie Kontaktzahl.'],['Stufe 3 · Wenige Kontakte','Hasen nur zwei Kontakte. Erobern die Füchse den Ball, dürfen sie ihn aus dem Kreis dribbeln = Punkt.']],
+ coach:[['Hasen','Weg von den Füchsen passen. Erkennbar: Der Pass geht zur Seite, wo kein Fuchs ist.'],['Anbieten','Zwischen zwei Füchse stellen ist gefährlich, lieber daneben. Fehlerbild: Der Hase steht im Schatten eines Fuchses.'],['Füchse','Zusammenarbeiten: einer läuft zum Ball, einer stellt den Pass zu.'],['Kreisgröße','Groß genug, damit die Hasen Erfolg haben.']],
+ last:['Dauer: 4 Runden à 2 Minuten','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel, für die Füchse hoch'],
+ leicht:['Größerer Kreis','Ein Fuchs (Stufe 1)','Freie Kontaktzahl'],
+ steig:['Zwei Füchse (Stufe 2)','Kreis kleiner','Hasen nur zwei Kontakte (Stufe 3)']},
+rseiten:{ziel:'Das Kind nutzt seine Seite, um mit Ball am Fuß den Kopf zu heben, und passt rechtzeitig, bevor die Mitte zu nahe kommt. Im Spiel: mit Ball Zeit gewinnen und dann abspielen.',
+ stufen:[['Stufe 1 · Dribbeln erlaubt','Beliebig an der eigenen Seite dribbeln, dann passen.'],['Stufe 2 · Drei Schritte','Nur drei Kontakte an der Seite, dann muss gepasst werden.'],['Stufe 3 · Seite wechseln','Nach dem Pass zur nächsten freien Seite laufen, zwei Kinder in der Mitte.']],
+ coach:[['Dribbeln','Ball eng am Fuß, Kopf hoch. Erkennbar: Das Kind schaut beim Dribbeln zu den anderen Seiten.'],['Timing','Passen, bevor die Mitte zu nahe ist. Fehlerbild: Das Kind dribbelt in die Mitte hinein.'],['Andere Seiten','Mitlaufen und frei anbieten.'],['Mitte','Den Weg an der Seite zustellen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 25 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Größeres Quadrat','Mitte geht nur','Beliebig dribbeln (Stufe 1)'],
+ steig:['Drei Kontakte (Stufe 2)','Nur schwacher Fuß','Zwei Kinder in der Mitte','Seite wechseln (Stufe 3)']},
+rdoppel:{ziel:'Das Kind spielt nach ein paar sicheren Pässen den Ball weit und flach zur anderen Gruppe. Die andere Gruppe ist bereit, wenn der Ball kommt. Im Spiel: die erste Spielverlagerung.',
+ stufen:[['Stufe 1 · Ohne Fänger','Zwei Quadrate, Wechsel nach 2–3 Pässen, ohne Fänger.'],['Stufe 2 · Mit Fängern','Ein Fänger pro Quadrat, Wechsel nach 3 Pässen.'],['Stufe 3 · Fänger wechseln','Die Fänger dürfen das Quadrat wechseln und dem Ball folgen.']],
+ coach:[['Weiter Pass','Fest und flach spielen. Fehlerbild: Der lange Ball ist zu weich und rollt nicht an.'],['Bereit sein','Die andere Gruppe schaut zum Ball. Erkennbar: Der lange Ball wird sicher gestoppt.'],['Zählen','Erst die Pässe, dann der Wechsel.'],['Fänger','In der ruhigen Gruppe schon zum Ball schauen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: kurz, die zweite Gruppe wartet nur wenige Sekunden','Pro Kind: ca. 10–15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Quadrate näher zusammen','Ohne Fänger (Stufe 1)','Wechsel schon nach 2 Pässen'],
+ steig:['Mit Fängern (Stufe 2)','Wechsel nur nach 4 Pässen','Zwei Bälle, auf Pfiff tauschen','Fänger wechseln (Stufe 3)']},
+rwechsel:{ziel:'Das Kind wechselt nach Ballverlust sofort in die Mitte und jagt den Ball, und das Kind aus der Mitte spielt außen sofort mit. Im Spiel: schnelles Umschalten ohne Pause.',
+ stufen:[['Stufe 1 · Tausch mit Pause','Nach Ballgewinn kurz anhalten, Plätze tauschen, weiter.'],['Stufe 2 · Fliegender Wechsel','Ohne Pause: Wer den Ball verliert, geht sofort in die Mitte.'],['Stufe 3 · Zwei in der Mitte','Bei 6 Kindern zwei in der Mitte, nur zwei Kontakte.']],
+ coach:[['Schnell wechseln','Ohne zu diskutieren. Erkennbar: Das Spiel läuft ohne Pause weiter.'],['Neue Mitte','Sofort den Ball jagen. Fehlerbild: Das Kind läuft langsam in die Mitte und ärgert sich.'],['Neues Kind außen','Ball zur freien Ecke passen.'],['Pass','Flach mit der Innenseite.']],
+ last:['Dauer: 3 Runden à 2 Minuten','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Tausch mit Pause (Stufe 1)','Größeres Quadrat','Freie Kontaktzahl'],
+ steig:['Fliegender Wechsel (Stufe 2)','Nur zwei Kontakte','Wer dreimal in der Mitte war, macht eine Zusatzaufgabe','Zwei in der Mitte (Stufe 3)']}
+};
+EX.forEach(e=>{const u=UPG_KR[e.id];if(!u)return;Object.assign(e,u,{saeulen:true});});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 /* Reiter nach Spielphasen (Okt 2026): Mit Ball, Gegen den Ball, Umschalten, Torabschluss, Athletik */
