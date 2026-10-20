@@ -5638,6 +5638,20 @@ const KIDMOVE={feuerwasser:'aufwaermen',blaurot:'aufwaermen',hasejaeger:'aufwaer
 EX.forEach(e=>{const m=c=>CATMAP[c]||c;e.cat=m(e.cat);e.cats=[...new Set(e.cats.map(m).concat(UMSCHALT.includes(e.id)?['umschalten']:[]))];
   if(KIDMOVE[e.id]&&e.lv.includes('kinder'))e.catsLv={kinder:[KIDMOVE[e.id]]};});
 function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e.cats.filter(c=>!h.includes(c));}
+/* Aufwärmen: 20–30 Übungen pro Altersbereich. Übungen aus unteren Altersbereichen dürfen nach oben, nie umgekehrt. */
+(function(){const X=id=>EX.find(e=>e.id===id);
+  const addCat=(ids,c)=>ids.forEach(id=>{const e=X(id);if(e&&!e.cats.includes(c))e.cats.push(c);});
+  const addLv=(e,lv,cats)=>{e.catsLv=e.catsLv||{};e.catsLv[lv]=cats;};
+  const up=(ids,lvs,note)=>ids.forEach(id=>{const e=X(id);if(!e)return;lvs.forEach(lv=>{if(!e.lv.includes(lv)){e.lv.push(lv);addLv(e,lv,['aufwaermen']);e.ad=e.ad||{};if(note[lv]&&!e.ad[lv])e.ad[lv]=note[lv];}});
+    const order=LV.map(l=>l.id);e.lv.sort((a,b)=>order.indexOf(a)-order.indexOf(b));const ch=e.chips.find(c=>c[0]==='Alter');if(ch)ch[1]=LV.filter(l=>e.lv.includes(l.id)).map(l=>l.short).join(' · ');});
+  /* U10–U12: Kinderspiele nach oben, Lauf-/Fangspiele zusätzlich als Aufwärmen, eigene Technik-/Rondoformen */
+  up(['schatz','huete','zimmer'],['u12'],{u12:'Für U10–U12 als schnelles Aufwärmen: Feld kleiner, höheres Tempo, abwechselnd starker und schwacher Fuß.'});
+  ['feuerwasser','blaurot','hasejaeger','zahlenlauf','farbenlauf','platztausch','startsignal','kettenfangen','baelleklau'].forEach(id=>{const e=X(id);if(e)addLv(e,'u12',['athletik','aufwaermen']);});
+  ['rzaehlen','rondo4p1','dribbelkreuz','ballmanip','koordzirkel'].forEach(id=>{const e=X(id);if(e){e.cats.includes('aufwaermen')||e.cats.push('aufwaermen');if(e.catsLv&&e.catsLv.u12&&!e.catsLv.u12.includes('aufwaermen'))e.catsLv.u12.push('aufwaermen');}});
+  /* U13–U18 und KM: eigene Formen als Aufwärmen, dazu ausgewählte U10–U12-Formen */
+  addCat(['rondo52','schnellrondo','kreisrondo','kontaktpassen','prallwand','dribbelparcours','reaktion','spiegel','nummern','leiter','huetchenklau','laufabc','tennisball'],'aufwaermen');
+  up(['zahlenpassen','ballschutz','dribbelkreuz','koordzirkel'],['jugend','km'],{jugend:'Für U13–U18 als Aufwärmen: höheres Tempo, maximal 2 Kontakte, Feld etwas kleiner.',km:'Für die KM als Aufwärmen: hohes Tempo, maximal 2 Kontakte, Feld kleiner, zum Schluss mit Wettkampfcharakter.'});
+})();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
 if(!LV.some(l=>l.id===level))level=null;
