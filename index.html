@@ -6897,7 +6897,7 @@ window.__kbShow=function(){showTab(tab);};
     let first=false;try{first=localStorage.getItem('hi-kabine-synced')!=='1';localStorage.setItem('hi-kabine-synced','1');}catch(e){}
     if(!sync.col){sync.col=col;$('kb-store').textContent='Synchronisiert: Kader, Spiele und Matchplan sind auf allen Geräten gleich, auf denen du angemeldet bist.';}
     if(!r||!Array.isArray(r.players)){if(!S.ts)S.ts=Date.now();sync.push();return;}
-    if(first){adopt(r);return;}
+    if(first){const remoteEmpty=r.demo||!r.players.length;if(remoteEmpty&&!S.demo&&S.players.length){S.ts=Date.now();sync.push();}else adopt(r);return;}
     if(sync.timer)return;
     if((r.ts||0)>(S.ts||0)){if(!busy())adopt(r);}
     else if((S.ts||0)>(r.ts||0))sync.push();
