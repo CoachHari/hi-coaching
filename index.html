@@ -1086,6 +1086,15 @@ dialog.rate-dlg.wide{width:min(1000px,calc(100vw - 24px))}
 .hilfe-sig span{display:block;margin-top:6px;font-style:normal;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:15px;color:var(--gold)}
 .hilfe-cta{display:flex;flex-wrap:wrap;gap:10px}
 @media (max-width:820px){.hilfe{grid-template-columns:1fr;gap:26px}.hilfe-ph{max-width:560px}}
+/* ---------- Testmodus: Schutz der Inhalte ---------- */
+html.testmode article.card,html.testmode #plan,html.testmode #list{position:relative}
+html.testmode article.card::after,html.testmode #plan::after,html.testmode #list::after{content:"";position:absolute;inset:0;background-image:var(--wm);background-repeat:repeat;pointer-events:none;z-index:6}
+html.testmode body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html.testmode input,html.testmode textarea,html.testmode select,html.testmode [contenteditable]{-webkit-user-select:text;user-select:text}
+html.testmode img,html.testmode svg{-webkit-user-drag:none}
+html.testmode #plan-pdf,html.testmode [data-pdf-s],html.testmode [data-t-pdf]{display:none!important}
+@media print{html.testmode body>*{display:none!important}html.testmode body::before{content:"Drucken ist in der Testversion nicht möglich. © H.I. – Coaching";display:block;padding:40px;font:600 18px Arial,sans-serif;color:#111}}
+dialog.wm-dlg{width:min(460px,calc(100vw - 24px))}
 </style>
 </head>
 <body>
@@ -7934,7 +7943,7 @@ function openRate(id){const e=EXM[id];if(!e)return;
       wieder:fd.get('wieder')||null,gut:String(fd.get('gut')||'').trim().slice(0,1500),aendern:String(fd.get('aendern')||'').trim().slice(0,1500)};
     let any=false;RQ.forEach(([k])=>{const v=+fd.get(k)||null;d[k]=v;if(v)any=true;});
     if(!any&&!d.gut&&!d.aendern){msg.textContent='Bitte mindestens eine Frage mit Sternen beantworten oder einen Kommentar schreiben.';return;}
-    rSave(RKEY,{name:d.name,team:d.team,alter:d.alter});
+    rSave(RKEY,{name:d.name,team:d.team,alter:d.alter});if(window.__wmUpdate)window.__wmUpdate();
     const row={uebung:e.id,data:d},btn=f.querySelector('[type=submit]');btn.disabled=true;
     let queued=false;try{await rateSend(row);}catch(_){const q=rLoad(RQUEUE,[]);q.push(row);rSave(RQUEUE,q);queued=true;}
     const done=rLoad(RDONE,{});done[e.id]=(done[e.id]||0)+1;rSave(RDONE,done);rateBtnState();
@@ -7986,6 +7995,27 @@ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-rate]');
   const r=ev.target.closest('[data-rres]');if(r){showRateEx(r.dataset.rres);return;}
   if(ev.target.closest('#rate-all'))showRateAll();});
 rateBtnState();if(TESTMODE){rateFlush();window.addEventListener('online',rateFlush);}
+/* ---------- Testmodus: Wasserzeichen, Kopier- und Druckschutz ---------- */
+function wmUpdate(){if(!TESTMODE)return;const n=(rLoad(RKEY,{}).name||'').trim(),t='© H.I. – Coaching · '+(n||'Testversion')+' · '+new Date().toLocaleDateString('de-AT');
+  const x=t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="470" height="200"><text x="235" y="105" transform="rotate(-20 235 100)" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="rgba(25,35,70,0.17)" stroke="rgba(255,255,255,0.2)" stroke-width="0.6">'+x+'</text></svg>';
+  document.documentElement.style.setProperty('--wm','url("data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)+'")');}
+window.__wmUpdate=wmUpdate;
+function wmAskName(){const d=document.createElement('dialog');d.className='picker login-dlg wm-dlg';d.setAttribute('aria-labelledby','wm-h');
+  d.innerHTML='<form novalidate><div class="pk-head"><div class="pk-top"><h3 id="wm-h">Willkommen zur Testversion</h3></div></div><div class="rate-body"><p class="login-lead">Schön, dass du die Übungen testest. Wie heißt du? Dein Name erscheint beim Bewertungsbogen und als Wasserzeichen auf den Übungen.</p><label class="fld">Dein Name<input name="name" autocomplete="name" required maxlength="60"></label><label class="fld">Verein / Team (optional)<input name="team" maxlength="60"></label><div class="rate-foot"><button type="submit" class="btn primary">Los geht’s</button><p role="status" aria-live="polite" data-wmmsg></p></div></div></form>';
+  document.body.appendChild(d);const f=d.querySelector('form');
+  d.addEventListener('cancel',ev=>{if(!f.name.value.trim())ev.preventDefault();});
+  f.addEventListener('submit',ev=>{ev.preventDefault();const n=f.name.value.trim();if(!n){d.querySelector('[data-wmmsg]').textContent='Bitte deinen Namen eintragen.';return;}
+    const me=rLoad(RKEY,{});me.name=n.slice(0,60);if(f.team.value.trim())me.team=f.team.value.trim().slice(0,60);rSave(RKEY,me);wmUpdate();d.close();d.remove();});
+  if(d.showModal)d.showModal();else d.setAttribute('open','');setTimeout(()=>f.name.focus(),50);}
+if(TESTMODE){wmUpdate();
+  const free=el=>el&&el.closest&&el.closest('input,textarea,select,[contenteditable]');
+  document.addEventListener('contextmenu',ev=>{if(!free(ev.target))ev.preventDefault();});
+  ['copy','cut'].forEach(k=>document.addEventListener(k,ev=>{if(!free(ev.target)){ev.preventDefault();toast('Kopieren ist in der Testversion nicht möglich.');}}));
+  document.addEventListener('dragstart',ev=>{if(!free(ev.target))ev.preventDefault();});
+  document.addEventListener('keydown',ev=>{if((ev.ctrlKey||ev.metaKey)&&['p','s'].includes(String(ev.key).toLowerCase())){ev.preventDefault();toast(String(ev.key).toLowerCase()==='p'?'Drucken ist in der Testversion nicht möglich.':'Speichern ist in der Testversion nicht möglich.');}});
+  document.addEventListener('click',ev=>{if(ev.target.closest&&ev.target.closest('#plan-pdf,[data-pdf-s],[data-t-pdf]')){ev.preventDefault();ev.stopImmediatePropagation();toast('PDF ist in der Testversion nicht verfügbar.');}},true);
+  if(!(rLoad(RKEY,{}).name||'').trim()){const go=()=>setTimeout(wmAskName,400);if(document.getElementById('splash'))window.addEventListener('hi:splashdone',go,{once:true});else go();}}
 rateLoad();
 
 function updateTotals(){PARTS.forEach(([k])=>{const el=partsEl.querySelector('[data-pm="'+k+'"]');if(el)el.textContent=partMin(k)+' min';});
