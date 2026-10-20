@@ -2642,6 +2642,92 @@ const kgGoal=(s,x,y,w)=>el('rect',{x,y,width:w,height:14,fill:'rgba(255,255,255,
     tick(t){const n=6-Math.floor(t/0.66);this._n.textContent=n>0?String(n):'Hilfe!';},
     ents:[{id:'a1'},{id:'a2'},{id:'a3'},{id:'d1',fill:RED},{id:'d2',fill:RED},{id:'d3',fill:RED}],sc:{a:S}};
 })();
+/* ---------- Torabschluss Bambini – U9: zehn neue Spiele (5 Säulen) ---------- */
+const taGoal=s=>el('rect',{x:120,y:6,width:120,height:14,fill:'rgba(255,255,255,.25)',stroke:'#FFFFFF','stroke-width':'2.5'},s);
+
+/* Zu zweit gegen das Torwartkind */
+(function(){const C=4.0;
+  const S={L:[[1.4,'Zu zweit aufs Tor, das Torwartkind kommt raus'],[2.0,'Querpass zum freien Kind'],[99,'… und ins leere Eck schieben']],
+    a1:[[0,130,260],[1.4,140,130],[C,140,130]],a2:[[0,240,260],[1.4,232,138],[1.9,230,124],[C,230,124]],k:[[0,180,36],[1.4,160,52],[2.0,192,40],[C,192,40]]};
+  const b=kmBall(S.a1.slice(0,2),1.4);S.BALLS=[kmCut(b,0,1.4).concat([[1.5,150,124],[1.9,218,122],[2.0,222,116],[2.4,232,14],[C,232,14]])];
+  A.ta2tw={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'a1'},{id:'a2'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Nachsetzen */
+(function(){const C=4.0;
+  const S={L:[[0.9,'Schuss aufs Tor'],[1.4,'Das Torwartkind wehrt ab'],[99,'Das zweite Kind setzt nach und trifft den Abpraller']],
+    s1:[[0,150,170]],s2:[[0,250,230],[0.6,250,230],[1.4,234,110],[C,234,110]],k:[[0,180,36],[0.8,175,40],[1.6,196,36],[C,196,36]]};
+  S.BALLS=[[[0,150,156],[0.5,150,156],[0.9,174,52],[1.3,226,96],[1.6,226,98],[2.0,214,14],[C,214,14]]];
+  A.tanachsetzen={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'s1'},{id:'s2'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Ecken-Jäger */
+(function(){const C=5.0;
+  const S={L:[[1.2,'In den Torecken hängen Leibchen'],[3.6,'Treffer ins Leibchen-Eck = 3 Punkte, sonst 1 Punkt'],[99,'Das Torwartkind bleibt in der Mitte']],
+    p1:[[0,110,150]],p2:[[0,180,160]],p3:[[0,250,150]],k:[[0,180,36],[2.0,180,36],[2.3,172,38],[C,172,38]]};
+  S.BALLS=[[[0,110,136],[0.6,110,136],[1.1,130,16],[C,130,16]],[[0,250,136],[1.8,250,136],[2.3,232,16],[C,232,16]],[[0,180,146],[3.0,180,146],[3.4,176,50],[3.8,190,90],[C,190,90]]];
+  A.taecken={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);[[122,8],[218,8]].forEach(([x,y])=>el('rect',{x,y,width:20,height:10,fill:'#F2C230',opacity:'.9'},s));line(s,40,170,320,170,'6 5','.6');},
+    ents:[{id:'p1'},{id:'p2'},{id:'p3'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Querpass-Schuss */
+(function(){const C=4.0;
+  const S={L:[[0.8,'Das Passkind spielt flach quer vor das Tor'],[1.5,'In den Ball laufen, nicht stehen bleiben'],[99,'Direkt oder mit einem Kontakt aufs Tor']],
+    q:[[0,310,140]],r:[[0,140,250],[0.4,140,250],[1.4,180,140],[C,180,140]],k:[[0,180,36],[1.4,188,38],[C,188,38]]};
+  S.BALLS=[[[0,296,140],[0.4,296,140],[1.4,186,128],[1.8,150,14],[C,150,14]]];
+  A.taquer={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'q',wait:true},{id:'r'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Aufdrehen und schießen */
+(function(){const C=4.0;
+  const S={L:[[0.9,'Mit dem Rücken zum Tor anbieten'],[1.5,'Ball mitnehmen und weg vom Gegner aufdrehen'],[99,'… und schießen']],
+    f:[[0,180,300]],p:[[0,180,160],[0.9,180,168],[1.4,205,150],[C,205,150]],d:[[0,170,124],[1.4,174,122],[C,174,122]],k:[[0,180,36],[1.7,196,36],[C,196,36]]};
+  S.BALLS=[[[0,180,286],[0.3,180,286],[0.9,180,182],[1.1,194,176],[1.4,214,140],[1.6,214,138],[2.0,218,14],[C,218,14]]];
+  A.tadreh={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'f',wait:true},{id:'p'},{id:'d',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Punkte-Zonen */
+(function(){const C=5.2;
+  const S={L:[[1.2,'Nah: 1 Punkt'],[2.6,'Mitte: 2 Punkte'],[99,'Weit: 3 Punkte. Wer traut sich?']],
+    z1:[[0,150,100]],z2:[[0,200,170]],z3:[[0,160,240]],k:[[0,180,36],[1.6,180,36],[1.9,190,36],[3.2,190,36],[3.5,168,38],[C,168,38]]};
+  S.BALLS=[[[0,150,86],[0.5,150,86],[0.8,140,16],[C,140,16]],[[0,200,156],[1.9,200,156],[2.3,226,16],[C,226,16]],[[0,160,226],[3.4,160,226],[3.9,132,16],[C,132,16]]];
+  A.tazonen={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);[[130,'1'],[200,'2'],[270,'3']].forEach(([y,n])=>{line(s,30,y,330,y,'6 5','.55');txt(s,340,y-6,'end','14').textContent=n;});},
+    ents:[{id:'z1'},{id:'z2'},{id:'z3'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Torschuss unter Druck */
+(function(){const C=3.8;
+  const S={L:[[1.0,'Mit Ball aufs Tor, ein Verfolger startet dahinter'],[99,'Schnell abschließen, bevor er dich einholt']],
+    a:[[0,180,300],[1.6,180,140],[C,180,140]],c:[[0,184,346],[0.4,184,346],[1.6,196,174],[2.0,198,162],[C,198,162]],k:[[0,180,36],[1.7,168,38],[C,168,38]]};
+  const b=kmBall(S.a.slice(0,2),1.6);S.BALLS=[kmCut(b,0,1.6).concat([[1.7,182,124],[2.1,206,14],[C,206,14]])];
+  A.tadruck={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'a'},{id:'c',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Fallball-Schuss */
+(function(){const C=4.4,X=[110,180,250],T=[0.4,1.6,2.8],G=[134,196,226];
+  const S={L:[[1.2,'Ball aus den Händen fallen lassen'],[2.4,'Mit dem Spann treffen, Fußspitze nach unten'],[99,'… und ab ins Tor']],k:[[0,180,36],[3.2,180,36],[3.5,196,36],[C,196,36]],BALLS:[]},ents=[];
+  X.forEach((x,i)=>{S['p'+i]=[[0,x,190]];ents.push({id:'p'+i});const t=T[i];S.BALLS.push([[0,x+12,180],[t,x+12,180],[t+0.25,x+4,176],[t+0.35,x+4,176],[t+0.8,G[i],16],[C,G[i],16]]);});
+  ents.push({id:'k',fill:NEU});
+  A.tafallball={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);line(s,40,210,320,210,'6 5','.55');},ents,sc:{a:S}};
+})();
+
+/* Torkönig */
+(function(){const C=5.2;
+  const S={L:[[1.6,'1 gegen 1 aufs Tor mit Torwartkind'],[2.6,'Tor! Wer trifft, bleibt drin'],[99,'Das nächste Kind aus der Schlange fordert den König heraus']],
+    a:[[0,180,250],[1.2,150,150],[1.6,140,110],[C,150,130]],d:[[0,200,150],[1.2,180,160],[1.6,174,146],[2.8,174,146],[3.8,338,222],[C,338,222]],
+    n:[[0,300,300],[2.8,300,300],[3.8,190,190],[C,190,190]],q1:[[0,330,330],[3.8,330,330],[C,300,330]],k:[[0,180,36],[1.7,196,36],[C,196,36]]};
+  const b=kmBall(S.a.slice(0,3),1.6);S.BALLS=[kmCut(b,0,1.6).concat([[1.7,138,96],[2.1,152,14],[C,152,14]])];
+  A.takoenig={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);txt(s,316,354,'middle','12').textContent='Schlange';},
+    ents:[{id:'a',label:'K'},{id:'d',fill:RED},{id:'n',fill:RED},{id:'q1',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Allein vor dem Torwartkind */
+(function(){const C=4.0;
+  const S={L:[[1.4,'Allein aufs Tor, das Torwartkind kommt raus'],[2.2,'Am Torwartkind vorbeidribbeln'],[99,'… und ins leere Tor schieben']],
+    a:[[0,180,300],[1.4,180,132],[1.8,216,100],[2.2,216,62],[C,216,62]],k:[[0,180,36],[1.4,180,94],[1.8,168,100],[C,168,100]]};
+  const b=kmBall(S.a.slice(0,4),2.2);S.BALLS=[kmCut(b,0,2.2).concat([[2.3,214,48],[2.6,200,14],[C,200,14]])];
+  A.tatwduell={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},ents:[{id:'a'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
 
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
@@ -5135,6 +5221,121 @@ EX.push(...[
  leicht:['2 gegen 2 (Stufe 1)','Schmaleres Feld','Hilfe schon nach 4 Sekunden'],
  steig:['2 gegen 3 (Stufe 2)','Breiteres Feld','Hilfe nach 8 Sekunden (Stufe 3)']}
 ].map(e=>Object.assign({},KG2,e)));
+/* ---------- Torabschluss Bambini – U9: zehn neue Spiele, Inhalte (5 Säulen) ---------- */
+Object.assign(LEG,{eckleibchen:['Leibchen im Eck','#F2C230',1],passkind:['Passkind',WAIT,1],koenig:['Torkönig',BLUE,1]});
+const KA2={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'abschluss',lv:['kinder'],saeulen:true};
+EX.push(...[
+{id:'ta2tw',title:'Zu zweit gegen das Torwartkind',legend:['kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','Querpass · Abschluss ins leere Eck'],['','8–12 Kinder, Gruppen zu 3'],['Feld','15 × 20 m vor dem Tor'],['Dauer','6–8 min'],['Material','Bälle, 1 Tor oder großes Minitor']],
+ ziel:'Das Kind erkennt, dass das Torwartkind herauskommt, und spielt quer zum freien Mitspieler, der ins leere Eck schiebt. Im Spiel: uneigennützig abspielen, wenn der Mitspieler besser steht.',
+ org:['Tor mit Torwartkind','Zwei Kinder starten nebeneinander mit einem Ball ca. 15 m vor dem Tor'],
+ rot:'Nach jedem Angriff rückt ein Angreifer ins Tor, das Torwartkind stellt sich hinten an.',
+ ablauf:['Zu zweit aufs Tor, ein Kind dribbelt.','Kommt das Torwartkind heraus, Querpass zum Mitspieler.','Der Mitspieler schiebt ins leere Eck.','Danach Rollen wechseln.'],
+ stufen:[['Stufe 1 · Torwart bleibt drin','Das Torwartkind bleibt auf der Linie, Abschluss nach einem Pass.'],['Stufe 2 · Torwart kommt raus','Das Torwartkind darf herauslaufen.'],['Stufe 3 · Verteidiger dazu','Ein Verteidiger startet von hinten und versucht, den Querpass abzufangen.']],
+ coach:[['Torwart beobachten','Kommt er raus? Erkennbar: Der Pass kommt, wenn das Torwartkind sich für ein Kind entscheidet.'],['Querpass flach','Vor den Mitspieler, nicht hinter ihn. Fehlerbild: Der Pass ist zu weit hinten, der Mitspieler muss stoppen.'],['Mitlaufen','Der Mitspieler bleibt auf gleicher Höhe.'],['Ins leere Eck','Schieben statt dreschen.']],
+ last:['Dauer: 8–10 Angriffe pro Gruppe, ca. 6–8 Minuten','Wartezeit: kurz, höchstens 2 Gruppen pro Tor','Pro Kind: ca. 3–4 Ballkontakte pro Angriff','Intensität: mittel'],
+ leicht:['Torwart bleibt drin (Stufe 1)','Größeres Tor','Kürzere Strecke'],
+ steig:['Torwart kommt raus (Stufe 2)','Abschluss direkt','Verteidiger dazu (Stufe 3)']},
+{id:'tanachsetzen',title:'Nachsetzen',legend:['kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','Abpraller verwerten · Nachsetzen'],['','8–12 Kinder in Paaren'],['Feld','15 × 15 m vor dem Tor'],['Dauer','6 min'],['Material','Bälle, 1 Tor, Hütchen']],
+ ziel:'Das Kind läuft nach jedem Schuss aufs Tor mit und verwertet einen Abpraller des Torwartkinds. Im Spiel: nachsetzen, viele Tore entstehen aus Abprallern.',
+ org:['Tor mit Torwartkind','Schütze ca. 8 m vor dem Tor, Partnerkind seitlich daneben','Weiche Bälle verwenden'],
+ rot:'Nach jedem Durchgang tauschen Schütze und Nachsetzer, nach 5 Durchgängen ein neues Torwartkind.',
+ ablauf:['Das erste Kind schießt aufs Tor.','Das zweite Kind läuft sofort Richtung Tor.','Wehrt das Torwartkind ab, schießt das zweite Kind den Abpraller.','Auch der Schütze darf nachsetzen.'],
+ stufen:[['Stufe 1 · Zugeworfener Abpraller','Die Trainerin wirft nach dem Schuss einen zweiten Ball ins Feld, den das Nachsetzkind verwertet.'],['Stufe 2 · Echter Abpraller','Nur echte Abpraller, beide Kinder dürfen nachsetzen.'],['Stufe 3 · Verteidiger','Ein Verteidiger versucht, den Abpraller vor dem Nachsetzkind zu klären.']],
+ coach:[['Sofort mitlaufen','Nicht stehen bleiben und schauen. Erkennbar: Das Nachsetzkind startet mit dem Schuss.'],['Schräg laufen','Dorthin, wo der Ball abprallen kann. Fehlerbild: Das Kind läuft direkt ins Torwartkind.'],['Schnell abschließen','Abpraller direkt oder mit einem Kontakt.'],['Fair','Nicht ins Torwartkind laufen.']],
+ last:['Dauer: 3 Runden à 5 Durchgänge','Wartezeit: kurz, 2 Paare pro Tor','Pro Kind: ca. 2–3 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Zugeworfener Abpraller (Stufe 1)','Kürzerer Abstand','Kein Torwartkind, Ball prallt von einer Bank ab'],
+ steig:['Echter Abpraller (Stufe 2)','Größerer Abstand','Verteidiger (Stufe 3)']},
+{id:'taecken',title:'Ecken-Jäger',legend:['kind','torwart','ball','eckleibchen','grosstor'],
+ chips:[['Schwerpunkt','Zielschuss in die Ecken'],['','8–12 Kinder'],['Feld','Schusslinie ca. 8 m vor dem Tor'],['Dauer','6 min'],['Material','Bälle, 1 Tor, 2 Leibchen für die Ecken']],
+ ziel:'Das Kind zielt bewusst in die Torecken, weg vom Torwartkind. Im Spiel: genau statt nur fest schießen.',
+ org:['Tor mit Torwartkind in der Mitte','In beiden oberen oder unteren Ecken ein Leibchen (am Pfosten befestigt oder auf dem Boden)','Kinder hinter einer Schusslinie, jedes mit Ball'],
+ rot:'Nach jeder Runde ein neues Torwartkind.',
+ ablauf:['Nacheinander von der Schusslinie schießen.','Treffer in ein Leibchen-Eck = 3 Punkte.','Normales Tor = 1 Punkt.','Ball holen, wieder anstellen.'],
+ stufen:[['Stufe 1 · Ohne Torwart','Leeres Tor, nur auf die Ecken zielen.'],['Stufe 2 · Torwart in der Mitte','Das Torwartkind steht in der Mitte und darf sich ab dem Schuss bewegen.'],['Stufe 3 · Nach Dribbling','Vor dem Schuss ein Slalom, dann in die Ecke.']],
+ coach:[['Ecke ansehen','Vor dem Schuss in die Ecke schauen. Erkennbar: Die Bälle gehen neben das Torwartkind.'],['Innenseite für Genauigkeit','Fehlerbild: Gedroschener Ball fliegt übers Tor.'],['Standbein','Zeigt in die Ecke.'],['Ruhig','Erst zielen, dann schießen.']],
+ last:['Dauer: 3 Runden, je 4–5 Schüsse pro Kind','Wartezeit: mittel, deshalb 2 Tore oder höchstens 5 Kinder pro Tor','Pro Kind: ca. 4–5 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Ohne Torwart (Stufe 1)','Kürzerer Abstand','Größere Leibchen-Zonen'],
+ steig:['Torwart in der Mitte (Stufe 2)','Größerer Abstand','Nur schwacher Fuß','Nach Dribbling (Stufe 3)']},
+{id:'taquer',title:'Querpass-Schuss',legend:['passkind','kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','In den Ball laufen · Direktabschluss'],['','8–12 Kinder'],['Feld','15 × 15 m vor dem Tor'],['Dauer','6–8 min'],['Material','Bälle, 1 Tor, Hütchen']],
+ ziel:'Das Kind läuft in einen flachen Querpass hinein und schließt mit einem Kontakt oder direkt ab. Im Spiel: Hereingaben vor dem Tor verwerten.',
+ org:['Tor mit Torwartkind','Passkind seitlich vor dem Tor mit Bällen','Schützen in einer Reihe ca. 12 m vor dem Tor (höchstens 4)'],
+ rot:'Nach jedem Schuss: Schütze wird Passkind, Passkind holt den Ball und stellt sich an.',
+ ablauf:['Der Schütze läuft los.','Das Passkind spielt flach quer vor das Tor.','Der Schütze läuft in den Ball und schießt.','Seite wechseln nach jeder Runde.'],
+ stufen:[['Stufe 1 · Mit Annahme','Ball annehmen, dann schießen.'],['Stufe 2 · Direkt','Direkt in den Lauf schießen.'],['Stufe 3 · Mit Verteidiger','Ein Verteidiger startet neben dem Schützen und will den Querpass abfangen.']],
+ coach:[['In den Ball laufen','Nicht warten, bis der Ball da ist. Erkennbar: Der Schütze trifft den Ball in der Bewegung.'],['Timing','Erst losrennen, wenn das Passkind passt. Fehlerbild: Der Schütze ist zu früh da und steht.'],['Innenseite','Ins lange Eck schieben.'],['Passkind','Flach und vor den Schützen passen.']],
+ last:['Dauer: 3 Runden à 3 Minuten','Wartezeit: mittel, höchstens 4 Kinder pro Station','Pro Kind: ca. 6–8 Abschlüsse pro Runde','Intensität: mittel'],
+ leicht:['Mit Annahme (Stufe 1)','Ball zugerollt mit der Hand','Größeres Tor'],
+ steig:['Direkt (Stufe 2)','Nur schwacher Fuß','Querpass schärfer','Mit Verteidiger (Stufe 3)']},
+{id:'tadreh',title:'Aufdrehen und schießen',legend:['passkind','kind','teamrot','torwart','ball'],
+ chips:[['Schwerpunkt','Aufdrehen · Abschluss'],['','8–12 Kinder, Gruppen zu 3–4'],['Feld','15 × 20 m vor dem Tor'],['Dauer','6–8 min'],['Material','Bälle, 1 Tor, Leibchen']],
+ ziel:'Das Kind bietet sich mit dem Rücken zum Tor an, nimmt den Ball mit und dreht sich weg vom Gegner zum Tor auf. Im Spiel: sich im Strafraum aufdrehen und abschließen.',
+ org:['Tor mit Torwartkind','Passkind ca. 12 m vor dem Tor','Schütze mit dem Rücken zum Tor ca. 8 m vor dem Tor, ab Stufe 2 ein Verteidiger dahinter'],
+ rot:'Nach jedem Abschluss: Passkind → Schütze → Verteidiger → Passkind.',
+ ablauf:['Das Passkind spielt flach zum Schützen.','Der Schütze kommt dem Ball entgegen.','Er nimmt den Ball mit und dreht sich zum Tor.','Abschluss aufs Tor.'],
+ stufen:[['Stufe 1 · Ohne Gegner','Annehmen, aufdrehen, schießen.'],['Stufe 2 · Passiver Verteidiger','Ein Verteidiger steht hinter dem Schützen, darf aber nur einen Fuß benutzen.'],['Stufe 3 · Aktiver Verteidiger','Der Verteidiger verteidigt richtig, nach Ballgewinn darf er auf ein Minitor beim Passkind kontern.']],
+ coach:[['Entgegenkommen','Dem Ball zwei Schritte entgegen. Erkennbar: Abstand zum Verteidiger wird größer.'],['Schulterblick','Vor der Annahme schauen, wo der Verteidiger steht. Fehlerbild: Das Kind dreht sich in den Verteidiger hinein.'],['Mitnahme','Ersten Kontakt zur Seite, weg vom Gegner.'],['Abschluss','Schnell, bevor der Verteidiger wieder da ist.']],
+ last:['Dauer: 3 Runden à 3 Minuten','Wartezeit: mittel, 3–4 Kinder pro Station','Pro Kind: ca. 6–8 Abschlüsse pro Runde','Intensität: mittel'],
+ leicht:['Ohne Gegner (Stufe 1)','Ball mit der Hand zugeworfen','Größeres Tor'],
+ steig:['Passiver Verteidiger (Stufe 2)','Abschluss mit zwei Kontakten','Aktiver Verteidiger (Stufe 3)']},
+{id:'tazonen',title:'Punkte-Zonen',legend:['kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','Schuss aus verschiedenen Entfernungen'],['','8–12 Kinder'],['Feld','20 m vor dem Tor mit 3 Zonen'],['Dauer','6 min'],['Material','Bälle, 1 Tor, Hütchen']],
+ ziel:'Das Kind schätzt ein, aus welcher Entfernung es treffen kann, und traut sich auch Schüsse aus der Distanz zu. Im Spiel: Mut zum Torschuss.',
+ org:['Tor mit Torwartkind','Drei Schusslinien: nah (1 Punkt), Mitte (2 Punkte), weit (3 Punkte)','Kinder mit Ball an den Linien verteilt'],
+ rot:'Nach jeder Runde ein neues Torwartkind.',
+ ablauf:['Jedes Kind wählt seine Zone.','Schuss aufs Tor.','Treffer bringt die Punkte der Zone.','Wer hat nach 5 Schüssen die meisten Punkte?'],
+ stufen:[['Stufe 1 · Freie Wahl','Jedes Kind wählt seine Zone, ohne Torwart.'],['Stufe 2 · Mit Torwart','Mit Torwartkind, jedes Kind muss jede Zone einmal probieren.'],['Stufe 3 · Nach Dribbling','Vor dem Schuss durch ein Hütchentor dribbeln, dann aus der gewählten Zone schießen.']],
+ coach:[['Spann für weite Schüsse','Fußspitze nach unten, Oberkörper über den Ball. Fehlerbild: Rücklage, der Ball fliegt hoch.'],['Innenseite für nahe Schüsse','Erkennbar: Nahe Schüsse gehen genau ins Eck.'],['Mut','Weit schießen lohnt sich.'],['Ehrlich zählen','Nur Tore zählen.']],
+ last:['Dauer: 5 Schüsse pro Kind pro Runde, 2 Runden','Wartezeit: mittel, deshalb Schüsse schnell hintereinander','Pro Kind: ca. 5 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Ohne Torwart (Stufe 1)','Zonen näher','Größeres Tor'],
+ steig:['Jede Zone einmal (Stufe 2)','Nur schwacher Fuß','Nach Dribbling (Stufe 3)']},
+{id:'tadruck',title:'Torschuss unter Druck',legend:['kind','teamrot','torwart','ball'],
+ chips:[['Schwerpunkt','Schneller Abschluss'],['','8–12 Kinder in Paaren'],['Feld','20 m vor dem Tor'],['Dauer','6 min'],['Material','Bälle, 1 Tor, Hütchen']],
+ ziel:'Das Kind dribbelt zügig aufs Tor und schließt ab, bevor der Verfolger es einholt. Im Spiel: schnelle Entscheidung zum Abschluss.',
+ org:['Tor mit Torwartkind','Schütze mit Ball ca. 18 m vor dem Tor','Verfolger 3 m dahinter'],
+ rot:'Nach jedem Durchgang Rollen tauschen.',
+ ablauf:['Auf Signal dribbelt der Schütze los.','Der Verfolger startet gleichzeitig.','Schuss, bevor der Verfolger da ist.','Holt der Verfolger den Ball, bekommt er einen Punkt.'],
+ stufen:[['Stufe 1 · Großer Abstand','Verfolger 5 m dahinter.'],['Stufe 2 · 3 m','Verfolger 3 m dahinter.'],['Stufe 3 · Seitlich','Der Verfolger startet seitlich neben dem Schützen.']],
+ coach:[['Tempo mit Ball','Ball vorlegen, aber unter Kontrolle. Erkennbar: Der Schütze kommt vor dem Verfolger zum Abschluss.'],['Früh schießen','Nicht noch einen Haken. Fehlerbild: Das Kind dribbelt zu lange und wird eingeholt.'],['Körper zwischen','Wenn der Verfolger kommt, Körper zwischen Ball und Verfolger.'],['Verfolger','Innen laufen, nicht schubsen.']],
+ last:['Dauer: 6–8 Durchgänge pro Kind','Wartezeit: kurz, 45 Sekunden Erholung','Pro Kind: ca. 4–6 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Großer Abstand (Stufe 1)','Kürzere Strecke','Ohne Torwart'],
+ steig:['3 m Abstand (Stufe 2)','Seitlicher Start (Stufe 3)','Nur schwacher Fuß']},
+{id:'tafallball',title:'Fallball-Schuss',legend:['kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','Spannstoß'],['','8–12 Kinder, jedes mit Ball'],['Feld','Schusslinie 6–8 m vor dem Tor'],['Dauer','5–6 min'],['Material','1 Ball pro Kind (weich), 1 Tor']],
+ ziel:'Das Kind lässt den Ball aus den Händen fallen und trifft ihn sauber mit dem Spann, bevor oder nachdem er aufspringt. Grundlage für den Schuss mit dem Spann.',
+ org:['Tor (mit oder ohne Torwartkind)','Kinder hinter einer Schusslinie, jedes mit einem Ball in den Händen'],
+ rot:'Nach jeder Runde ein neues Torwartkind.',
+ ablauf:['Ball mit beiden Händen vor den Körper halten.','Fallen lassen.','Mit dem Spann treffen.','Ball holen und wieder anstellen.'],
+ stufen:[['Stufe 1 · Mit Aufspringen','Ball einmal aufspringen lassen, dann treffen.'],['Stufe 2 · Volley','Ball direkt aus der Luft treffen.'],['Stufe 3 · Torwart','Mit Torwartkind, Ecken zählen doppelt.']],
+ coach:[['Spann','Fußspitze nach unten, Schnürsenkel treffen. Fehlerbild: Mit der Spitze getroffen, der Ball fliegt zur Seite.'],['Ball beobachten','Bis zum Treffen hinschauen. Erkennbar: Der Ball fliegt gerade aufs Tor.'],['Standbein','Neben den Ball.'],['Locker','Nicht zu fest, erst sauber.']],
+ last:['Dauer: 3 Runden, je 5–6 Schüsse pro Kind','Wartezeit: kurz, alle schießen gleichzeitig auf ein großes Tor (ohne Torwart) oder nacheinander mit Torwart','Pro Kind: ca. 5–6 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Mit Aufspringen (Stufe 1)','Weicher oder leichter Ball','Kürzerer Abstand'],
+ steig:['Volley (Stufe 2)','Größerer Abstand','Nur schwacher Fuß','Torwart, Ecken doppelt (Stufe 3)']},
+{id:'takoenig',title:'Torkönig',legend:['koenig','teamrot','torwart','ball'],
+ chips:[['Schwerpunkt','1 gegen 1 mit Abschluss'],['','8–12 Kinder'],['Feld','12 × 15 m vor dem Tor'],['Dauer','8 min'],['Material','Bälle, 1 Tor']],
+ ziel:'Das Kind setzt sich im 1 gegen 1 durch und schließt gegen das Torwartkind ab. Wer trifft, bleibt drin und verteidigt gegen das nächste Kind. Im Spiel: Mut im Duell vor dem Tor.',
+ org:['Tor mit Torwartkind','Feld 12 × 15 m davor','Alle anderen Kinder in einer Schlange an der Seite, jedes mit Ball'],
+ rot:'Wer trifft, bleibt als König drin. Wer nicht trifft, stellt sich hinten an. Nach 5 Durchgängen ein neues Torwartkind.',
+ ablauf:['Der König greift an, das nächste Kind verteidigt.','Trifft der König, bleibt er drin.','Erobert der Verteidiger den Ball und trifft, wird er König.','Wer bleibt am längsten König?'],
+ stufen:[['Stufe 1 · Ohne Torwart','1 gegen 1 aufs leere Tor.'],['Stufe 2 · Mit Torwartkind','Mit Torwartkind, Abschluss aus der Schusszone.'],['Stufe 3 · Zeitlimit','Abschluss innerhalb von 6 Sekunden.']],
+ coach:[['Mut','Auf den Verteidiger zu, Finte, vorbei. Erkennbar: Das Kind versucht vorbeizugehen.'],['Abschluss','Ins freie Eck, weg vom Torwartkind.'],['Verteidigen','Zwischen Ball und Tor bleiben. Fehlerbild: Der Verteidiger springt hinein.'],['Fair bleiben','Kein Ärgern beim Ausscheiden.']],
+ last:['Dauer: 8 Minuten fortlaufend','Wartezeit: mittel, deshalb Schlange kurz halten oder zwei Tore','Pro Kind: ca. 3–5 Duelle','Intensität: hoch'],
+ leicht:['Ohne Torwart (Stufe 1)','Breiteres Feld','Größeres Tor'],
+ steig:['Mit Torwartkind (Stufe 2)','Schmaleres Feld','Zeitlimit (Stufe 3)']},
+{id:'tatwduell',title:'Allein vor dem Torwartkind',legend:['kind','torwart','ball','grosstor'],
+ chips:[['Schwerpunkt','Torwart umspielen · Abschluss'],['','8–12 Kinder'],['Feld','20 m vor dem Tor'],['Dauer','6–8 min'],['Material','Bälle, 1–2 Tore']],
+ ziel:'Das Kind läuft allein aufs Tor zu, entscheidet, ob es schießt oder das Torwartkind umspielt, und schiebt ins leere Tor. Im Spiel: ruhig bleiben im 1 gegen Torwart.',
+ org:['Tor mit Torwartkind','Kinder mit Ball ca. 18 m vor dem Tor'],
+ rot:'Nach 4 Durchgängen ein neues Torwartkind.',
+ ablauf:['Allein mit Ball aufs Tor.','Kommt das Torwartkind raus: vorbeidribbeln.','Bleibt es drin: ins Eck schießen.','Ball holen und wieder anstellen.'],
+ stufen:[['Stufe 1 · Torwart bleibt drin','Das Torwartkind bleibt auf der Linie, das Kind schießt ins Eck.'],['Stufe 2 · Torwart kommt','Das Torwartkind darf herauskommen, das Kind entscheidet.'],['Stufe 3 · Verfolger','Ein Verfolger startet 3 m hinter dem Kind.']],
+ coach:[['Ruhig bleiben','Kopf hoch, was macht das Torwartkind? Erkennbar: Das Kind entscheidet sich passend.'],['Umspielen','Ball seitlich am Torwartkind vorbei vorlegen. Fehlerbild: Das Kind dribbelt in die Hände des Torwartkinds.'],['Ins leere Tor schieben','Nicht dreschen.'],['Torwartkind','Mutig herauskommen, aber nie mit dem Kopf voraus in die Füße springen.']],
+ last:['Dauer: 3 Runden à 3 Minuten','Wartezeit: mittel, höchstens 4 Kinder pro Tor','Pro Kind: ca. 6–8 Abschlüsse pro Runde','Intensität: mittel'],
+ leicht:['Torwart bleibt drin (Stufe 1)','Kürzere Strecke','Größeres Tor'],
+ steig:['Torwart kommt (Stufe 2)','Nur schwacher Fuß','Verfolger (Stufe 3)']}
+].map(e=>Object.assign({},KA2,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -7441,6 +7642,76 @@ dreidrei_v:{ziel:'Das Kind läuft nach Ballverlust sofort zurück und schützt m
  steig:['3 gegen 3 (Stufe 2)','Tor nach Ballgewinn doppelt (Stufe 3)','Kleinere Minitore']}
 };
 EX.forEach(e=>{const u=UPG_KG[e.id];if(!u)return;Object.assign(e,u,{saeulen:true});});
+/* ---------- 5-Säulen-Überarbeitung: Torabschluss Bambini – U9 ---------- */
+const UPG_KA={
+festival:{ziel:'Das Kind dribbelt zu einem freien Minitor und schließt sicher ab, ganz oft und ohne Wartezeit. Im Spiel: viele Torerlebnisse und das freie Tor erkennen.',
+ orgAdd:['Für Stufe 3: 2 Kinder als Torwächter mit Leibchen'],
+ stufen:[['Stufe 1 · Freies Schießen','Zu einem beliebigen Tor dribbeln und schießen.'],['Stufe 2 · Nie zweimal','Nie zweimal hintereinander aufs gleiche Tor, Schuss aus einer Schusszone.'],['Stufe 3 · Torwächter','Zwei Torwächter dürfen sich vor ein Tor stellen. Die Kinder suchen ein freies Tor.']],
+ coach:[['Freies Tor','Kopf hoch beim Dribbeln. Erkennbar: Das Kind dribbelt zu einem Tor, an dem gerade niemand schießt.'],['Innenseite','Ruhig ins Tor schieben. Fehlerbild: Gedroschener Ball fliegt über das Minitor.'],['Ball holen','Sofort zum nächsten Tor.'],['Zählen','Eigene Tore laut zählen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, jedes Kind hat einen Ball','Pro Kind: ca. 8–12 Torschüsse pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Größere Tore','Schuss von nah','Mehr Tore'],
+ steig:['Nie zweimal (Stufe 2)','Nur schwacher Fuß','Schusszone weiter weg','Torwächter (Stufe 3)']},
+farben:{ziel:'Das Kind hört die Farbe, findet das passende Tor schnell und schließt ab. Im Spiel: wahrnehmen, entscheiden, abschließen.',
+ orgAdd:['Für Stufe 3: 2 Kinder als Torwächter'],
+ stufen:[['Stufe 1 · Rufen und zeigen','Farbe wird gerufen und gezeigt.'],['Stufe 2 · Nur zeigen','Farbe wird nur gezeigt, Kopf hoch.'],['Stufe 3 · Torwächter','Zwei Torwächter laufen zum gerufenen Tor und verteidigen es.']],
+ coach:[['Zuhören und schauen','Erkennbar: Das Kind startet in die richtige Richtung.'],['Ball nah','Auf dem Weg zum Tor eng führen. Fehlerbild: Der Ball wird weit vorgelegt und andere Kinder stoßen zusammen.'],['Abschluss','Innenseite, ins Eck.'],['Zurück','Schnell zurück in die Mitte.']],
+ last:['Dauer: 8–10 Farben, ca. 6–8 Minuten','Wartezeit: keine, alle laufen gleichzeitig','Pro Kind: ca. 8–10 Torschüsse','Intensität: mittel bis hoch'],
+ leicht:['Nur zwei Farben','Rufen und zeigen (Stufe 1)','Tore näher'],
+ steig:['Nur zeigen (Stufe 2)','Zwei Farben hintereinander','Nur schwacher Fuß','Torwächter (Stufe 3)']},
+huetchenball:{ziel:'Das Kind zielt genau und schießt flach auf ein kleines Ziel. Jeder Treffer ist sofort sichtbar. Im Spiel: genau schießen statt nur fest.',
+ orgAdd:['Für Stufe 3: 1–2 Kinder als Wächter im Kreis'],
+ stufen:[['Stufe 1 · Nah','Abstand 4 m, aus dem Stand schießen.'],['Stufe 2 · Weiter weg','Abstand 6 m, vorher den Ball einmal stoppen.'],['Stufe 3 · Wächter','Ein Wächter im Kreis darf Schüsse mit den Füßen abwehren.']],
+ coach:[['Zielen','Erst schauen, dann schießen. Erkennbar: Die Fußspitze des Standbeins zeigt zum Ziel.'],['Innenseite für Genauigkeit','Fehlerbild: Spitze, der Ball fliegt daneben.'],['Flach','Schieben, nicht hochschießen.'],['Aufbauen','Gemeinsam heruntergeschossene Bälle wieder auflegen.']],
+ last:['Dauer: 3 Runden à 90 Sekunden','Wartezeit: keine, jedes Kind hat einen Ball','Pro Kind: ca. 10–12 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Nah (Stufe 1)','Größere Ziele (Bälle auf Kegeln)','Mehr Ziele'],
+ steig:['Weiter weg (Stufe 2)','Nur schwacher Fuß','Kleinere Ziele','Wächter (Stufe 3)']},
+duell:{ziel:'Das Kind schießt flach und genau auf das Tor des anderen und hält Bälle, die auf das eigene Tor kommen. Im Spiel: Torschuss und Torwartspiel im Wechsel.',
+ stufen:[['Stufe 1 · Weite Tore','Tore 4 m breit, aus dem Stand schießen.'],['Stufe 2 · Ball stoppen','Ball erst mit dem Fuß stoppen, dann schießen.'],['Stufe 3 · Nach vorne','Nach dem Halten darf das Kind zwei Schritte nach vorne dribbeln und dann schießen.']],
+ coach:[['Flach schießen','Innenseite oder Spann, Ball bleibt unten. Erkennbar: Der Ball rollt oder springt flach.'],['Ins Eck','Weg vom anderen Kind zielen.'],['Halten','Hinter den Ball, Hände oder Fuß. Fehlerbild: Das Kind dreht sich weg.'],['Schnell zurück','Nach dem Schuss sofort ins eigene Tor.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, beide Kinder sind ständig aktiv','Pro Kind: ca. 15 Schüsse pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Weite Tore (Stufe 1)','Kürzerer Abstand','Ball mit der Hand werfen'],
+ steig:['Ball stoppen (Stufe 2)','Schmalere Tore','Nur schwacher Fuß','Nach vorne dribbeln (Stufe 3)']},
+torwart:{ziel:'Das Kind schießt gezielt aufs Minitor und probiert auch die Torwartrolle aus: Ball fangen und flach zurückrollen. Im Spiel: Torschuss und erstes Torwartspiel.',
+ stufen:[['Stufe 1 · Aus dem Stand','Aus dem Stand schießen, Torwartkind rollt zurück.'],['Stufe 2 · Nach Dribbling','Kurz andribbeln, dann schießen.'],['Stufe 3 · Nach Zuspiel','Das Torwartkind rollt den Ball zum Schützen, der direkt oder mit einem Kontakt schießt.']],
+ coach:[['Ins Eck','Weg vom Torwartkind zielen. Erkennbar: Die Bälle gehen neben das Torwartkind.'],['Torwart','Hinter den Ball, Hände nach vorne. Fehlerbild: Das Torwartkind dreht den Kopf weg.'],['Flach zurückrollen','Mit der Hand, nicht werfen.'],['Wechseln','Jedes Kind probiert beide Rollen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, Rollen tauschen','Wartezeit: keine, Paare','Pro Kind: ca. 10–12 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Aus dem Stand (Stufe 1)','Kürzerer Abstand','Größeres Tor'],
+ steig:['Nach Dribbling (Stufe 2)','Nach Zuspiel (Stufe 3)','Nur schwacher Fuß']},
+torregen:{ziel:'Das Kind holt sich schnell einen Ball, dribbelt bis zur Schusslinie und schießt. Das ganze Team sammelt gemeinsam Tore. Im Spiel: viele Abschlüsse und Teamgeist.',
+ orgAdd:['Für Stufe 3: 1 Torwartkind'],
+ stufen:[['Stufe 1 · Torregen','Alle Bälle ins Tor, Schusslinie 6 m.'],['Stufe 2 · Linie weiter','Schusslinie 8 m, nur mit der Innenseite.'],['Stufe 3 · Torwart','Ein Torwartkind hält, gehaltene Bälle wirft es zurück ins Feld.']],
+ coach:[['Schnell','Ball holen, dribbeln, schießen. Erkennbar: Kein Kind steht herum.'],['Hinter der Linie schießen','Fehlerbild: Schuss vom Torraum aus.'],['Kopf hoch','Nicht zusammenstoßen.'],['Gemeinsam zählen','Team-Rekord verbessern.']],
+ last:['Dauer: 4 Runden à 60 Sekunden','Wartezeit: keine','Pro Kind: ca. 4–6 Schüsse pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Linie näher','Mehr Bälle','Ohne Torwart (Stufe 1)'],
+ steig:['Linie weiter (Stufe 2)','Nur schwacher Fuß','Torwart (Stufe 3)']},
+slalom:{ziel:'Das Kind dribbelt eng durch einen kurzen Slalom und schließt sicher ins Minitor ab. Im Spiel: aus dem Dribbling heraus abschließen.',
+ orgAdd:['Für Stufe 3: ein Kind als Störer pro Bahn'],
+ stufen:[['Stufe 1 · Slalom und Schuss','Slalom, dann aus dem Stand schießen.'],['Stufe 2 · Aus dem Lauf','Direkt aus dem Lauf schießen, ohne anzuhalten.'],['Stufe 3 · Störer','Nach dem Slalom wartet ein Störer und darf den Weg zum Tor zustellen.']],
+ coach:[['Eng','Ball nah an den Hütchen vorbei. Erkennbar: Kein Hütchen wird berührt.'],['Ball vorlegen','Nach dem letzten Hütchen den Ball für den Schuss vorlegen. Fehlerbild: Der Ball liegt zu nah, das Kind stolpert.'],['Abschluss','Innenseite ins Eck.'],['Partnerkind','Flach zurückpassen.']],
+ last:['Dauer: 3 Runden à 2 Minuten','Wartezeit: kurz, Paare','Pro Kind: ca. 6–8 Abschlüsse pro Runde','Intensität: mittel'],
+ leicht:['Weitere Abstände','Aus dem Stand (Stufe 1)','Größeres Minitor'],
+ steig:['Aus dem Lauf (Stufe 2)','Hütchen enger','Nur schwacher Fuß','Störer (Stufe 3)']},
+funino:{ziel:'Das Kind spielt 3 gegen 3 auf vier Minitore, erkennt das freie Tor und schließt aus der Schusszone ab. Im Spiel: der Weg zum Tor im echten Spiel.',
+ stufen:[['Stufe 1 · Überzahl','Ein Joker spielt immer mit dem Team am Ball.'],['Stufe 2 · Funino','3 gegen 3, Abschluss nur aus der Schusszone.'],['Stufe 3 · Tor nach Pass','Tor zählt doppelt nach einem Pass in der Schusszone.']],
+ coach:[['Freies Tor','Kopf hoch: Welches Tor ist frei? Erkennbar: Das Team spielt den Ball zum Tor, das nicht verteidigt wird.'],['Breit','Nicht alle zum Ball. Fehlerbild: Alle sechs um den Ball.'],['Schusszone','Erst dort schießen.'],['Sofort weiter','Nach einem Tor sofort Eindribbeln.']],
+ last:['Dauer: 4 Spiele à 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 20 Ballkontakte und 2–4 Schüsse pro Spiel','Intensität: hoch'],
+ leicht:['Joker (Stufe 1)','Größere Schusszone','Größere Minitore'],
+ steig:['Funino 3 gegen 3 (Stufe 2)','Kleinere Schusszone','Tor nach Pass doppelt (Stufe 3)']},
+luecken:{ziel:'Das Kind schießt genau durch eine Lücke zum Partnerkind und wählt mutig auch kleine Lücken. Im Spiel: genau schießen.',
+ orgAdd:['Für Stufe 3: ein Kind als Torwart pro Seite'],
+ stufen:[['Stufe 1 · Große Lücken','Nur große Lücken, Ball vorher stoppen.'],['Stufe 2 · Punkte','Alle Lücken, Punkte nach Größe.'],['Stufe 3 · Torwart hinter der Mauer','Hinter der Mauer steht ein Torwartkind und darf Bälle abwehren.']],
+ coach:[['Zielen','Lücke anschauen, Standbein zeigt hin. Erkennbar: Der Ball geht durch die gewählte Lücke.'],['Innenseite','Flach schieben. Fehlerbild: Der Ball springt über die Mauer.'],['Mut','Auch kleine Lücken probieren.'],['Stoppen','Bälle vom Partnerkind sauber stoppen.']],
+ last:['Dauer: 3 Runden à 90 Sekunden','Wartezeit: keine, Paare','Pro Kind: ca. 12–15 Schüsse pro Runde','Intensität: niedrig'],
+ leicht:['Große Lücken (Stufe 1)','Kürzerer Abstand','Ball vorher stoppen'],
+ steig:['Punkte nach Größe (Stufe 2)','Größerer Abstand','Nur schwacher Fuß','Torwart (Stufe 3)']},
+einsgegeneins:{ziel:'Das Kind dribbelt mutig auf den Gegner zu, geht mit einer Finte vorbei und schließt ins Minitor ab. Im Spiel: das 1 gegen 1 vor dem Tor gewinnen.',
+ stufen:[['Stufe 1 · Passiver Gegner','Der Gegner geht nur und darf den Ball nicht erobern.'],['Stufe 2 · Duell','Normales 1 gegen 1, nach dem Abschluss greift das andere Kind an.'],['Stufe 3 · Zeitlimit','Abschluss innerhalb von 6 Sekunden, sonst Ballwechsel.']],
+ coach:[['Mut','Auf den Gegner zu. Erkennbar: Das Kind versucht vorbeizugehen, statt von weit zu schießen.'],['Finte','Körper zur einen Seite, dann vorbei. Fehlerbild: Das Kind dribbelt direkt in den Gegner.'],['Abschluss','Schnell nach der Finte.'],['Verteidigen','Zwischen Ball und Tor.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, Paare','Pro Kind: ca. 20 Ballkontakte pro Runde','Intensität: hoch'],
+ leicht:['Passiver Gegner (Stufe 1)','Breiteres Feld','Größere Minitore'],
+ steig:['Duell (Stufe 2)','Schmaleres Feld','Zeitlimit (Stufe 3)']}
+};
+EX.forEach(e=>{const u=UPG_KA[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 /* Reiter nach Spielphasen (Okt 2026): Mit Ball, Gegen den Ball, Umschalten, Torabschluss, Athletik */
