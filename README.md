@@ -20,7 +20,7 @@ Synchronisiert Trainingseinheiten, Kalender, Kader, Spiele und Matchplan zwische
 
 1. Auf supabase.com ein kostenloses Konto und ein Projekt anlegen (Region: Frankfurt).
 2. In Supabase: **SQL Editor → New query**, den Inhalt von `supabase.sql` einfügen und auf **Run** klicken. Die E-Mail-Adresse in der letzten Zeile ist die, mit der du dich anmeldest.
-3. **Authentication → Emails → Magic Link**: Im Text `{{ .Token }}` ergänzen, damit der Anmeldecode in der E-Mail steht.
+3. Anmeldung läuft über den Link in der E-Mail (ohne eigenen Mailserver lässt Supabase den E-Mail-Text nicht ändern).
 4. **Authentication → URL Configuration**: Site URL und Redirect URL auf `https://coachhari.github.io/hi-coaching/` setzen.
 5. Die Werte aus **Project Settings → API** (Project URL und anon public key) in `config.js` eintragen.
 6. Auf jedem Gerät oben auf **Anmelden für Sync** tippen. Beim ersten Anmelden werden die Daten, die bisher nur auf dem Gerät lagen, hochgeladen. Beim Kader gilt: Ist online schon ein Kader vorhanden, wird dieser übernommen. Der bisherige Kader des Geräts wird vorher als Sicherung im Browser abgelegt.

@@ -54,9 +54,9 @@
   function openLogin(){let d=document.getElementById('login-dlg');
     if(!d){d=document.createElement('dialog');d.id='login-dlg';d.className='picker login-dlg';d.setAttribute('aria-labelledby','login-h');
       d.innerHTML='<form id="login-form" novalidate><div class="pk-head"><div class="pk-top"><h3 id="login-h">Anmelden</h3><button type="button" class="btn ghost" id="login-x">Schließen</button></div></div>'+
-        '<div class="login-body"><p class="login-lead">Mit deiner E-Mail-Adresse anmelden. Du bekommst einen Code per E-Mail. Danach sind Trainingseinheiten, Kalender, Kader, Spiele und Matchplan auf allen deinen Geräten gleich.</p>'+
+        '<div class="login-body"><p class="login-lead">Mit deiner E-Mail-Adresse anmelden. Du bekommst eine E-Mail mit einem Anmeldelink. Öffne sie auf diesem Gerät und tippe auf den Link. Danach sind Trainingseinheiten, Kalender, Kader, Spiele und Matchplan auf allen deinen Geräten gleich.</p>'+
         '<label class="fld">E-Mail-Adresse<input type="email" name="email" autocomplete="email" inputmode="email" required></label>'+
-        '<label class="fld" id="login-code-wrap" hidden>Code aus der E-Mail<input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456"></label>'+
+        '<label class="fld" id="login-code-wrap" hidden>Code aus der E-Mail (nur falls die E-Mail einen Code enthält)<input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456"></label>'+
         '<div class="tfoot"><button type="submit" class="btn primary" id="login-go">Code senden</button><p id="login-msg" role="status" aria-live="polite"></p></div></div></form>';
       document.body.appendChild(d);
       const f=d.querySelector('form'),msg=d.querySelector('#login-msg'),go=d.querySelector('#login-go');let sent=false;
@@ -67,8 +67,8 @@
         go.disabled=true;
         try{
           if(!sent){const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
-            if(error)throw error;sent=true;d.querySelector('#login-code-wrap').hidden=false;go.textContent='Anmelden';f.email.readOnly=true;
-            msg.textContent='Code wurde an '+email+' geschickt. Gib ihn hier ein. Du kannst auch auf den Link in der E-Mail tippen.';f.code.focus();}
+            if(error)throw error;sent=true;d.querySelector('#login-code-wrap').hidden=false;go.textContent='Mit Code anmelden';f.email.readOnly=true;
+            msg.textContent='E-Mail an '+email+' ist unterwegs. Öffne sie auf diesem Gerät und tippe auf den Link. Die Seite meldet dich dann automatisch an.';}
           else{const token=f.code.value.replace(/\D/g,'');if(token.length<6){msg.textContent='Bitte den Code aus der E-Mail eingeben.';go.disabled=false;return;}
             const {error}=await sb.auth.verifyOtp({email,token,type:'email'});if(error)throw error;msg.textContent='Angemeldet. Die Seite wird neu geladen …';location.reload();}
         }catch(err){const m=String(err&&err.message||'');
