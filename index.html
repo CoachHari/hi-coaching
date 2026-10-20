@@ -2178,6 +2178,128 @@ const mgoal=(s,x,y,w,h)=>el('rect',{x,y,width:w,height:h,fill:'rgba(255,255,255,
     tick(t,{G}){const sw=t>=2.3;setFill(G.t2,sw?BLUE:RED);setFill(G.u1,sw?RED:BLUE);},
     ents:[{id:'o0'},{id:'u0'},{id:'o1'},{id:'u1'},{id:'o2'},{id:'u2'},{id:'t1',fill:RED},{id:'t2',fill:RED}],sc:{a:S}};
 })();
+/* ---------- Technik Bambini – U9: acht neue Spiele (5 Säulen) ---------- */
+const ktDense=(kf,C)=>{const o=[];for(let k=0;k<=Math.round(C*10);k++){const t=k/10;o.push([t,...at(kf,t)]);}return o;};
+
+/* Garagen-Dribbling */
+(function(){
+  const GA=[[70,70],[180,50],[290,80],[60,250],[300,280],[180,310]];
+  const ag=[];for(let i=0;i<8;i++)ag.push({x:70+(i%4)*72,y:120+Math.floor(i/4)*120,speed:55});
+  let assigned=false;
+  const c=sim({seed:5,dur:5.6,bounds:[0,0,360,360],agents:ag,sep:34,balls:ag.map((_,i)=>({x:0,y:0,owner:i})),
+    step(t,{ag,bl,rt}){
+      if(t<3.0){ag.forEach(a=>{if(a.tx==null||Math.hypot(a.tx-a.x,a.ty-a.y)<10)[a.tx,a.ty]=rt(40);});return;}
+      if(!assigned){assigned=true;const free=GA.map((g,k)=>k);
+        ag.forEach(a=>{a.g=null;});
+        GA.forEach((g,k)=>{let bi=-1,bd=1e9;ag.forEach((a,i)=>{if(a.g!=null)return;const d=Math.hypot(a.x-g[0],a.y-g[1]);if(d<bd){bd=d;bi=i;}});
+          const a=ag[bi];a.g=k;const p=toward(g,[a.x,a.y],22);a.tx=p[0];a.ty=p[1];a.speed=70;});
+        ag.forEach(a=>{if(a.g==null){a.tx=180;a.ty=180;a.speed=45;}});}
+      ag.forEach((a,i)=>{const b=bl.find(x=>x.owner===i);
+        if(a.g!=null&&b&&Math.hypot(a.tx-a.x,a.ty-a.y)<4){const g=GA[a.g];b.owner=null;b.mv={x0:b.x,y0:b.y,x1:g[0],y1:g[1],t0:t,t1:t+0.3};}
+        if(a.g==null&&Math.hypot(a.tx-a.x,a.ty-a.y)<10){[a.tx,a.ty]=[180+(a.i%2?40:-40),180];}});}});
+  A.garage={vb:'0 0 360 360',cycle:5.6,linear:true,
+    draw(s){field(s,0,0,360,360);GA.forEach(g=>el('circle',{cx:g[0],cy:g[1],r:20,fill:'none',stroke:'#FFFFFF','stroke-width':'2.5',opacity:'.9'},s));},ents:kidEnts(8),
+    sc:{a:pack(c,[[3.0,'Alle Autos fahren mit Ball durch die Stadt'],[4.6,'Pfiff: schnell eine freie Garage suchen und den Ball darin mit der Sohle parken'],[99,'Wer keine Garage findet, dreht eine Ehrenrunde']])}};
+})();
+
+/* Zuwerfen und annehmen */
+(function(){
+  const S={L:[[0.9,'Das Werferkind rollt den Ball zu oder lässt ihn aufspringen'],[1.4,'Ball mit der Sohle oder Innenseite annehmen'],[2.4,'Werferkind ruft „oben“ oder „unten“: durch dieses Tor dribbeln'],[99,'Zurück und den Ball zurückpassen']],BALLS:[]},ents=[],GT=[];
+  [[70,-1,0],[180,1,0.3],[290,-1,0.6]].forEach(([y,s,d],i)=>{const yg=y+s*35;
+    S['w'+i]=[[0,70,y]];ents.push({id:'w'+i,wait:true});
+    const R=[[0,200,y],[1.0,200,y],[1.8,290,yg],[2.3,330,yg],[2.5,330,yg],[3.4,200,y],[5.0,200,y]];
+    const B=[[0,84,y],[0.3,84,y],[0.9,186,y],[1.0,186,y],[1.8,304,yg],[2.3,344,yg],[2.5,316,yg],[3.4,186,y],[3.5,186,y],[4.0,84,y],[5.0,84,y]];
+    S['r'+i]=shift(R,d);S.BALLS.push(shift(B,d));ents.push({id:'r'+i});
+    GT.push([305,y-50],[305,y-20],[305,y+20],[305,y+50]);});
+  A.zuwerfen={vb:'0 0 360 360',cycle:5.0,draw(s){field(s,0,0,360,360);GT.forEach(([x,y])=>cone(s,x,y));},ents,sc:{a:S}};
+})();
+
+/* Ball beschützen */
+(function(){
+  const P=[[100,110,0],[260,120,1.3],[180,265,2.4]],C=4.8,S={L:[[2.4,'Der Dieb versucht, um das Kind herum an den Ball zu kommen'],[99,'Körper zwischen Dieb und Ball, Ball mit der Sohle festhalten und mitdrehen']],BALLS:[]},ents=[];
+  P.forEach(([cx,cy,ph],i)=>{const D=[],O=[],B=[];
+    for(let k=0;k<=48;k++){const t=k/10,u=t+ph,th=-Math.PI/2+1.3*Math.sin(u*2*Math.PI/C)+0.5*Math.sin(u*4*Math.PI/C),lag=th-0.18*Math.cos(u*2*Math.PI/C);
+      const bx=cx+3*Math.cos(u*3),by=cy+3*Math.sin(u*2);
+      D.push([t,bx+44*Math.cos(th),by+44*Math.sin(th)]);O.push([t,bx+16*Math.cos(lag),by+16*Math.sin(lag)]);B.push([t,bx,by]);}
+    S['o'+i]=O;S['d'+i]=D;S.BALLS.push(B);ents.push({id:'o'+i},{id:'d'+i,fill:RED});});
+  A.beschuetzen={vb:'0 0 360 360',cycle:C,fade:false,linear:true,
+    draw(s){field(s,0,0,360,360);P.forEach(([x,y])=>el('circle',{cx:x,cy:y,r:62,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.45'},s));},ents,sc:{a:S}};
+})();
+
+/* Durch das Burgtor */
+(function(){
+  const S={L:[[1.4,'Auf das Burgtor zudribbeln'],[2.3,'Finte: Körper zur einen Seite, dann zur anderen vorbei'],[3.6,'Ab aufs Minitor'],[99,'Der Burgwächter darf die Mauer nicht verlassen']],BALLS:[]},ents=[];
+  [[95,1,0],[265,-1,0.5]].forEach(([x,s,d],i)=>{
+    const At=[[0,x,320],[1.4,x,240],[1.8,x-16*s,222],[2.3,x+40*s,186],[3.0,x+16*s,96],[4.4,x+16*s,96]];
+    const Df=[[0,x,180],[1.5,x,180],[1.9,x-18*s,180],[2.5,x-2*s,180],[4.4,x-2*s,180]];
+    const dense=ballOf(ktDense(At,3.05),14).slice(0,31);
+    const Bl=dense.concat([[3.6,x+4*s,20],[4.4,x+4*s,20]]);
+    S['a'+i]=shift(At,d);S['v'+i]=shift(Df,d);S.BALLS.push(shift(Bl,d));ents.push({id:'a'+i},{id:'v'+i,fill:RED});});
+  A.burgtor={vb:'0 0 360 360',cycle:5.0,
+    draw(s){field(s,0,0,360,360);[95,265].forEach(x=>{el('rect',{x:x-62,y:160,width:124,height:40,fill:'#8B5A2B',opacity:'.5'},s);mgoal(s,x-20,8,40,14);});line(s,180,10,180,350,'6 5','.5');},ents,sc:{a:S}};
+})();
+
+/* Linienläufer */
+(function(){
+  const L0=60,L1=300,side=L1-L0,per=4*side;
+  const pos=s=>{s=((s%per)+per)%per;if(s<side)return[L0+s,L0];s-=side;if(s<side)return[L1,L0+s];s-=side;if(s<side)return[L1-s,L1];s-=side;return[L0,L1-s];};
+  const S={L:[[99,'Nur auf den Linien dribbeln: Der Ball bleibt immer auf der Linie']],BALLS:[]},ents=[];
+  for(let i=0;i<3;i++){const K=[],B=[];for(let k=0;k<=48;k++){const t=k/10,s=i*per/3+t*(per/3)/4.8;K.push([t,...pos(s)]);B.push([t,...pos(s+15)]);}
+    S['o'+i]=K;S.BALLS.push(B);ents.push({id:'o'+i});}
+  const osc=(t,ph)=>{const u=(((t+ph)%4.8)+4.8)%4.8;return u<2.4?u/2.4:2-u/2.4;};
+  const V=[],VB=[],H=[],HB=[];
+  for(let k=0;k<=48;k++){const t=k/10,a=osc(t,0),b=osc(t,1.2),da=(((t)%4.8)<2.4)?1:-1,db=(((t+1.2)%4.8)<2.4)?1:-1;
+    const vy=90+180*a,hx=90+180*b;V.push([t,180,vy]);VB.push([t,180,vy+15*da]);H.push([t,hx,180]);HB.push([t,hx+15*db,180]);}
+  S.v=V;S.h=H;S.BALLS.push(VB,HB);ents.push({id:'v'},{id:'h'});
+  A.linienlauf={vb:'0 0 360 360',cycle:4.8,fade:false,linear:true,
+    draw(s){field(s,0,0,360,360);const w=(x1,y1,x2,y2)=>el('line',{x1,y1,x2,y2,stroke:'#FFFFFF','stroke-width':'4',opacity:'.85'},s);
+      w(L0,L0,L1,L0);w(L1,L0,L1,L1);w(L1,L1,L0,L1);w(L0,L1,L0,L0);w(180,L0,180,L1);w(L0,180,L1,180);},ents,sc:{a:S}};
+})();
+
+/* Ballkönig */
+(function(){
+  const ag=[];for(let i=0;i<7;i++)ag.push({x:100+(i%4)*55,y:120+Math.floor(i/4)*110,speed:50});
+  let phase=0,out=null;
+  const c=sim({seed:7,dur:5.6,bounds:[0,0,360,360],agents:ag,sep:34,balls:ag.map((_,i)=>({x:0,y:0,owner:i})),
+    step(t,{ag,bl,rt}){
+      ag.forEach(a=>{if(a.i===0&&phase===1)return;if(a.i===3&&phase>=2)return;if(a.tx==null||Math.hypot(a.tx-a.x,a.ty-a.y)<10)[a.tx,a.ty]=rt(80);});
+      if(phase===0&&t>=1.4){phase=1;}
+      if(phase===1){const a=ag[0],v=ag[3];[a.tx,a.ty]=toward([v.x,v.y],[a.x,a.y],30);a.speed=70;
+        if(Math.hypot(a.x-v.x,a.y-v.y)<40||t>2.4){phase=2;const b=bl.find(x=>x.owner===3);b.owner=null;const d=unit([a.x,a.y],[b.x,b.y]);
+          let k=0;while(k<400){const x=b.x+d[0]*k,y=b.y+d[1]*k;if(x<20||x>340||y<20||y>340)break;k+=5;}let x1=b.x+d[0]*k,y1=b.y+d[1]*k;x1=Math.max(14,Math.min(346,x1));y1=Math.max(14,Math.min(346,y1));out=b;b.mv={x0:b.x,y0:b.y,x1,y1,t0:t,t1:t+0.7};a.speed=50;[a.tx,a.ty]=rt(80);}}
+      if(phase===2&&out&&!out.mv){const v=ag[3];[v.tx,v.ty]=toward([out.x,out.y],[180,180],16);v.speed=100;
+        if(Math.hypot(v.tx-v.x,v.ty-v.y)<4){out.owner=3;phase=3;v.tx=180;v.ty=180;v.speed=55;}}
+      if(phase===2&&out&&out.mv){const v=ag[3];v.tx=v.x;v.ty=v.y;}}});
+  A.ballkoenig={vb:'0 0 360 360',cycle:5.6,linear:true,
+    draw(s){field(s,0,0,360,360);el('rect',{x:40,y:40,width:280,height:280,fill:'none',stroke:'#FFFFFF','stroke-width':'2',opacity:'.8'},s);txt(s,316,32,'end').textContent='Königreich';},ents:kidEnts(7),
+    sc:{a:pack(c,[[1.4,'Alle dribbeln im Königreich'],[3.0,'Mit dem eigenen Ball am Fuß versuchen, andere Bälle hinauszuspitzeln'],[99,'Wessen Ball draußen ist: holen und schnell zurück ins Königreich']])}};
+})();
+
+/* Vier-Tore-Duell */
+(function(){
+  const At=[[0,180,300],[1.2,110,220],[1.5,104,214],[2.4,230,170],[3.4,275,46],[4.4,275,46]];
+  const Rd=[[0,180,150],[1.3,128,150],[1.8,118,148],[2.6,190,120],[3.4,240,96],[4.4,240,96]];
+  const S={L:[[1.2,'1 gegen 1: Blau darf durch eines der beiden oberen Tore dribbeln'],[2.4,'Steht Rot im Weg: Richtung wechseln'],[3.6,'Durchs freie Tor dribbeln = Punkt'],[99,'Erobert Rot den Ball, greift Rot die unteren Tore an']],
+    a:At,r:Rd,BALLS:[ballOf(ktDense(At,4.4),14)]};
+  A.viertore={vb:'0 0 360 360',cycle:4.8,
+    draw(s){field(s,0,0,360,360);[[60,40],[110,40],[250,40],[300,40],[60,326],[110,326],[250,326],[300,326]].forEach(([x,y])=>cone(s,x,y));},
+    ents:[{id:'a'},{id:'r',fill:RED}],sc:{a:S}};
+})();
+
+/* Wie viele Finger? */
+(function(){
+  const ag=[];for(let i=0;i<8;i++)ag.push({x:90+(i%4)*60,y:110+Math.floor(i/4)*100,speed:52});
+  const c=sim({seed:19,dur:5.6,bounds:[0,0,360,310],agents:ag,sep:34,balls:ag.map((_,i)=>({x:0,y:0,owner:i})),
+    step(t,{ag,rt}){ag.forEach(a=>{if(a.tx==null||Math.hypot(a.tx-a.x,a.ty-a.y)<10)[a.tx,a.ty]=rt(30);});}});
+  const S=pack(c,[[99,'Kopf hoch: Der Trainer zeigt Finger. Wer die Zahl zuerst ruft, bekommt einen Punkt']]);S.tr=[[0,180,334]];
+  const NUM=[3,1,4,2];
+  A.fingerzahl={vb:'0 0 360 360',cycle:5.6,linear:true,
+    draw(s){field(s,0,0,360,360);line(s,10,312,350,312,'6 5','.6');
+      el('rect',{x:204,y:318,width:34,height:30,rx:8,fill:'#FFFFFF',stroke:'#2C2C2A','stroke-width':'1.5'},s);
+      this._n=el('text',{x:221,y:340,'text-anchor':'middle','font-size':'20','font-weight':'700','font-family':'Barlow, Arial, sans-serif',fill:'#1F53A0'},s);this._n.textContent='3';},
+    tick(t){const n=NUM[Math.min(NUM.length-1,Math.floor(t/1.4))];if(this._n.textContent!==String(n))this._n.textContent=String(n);},
+    ents:kidEnts(8).concat([{id:'tr',fill:'#2C2C2A',label:'T'}]),sc:{a:S}};
+})();
 
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
@@ -4255,6 +4377,99 @@ EX.push(...[
  leicht:['Brücke schmaler','Trolle nur gehend (Stufe 1)','Ein Troll weniger'],
  steig:['Brücke breiter','Nur schwacher Fuß','Drei Trolle (Stufe 3)','Pass nur mit zwei Kontakten']}
 ].map(e=>Object.assign({},KP2,e)));
+/* ---------- Technik Bambini – U9: acht neue Spiele, Inhalte (5 Säulen) ---------- */
+Object.assign(LEG,{werfer:['Werferkind',WAIT,1],mauer:['Burgmauer','#8B5A2B',1],garage:['Garage (Reifen)','transparent',1],linie:['Linie','#FFFFFF',1]});
+const KT2={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'technik',lv:['kinder'],saeulen:true};
+EX.push(...[
+{id:'garage',title:'Garagen-Dribbling',legend:['kind','ball','garage'],
+ chips:[['Schwerpunkt','Ballführung · Stoppen · Kopf hoch'],['','8–12 Kinder, jedes mit Ball'],['Feld','20 × 20 m'],['Dauer','6–8 min'],['Material','1 Ball pro Kind, Reifen oder Hütchenkreise (2 weniger als Kinder)']],
+ ziel:'Das Kind führt den Ball eng durch ein volles Feld, behält dabei die freien Garagen im Blick und stoppt den Ball auf Pfiff sicher mit der Sohle. Im Spiel: dribbeln mit Kopf hoch und den Ball jederzeit unter Kontrolle haben.',
+ org:['Reifen oder Hütchenkreise als Garagen im Feld verteilen, 2 weniger als Kinder','Jedes Kind hat einen Ball (Auto)'],
+ rot:'Wer keine Garage findet, dreht eine Ehrenrunde um das Feld und ist wieder dabei.',
+ ablauf:['Alle Autos fahren (dribbeln) durch die Stadt.','Pfiff: schnell eine freie Garage suchen.','Den Ball in der Garage mit der Sohle parken.','Weiter geht’s: Bei jedem Pfiff eine andere Garage.'],
+ stufen:[['Stufe 1 · Genug Garagen','So viele Garagen wie Kinder, nur parken.'],['Stufe 2 · Zu wenig Garagen','Zwei Garagen weniger als Kinder, wer keine findet, dreht eine Ehrenrunde.'],['Stufe 3 · Abschleppwagen','Zwei Kinder ohne Ball sind Abschleppwagen und dürfen Bälle wegspitzeln, solange sie nicht geparkt sind.']],
+ coach:[['Kopf hoch','Freie Garagen suchen, nicht nur auf den Ball schauen. Erkennbar: Das Kind läuft gezielt zu einer freien Garage.'],['Eng führen','Ball bei jedem Schritt berühren. Fehlerbild: Der Ball wird vorgeschossen und rollt an der Garage vorbei.'],['Parken','Sohle oben auf den Ball, Ball liegt still im Reifen.'],['Tempo wechseln','Schnell durch die Stadt, langsam vor der Garage.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, je 4–5 Pfiffe','Wartezeit: keine, jedes Kind hat einen Ball','Pro Kind: ca. 60–80 Ballkontakte pro Runde','Intensität: mittel, kurze Sprints zur Garage'],
+ leicht:['Mehr Garagen (Stufe 1)','Größere Reifen','Nur gehend dribbeln'],
+ steig:['Zwei Garagen weniger (Stufe 2)','Nur schwacher Fuß','Parken mit der Innenseite statt Sohle','Abschleppwagen (Stufe 3)']},
+{id:'zuwerfen',title:'Zuwerfen und annehmen',legend:['werfer','kind','ball','cone'],
+ chips:[['Schwerpunkt','Ballannahme · Mitnahme'],['','8–12 Kinder in Paaren'],['Feld','je Paar 8 × 6 m'],['Dauer','6–8 min'],['Material','1 Ball und 4 Hütchen pro Paar']],
+ ziel:'Das Kind nimmt einen zugeworfenen oder zugerollten Ball mit Sohle oder Innenseite sicher an und dribbelt danach durch das gerufene Tor. Im Spiel: Ball annehmen und sofort weiterspielen.',
+ org:['Paare: ein Werferkind, ein Annahmekind, Abstand 5–6 m','Hinter dem Annahmekind zwei Hütchentore (oben und unten)'],
+ rot:'Nach 5 Bällen tauschen Werferkind und Annahmekind.',
+ ablauf:['Das Werferkind rollt den Ball zu oder lässt ihn einmal aufspringen.','Das Annahmekind stoppt den Ball mit Sohle oder Innenseite.','Das Werferkind ruft „oben“ oder „unten“.','Durch dieses Tor dribbeln, zurück und den Ball zurückpassen.'],
+ stufen:[['Stufe 1 · Gerollt','Ball wird zugerollt, mit der Sohle stoppen.'],['Stufe 2 · Aufspringen','Ball springt einmal auf, mit der Innenseite annehmen und durch das gerufene Tor dribbeln.'],['Stufe 3 · Gegenspieler','Das Werferkind läuft nach dem Wurf los und versucht, das Tor zuzustellen. Das Annahmekind wählt das freie Tor.']],
+ coach:[['Hinschauen','Augen beim Ball, bis er unter der Sohle ist.'],['Weich annehmen','Fuß locker, Ball abfedern. Fehlerbild: Der Fuß ist steif, der Ball springt weg.'],['Richtung','Bei Stufe 2 den Ball gleich Richtung Tor mitnehmen. Erkennbar: Kein Extra-Kontakt nach der Annahme.'],['Beide Füße','Abwechselnd rechts und links annehmen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, danach Rollen tauschen','Wartezeit: kurz, das Werferkind ist ständig beteiligt','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Kürzerer Abstand','Ball nur zurollen (Stufe 1)','Breitere Tore'],
+ steig:['Ball springt auf (Stufe 2)','Annahme mit dem Oberschenkel','Nur schwacher Fuß','Gegenspieler (Stufe 3)']},
+{id:'beschuetzen',title:'Ball beschützen',legend:['kind','dieb','ball'],
+ chips:[['Schwerpunkt','Ball abschirmen · Körpereinsatz'],['','8–12 Kinder in Paaren'],['Feld','Kreise mit ca. 6 m Durchmesser'],['Dauer','6–8 min'],['Material','1 Ball pro Paar, Hütchen für die Kreise']],
+ ziel:'Das Kind stellt seinen Körper zwischen den Dieb und den Ball, hält den Ball mit der Sohle fest und dreht sich mit. Im Spiel: den Ball im Zweikampf behaupten.',
+ org:['Kreise aus Hütchen, ein Paar pro Kreis','Ein Kind mit Ball, das andere ist der Dieb'],
+ rot:'Nach jeder Runde (oder wenn der Dieb den Ball berührt) tauschen.',
+ ablauf:['Das Kind mit Ball bleibt im Kreis und beschützt seinen Ball.','Der Dieb versucht, den Ball mit dem Fuß zu berühren.','Das Kind dreht sich immer so, dass sein Körper zwischen Dieb und Ball ist.','Wie lange schaffst du es?'],
+ stufen:[['Stufe 1 · Langsamer Dieb','Der Dieb geht nur und darf nur mit einem Fuß nach dem Ball tippen.'],['Stufe 2 · Echter Dieb','Der Dieb läuft. 10 Sekunden behaupten = Punkt.'],['Stufe 3 · Ausbrechen','Auf Pfiff dribbelt das Kind aus dem Kreis über eine Linie (Punkt), der Dieb versucht es zu verhindern.']],
+ coach:[['Körper dazwischen','Rücken oder Seite zum Dieb. Erkennbar: Der Dieb kommt nicht direkt an den Ball.'],['Sohle','Ball mit der Sohle festhalten und mitdrehen. Fehlerbild: Der Ball liegt weit weg vom Fuß.'],['Arme','Arme seitlich zur Balance, nicht schubsen.'],['Kleine Schritte','Mit kleinen Schritten mitdrehen.']],
+ last:['Dauer: 6 Runden à 20–30 Sekunden, dann tauschen','Wartezeit: keine, beide Kinder sind aktiv','Pro Kind: ca. 20–30 Ballkontakte pro Runde','Intensität: mittel bis hoch (Zweikampf)'],
+ leicht:['Kürzere Runden (15 Sekunden)','Dieb geht nur (Stufe 1)','Größerer Kreis'],
+ steig:['10 Sekunden behaupten (Stufe 2)','Kleinerer Kreis','Zwei Diebe gegen ein Kind','Ausbrechen (Stufe 3)']},
+{id:'burgtor',title:'Durch das Burgtor',legend:['kind','waechter','ball','mauer','minitor'],
+ chips:[['Schwerpunkt','Finte · Dribbling am Gegner vorbei'],['','8–12 Kinder, 2–3 Bahnen'],['Feld','Bahnen 8 × 20 m'],['Dauer','6–8 min'],['Material','Bälle, Hütchen für die Mauer, 1 Minitor pro Bahn, Leibchen']],
+ ziel:'Das Kind dribbelt auf einen Burgwächter zu, täuscht mit dem Körper eine Richtung an und geht auf der anderen Seite vorbei. Danach passt es ins Minitor. Im Spiel: an einer Gegenspielerin vorbeidribbeln.',
+ org:['Bahnen 8 × 20 m, in der Mitte eine Burgmauer (Zone ca. 2 m tief)','Ein Burgwächter pro Mauer, er darf die Mauer nicht verlassen','Am Ende jeder Bahn ein Minitor, die anderen Kinder mit Ball am Start'],
+ rot:'Nach 3 Toren oder 2 Minuten wird ein anderes Kind Burgwächter.',
+ ablauf:['Auf den Burgwächter zudribbeln.','Kurz davor: Körper zur einen Seite, dann zur anderen vorbei.','Hinter der Mauer ins Minitor passen.','Ball holen und außen zurück zum Start.'],
+ stufen:[['Stufe 1 · Schlafender Wächter','Der Wächter steht still oder ist eine Stange. Finte üben.'],['Stufe 2 · Wächter geht mit','Der Wächter darf sich in der Mauer nur seitlich bewegen und den Ball berühren.'],['Stufe 3 · Echter Wächter','Der Wächter darf in der Mauer frei verteidigen. Erobert er den Ball, darf er auf ein Minitor am Start kontern.']],
+ coach:[['Finte vor dem Gegner','Etwa einen großen Schritt vor dem Wächter täuschen. Erkennbar: Der Wächter macht einen Schritt in die falsche Richtung.'],['Oberkörper','Schulter deutlich mitbewegen. Fehlerbild: Nur der Fuß bewegt sich, der Wächter lässt sich nicht täuschen.'],['Antritt','Nach der Finte schnell vorbei.'],['Abschluss','Ruhig mit der Innenseite ins Minitor.']],
+ last:['Dauer: 3 Runden à 2 Minuten','Wartezeit: kurz, höchstens 3–4 Kinder pro Bahn','Pro Kind: ca. 6–8 Durchgänge pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Breitere Bahn','Wächter steht still (Stufe 1)','Kein Minitor, nur über die Linie dribbeln'],
+ steig:['Wächter geht mit (Stufe 2)','Schmalere Bahn','Bestimmte Finte vorgeben (z. B. Übersteiger)','Echter Wächter mit Konter (Stufe 3)']},
+{id:'linienlauf',title:'Linienläufer',legend:['kind','ball','linie'],
+ chips:[['Schwerpunkt','Enge Ballführung · Richtungswechsel'],['','8–12 Kinder, jedes mit Ball'],['Feld','Platzlinien oder Linien aus Hütchen/Markierungen'],['Dauer','5–6 min'],['Material','1 Ball pro Kind, Platzlinien oder Markierungsband']],
+ ziel:'Das Kind führt den Ball ganz eng entlang einer Linie und wechselt an Kreuzungen die Richtung, ohne die Linie zu verlassen. Im Spiel: enge Ballführung und saubere Richtungswechsel.',
+ org:['Platzlinien nutzen oder Linien mit Markierungsband legen (Rechteck mit Kreuz)','Jedes Kind mit Ball auf einer Linie'],
+ rot:'Bei Stufe 3 tauschen Fänger und gefangenes Kind.',
+ ablauf:['Alle dribbeln nur auf den Linien.','An Kreuzungen darf abgebogen werden.','Der Ball bleibt immer auf der Linie.','Kommt ein anderes Kind entgegen: umdrehen.'],
+ stufen:[['Stufe 1 · Gehen','Im Gehen auf der Linie dribbeln.'],['Stufe 2 · Richtungswechsel','Auf Pfiff umdrehen (mit der Sohle zurückziehen).'],['Stufe 3 · Linienfänger','Zwei Fänger dürfen auch nur auf den Linien laufen und fangen. Wer gefangen wird, tauscht mit dem Fänger.']],
+ coach:[['Eng','Ball bei jedem Schritt berühren. Erkennbar: Der Ball verlässt die Linie nicht.'],['Kopf hoch','Wer kommt mir entgegen? Fehlerbild: Zwei Kinder stoßen auf der Linie zusammen.'],['Umdrehen','Mit der Sohle zurückziehen und in die andere Richtung.'],['Beide Füße','Innen- und Außenseite benutzen.']],
+ last:['Dauer: 4 Runden à 60 Sekunden','Wartezeit: keine','Pro Kind: ca. 50–70 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Nur gehen (Stufe 1)','Breite Linie (z. B. Strafraumlinie doppelt markieren)','Weniger Kinder gleichzeitig'],
+ steig:['Umdrehen auf Pfiff (Stufe 2)','Nur schwacher Fuß','Rückwärts mit der Sohle','Linienfänger (Stufe 3)']},
+{id:'ballkoenig',title:'Ballkönig',legend:['kind','ball'],
+ chips:[['Schwerpunkt','Ballkontrolle unter Druck · Ball abschirmen'],['','8–12 Kinder, jedes mit Ball'],['Feld','15 × 15 m (Königreich)'],['Dauer','6–8 min'],['Material','1 Ball pro Kind, Hütchen']],
+ ziel:'Das Kind behält den eigenen Ball unter Kontrolle und schützt ihn, während es versucht, andere Bälle aus dem Königreich zu spitzeln. Im Spiel: Ball sichern und gleichzeitig den Gegner angreifen.',
+ org:['Königreich 15 × 15 m mit Hütchen markieren','Jedes Kind dribbelt einen Ball im Königreich'],
+ rot:'Wessen Ball draußen ist, holt ihn, macht eine kleine Aufgabe (z. B. 5× Sohle tippen) und kommt zurück.',
+ ablauf:['Alle dribbeln im Königreich.','Mit dem eigenen Ball am Fuß versuchen, andere Bälle hinauszuspitzeln.','Den eigenen Ball dabei beschützen.','Wer am Ende am wenigsten draußen war, ist Ballkönig.'],
+ stufen:[['Stufe 1 · Nur dribbeln','Alle dribbeln im Feld, niemand spitzelt, Kopf hoch üben.'],['Stufe 2 · Ballkönig','Andere Bälle hinausspitzeln, Ball holen, Aufgabe, zurück.'],['Stufe 3 · Ausscheiden','Wessen Ball draußen ist, wartet am Rand, bis zwei andere Bälle draußen sind. Die letzten drei sind die Könige.']],
+ coach:[['Eigener Ball zuerst','Erst den eigenen Ball sichern, dann angreifen. Fehlerbild: Das Kind lässt den eigenen Ball liegen.'],['Abschirmen','Körper zwischen Gegner und Ball. Erkennbar: Das Kind dreht sich weg, wenn jemand kommt.'],['Kopf hoch','Wer kommt auf mich zu?'],['Fair','Nur den Ball spielen, nicht schubsen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: kurz, Ball holen und sofort zurück','Pro Kind: ca. 50 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Größeres Königreich','Nur dribbeln (Stufe 1)','Ball darf mit der Hand zurückgeholt werden'],
+ steig:['Kleineres Königreich','Nur schwacher Fuß','Ausscheiden (Stufe 3)']},
+{id:'viertore',title:'Vier-Tore-Duell',legend:['teamblau','teamrot','ball','cone'],
+ chips:[['Schwerpunkt','Dribbling 1 gegen 1 · Richtungswechsel'],['','8–12 Kinder in Paaren'],['Feld','je Paar 10 × 12 m'],['Dauer','6–8 min'],['Material','1 Ball und 8 Hütchen pro Paar']],
+ ziel:'Das Kind erkennt, welches der zwei Tore frei ist, wechselt die Richtung, wenn der Gegner im Weg steht, und dribbelt durch das freie Tor. Im Spiel: Dribbling in den freien Raum.',
+ org:['Pro Paar ein Feld mit zwei kleinen Toren auf jeder Seite','Ein Kind beginnt mit Ball, das andere verteidigt'],
+ rot:'Nach jedem Punkt bekommt das andere Kind den Ball. Nach jeder Runde neue Paare.',
+ ablauf:['Das Kind mit Ball greift die beiden Tore gegenüber an.','Das andere Kind verteidigt.','Durch ein Tor dribbeln = Punkt.','Erobert das andere Kind den Ball, greift es seine beiden Tore an.'],
+ stufen:[['Stufe 1 · Passiver Gegner','Der Gegner geht nur und darf den Ball nicht berühren, nur im Weg stehen.'],['Stufe 2 · Halbaktiv','Der Gegner darf den Ball berühren, aber nur mit einem Fuß.'],['Stufe 3 · Echtes Duell','1 gegen 1 mit Umschalten: Nach Ballgewinn sofort auf die eigenen Tore.']],
+ coach:[['Hinschauen','Welches Tor ist frei? Erkennbar: Das Kind dribbelt zum Tor, vor dem der Gegner nicht steht.'],['Richtungswechsel','Mit Sohle oder Innenseite abdrehen. Fehlerbild: Das Kind dribbelt direkt in den Gegner.'],['Tempo','Nach dem Richtungswechsel schnell zum Tor.'],['Verteidigen','Zwischen Ball und Tor stellen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, 30 Sekunden Pause','Wartezeit: keine, alle Paare spielen gleichzeitig','Pro Kind: ca. 30–40 Ballkontakte pro Runde','Intensität: hoch'],
+ leicht:['Breitere Tore','Passiver Gegner (Stufe 1)','Größeres Feld'],
+ steig:['Halbaktiver Gegner (Stufe 2)','Schmalere Tore','Punkt nur, wenn der Ball im Tor gestoppt wird','Echtes Duell (Stufe 3)']},
+{id:'fingerzahl',title:'Wie viele Finger?',legend:['kind','ball','trainer'],
+ chips:[['Schwerpunkt','Dribbling mit Kopf hoch'],['','8–12 Kinder, jedes mit Ball'],['Feld','15 × 15 m'],['Dauer','5–6 min'],['Material','1 Ball pro Kind, Hütchen in 3–4 Farben (für Stufe 3)']],
+ ziel:'Das Kind dribbelt den Ball eng und schaut dabei immer wieder hoch, um zu sehen, was die Trainerin zeigt. Im Spiel: Ball führen und gleichzeitig das Spiel sehen.',
+ org:['Feld 15 × 15 m, die Trainerin steht am Rand','Jedes Kind hat einen Ball','Für Stufe 3: Hütchentore in 3–4 Farben im Feld'],
+ rot:'Ein Kind darf auch einmal Trainerin sein und Finger zeigen.',
+ ablauf:['Alle dribbeln frei im Feld.','Die Trainerin hebt eine Hand und zeigt eine Zahl.','Wer die Zahl zuerst ruft, bekommt einen Punkt.','Zahl wechselt alle paar Sekunden.'],
+ stufen:[['Stufe 1 · Zahlen rufen','Finger zeigen, Kinder rufen die Zahl.'],['Stufe 2 · Zahl = Aufgabe','1 = Sohle stoppen, 2 = umdrehen, 3 = Tempo, 4 = Ball um den Körper kreisen.'],['Stufe 3 · Farbe zeigen','Die Trainerin zeigt ein farbiges Hütchen: Durch ein Tor dieser Farbe dribbeln. Zwei Fänger stören.']],
+ coach:[['Kopf hoch','Immer wieder kurz hochschauen. Erkennbar: Das Kind ruft die Zahl, ohne stehen zu bleiben.'],['Ball nah','Kleine Kontakte, damit der Ball nicht wegläuft. Fehlerbild: Das Kind bleibt stehen, um hochzuschauen.'],['Platz finden','Nicht zu nah an andere Kinder.'],['Beide Füße','Abwechselnd dribbeln.']],
+ last:['Dauer: 4 Runden à 60–90 Sekunden','Wartezeit: keine','Pro Kind: ca. 60 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Langsames Dribbeln','Zahl auch rufen','Nur Zahlen 1–3'],
+ steig:['Zahl = Aufgabe (Stufe 2)','Zahl nur ganz kurz zeigen','Rechenaufgabe mit zwei Händen','Farbe zeigen mit Fängern (Stufe 3)']}
+].map(e=>Object.assign({},KT2,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -6276,6 +6491,92 @@ insel:{ziel:'Das Kind passt zum Partnerkind auf einer Insel und läuft nach dem 
  steig:['Weniger Inseln (Stufe 2)','Nur schwacher Fuß','Ball muss in der Insel liegen bleiben','Inselbesetzer (Stufe 3)']}
 };
 EX.forEach(e=>{const u=UPG_KP[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
+/* ---------- 5-Säulen-Überarbeitung: Technik Bambini – U9 ---------- */
+const UPG_KT={
+dribbelzoo:{ziel:'Das Kind wechselt mit Ball am Fuß das Tempo und die Art der Ballführung (langsam, schnell, große und kleine Schritte), ohne den Ball zu verlieren. Im Spiel: Tempowechsel beim Dribbling.',
+ orgAdd:['Für Stufe 3: 2 Kinder ohne Ball als Jäger mit Leibchen'],
+ stufen:[['Stufe 1 · Tiere','Auf Zuruf wie ein Tier dribbeln: Schnecke, Hase, Elefant, Krebs.'],['Stufe 2 · Tiertricks','Jedes Tier hat einen Ballkontakt: Krebs zieht mit der Sohle zurück, Hase tippt abwechselnd, Elefant stampft mit Sohlenstopp.'],['Stufe 3 · Jäger im Zoo','Zwei Jäger ohne Ball versuchen Bälle wegzuspitzeln. Nur Tiere im Hasentempo dürfen gejagt werden.']],
+ coach:[['Eng','Ball nah am Fuß, auch im Hasentempo. Fehlerbild: Der Ball rollt beim schnellen Tier weg.'],['Tempowechsel','Erkennbar: Das Kind wird sofort langsamer oder schneller, wenn ein neues Tier gerufen wird.'],['Kopf hoch','Auf die anderen Tiere achten.'],['Fantasie','Kinder eigene Tiere mit eigenem Trick erfinden lassen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, jedes Kind hat einen Ball','Pro Kind: ca. 60–80 Ballkontakte pro Runde','Intensität: wechselnd niedrig bis hoch'],
+ leicht:['Nur zwei Tiere (langsam/schnell)','Größeres Feld','Tier zeigen und rufen'],
+ steig:['Tiertricks (Stufe 2)','Nur schwacher Fuß','Kinder erfinden eigene Tiere','Jäger im Zoo (Stufe 3)']},
+sohle:{ziel:'Das Kind rollt den Ball mit der Sohle kontrolliert seitlich, vor und zurück und behält dabei das Gleichgewicht. Im Spiel: Ball mit der Sohle sichern und die Richtung ändern.',
+ orgAdd:['Für Stufe 3: am Ende jeder Bahn ein Hütchentor, ein Partnerkind als Torwächter'],
+ stufen:[['Stufe 1 · Seitlich rollen','Mit der rechten Sohle hin, mit der linken zurück.'],['Stufe 2 · Vor und zurück','Sohle vor und zurück, dann Wechsel rechts und links bei jedem Schritt, Blick nach vorne.'],['Stufe 3 · Ausweichen','Am Ende der Bahn steht ein Torwächter vor einem Hütchentor. Mit der Sohle seitlich ausweichen und durchdribbeln.']],
+ coach:[['Sohle leicht','Fuß nur auflegen, nicht drücken. Fehlerbild: Der Ball wird gestoppt statt gerollt.'],['Kleine Bewegungen','Erkennbar: Der Ball bleibt immer nah am Körper.'],['Gleichgewicht','Arme zur Seite, Standbein leicht gebeugt.'],['Blick','Nach und nach mehr nach vorne schauen.']],
+ last:['Dauer: 6 Bahnen pro Kind, ca. 5 Minuten','Wartezeit: kurz, höchstens 2–3 Kinder pro Bahn','Pro Kind: ca. 20–30 Sohlenkontakte pro Bahn','Intensität: niedrig'],
+ leicht:['Kürzere Bahn','Nur mit dem starken Fuß','An einer Hand festhalten (Partnerkind)'],
+ steig:['Vor und zurück (Stufe 2)','Wechsel bei jedem Schritt','Blick nach vorne statt auf den Ball','Ausweichen am Torwächter (Stufe 3)']},
+slalomrennen:{ziel:'Das Kind führt den Ball eng um Hütchen, benutzt dabei Innen- und Außenseite und dreht sauber um das letzte Hütchen. Im Spiel: enge Ballführung um Gegner herum.',
+ orgAdd:['Für Stufe 3: pro Bahn ein Minitor am Ende und ein Kind als Störer'],
+ stufen:[['Stufe 1 · Slalom','Durch den Slalom und zurück, ohne Zeit.'],['Stufe 2 · Rennen','Wettrennen zwischen den Bahnen, Innen- und Außenseite vorgegeben.'],['Stufe 3 · Störer und Tor','Nach dem Slalom ins Minitor passen. Ein Störer darf hinter dem letzten Hütchen den Weg zum Tor zustellen.']],
+ coach:[['Eng','Ball nah am Hütchen vorbei. Fehlerbild: Weite Bögen, der Ball stößt an Hütchen.'],['Innen- und Außenseite','Erkennbar: Das Kind wechselt die Fußseite an jedem Hütchen.'],['Sauber vor schnell','Erst ohne Fehler, dann schneller.'],['Wende','Eng um das letzte Hütchen drehen.']],
+ last:['Dauer: 4–6 Läufe pro Kind, ca. 6 Minuten','Wartezeit: kurz, höchstens 3 Kinder pro Bahn','Pro Kind: ca. 20 Ballkontakte pro Lauf','Intensität: mittel bis hoch beim Rennen'],
+ leicht:['Größere Abstände zwischen den Hütchen','Weniger Hütchen','Nur gehen'],
+ steig:['Wettrennen (Stufe 2)','Hütchen enger','Nur schwacher Fuß','Störer und Minitor (Stufe 3)']},
+jonglieren:{ziel:'Das Kind lässt den Ball fallen, tippt ihn mit dem Spann wieder hoch und fängt oder kontrolliert ihn. Es entwickelt Gefühl für Ball und Fuß, die Grundlage für jede Annahme.',
+ stufen:[['Stufe 1 · Tippen und fangen','Ball fallen lassen, einmal hochtippen, fangen.'],['Stufe 2 · Zweimal','Zweimal tippen (mit Aufspringen dazwischen erlaubt), dann fangen.'],['Stufe 3 · Jonglier-Duell','Zu zweit: Wer schafft mehr Kontakte? Danach den Ball dem Partnerkind zuspielen, das ihn mit dem Fuß annehmen muss.']],
+ coach:[['Spann','Fußspitze leicht nach unten. Fehlerbild: Mit der Spitze getroffen, der Ball fliegt nach vorne weg.'],['Locker','Nur leicht antippen. Erkennbar: Der Ball steigt gerade bis Bauchhöhe.'],['Abwechseln','Rechts und links.'],['Geduld','Jeder Versuch zählt, Rekorde loben.']],
+ last:['Dauer: 3 Runden à 90 Sekunden, eigener Rekord','Wartezeit: keine, jedes Kind hat einen Ball','Pro Kind: ca. 40–60 Ballkontakte pro Runde','Intensität: niedrig'],
+ leicht:['Ball einmal aufspringen lassen','Weicherer oder größerer Ball (z. B. Wasserball)','Nur fallen lassen und fangen'],
+ steig:['Zweimal tippen (Stufe 2)','Oberschenkel statt Fuß','Ohne Hände','Jonglier-Duell (Stufe 3)']},
+ballumkreisen:{ziel:'Das Kind tippt den Ball abwechselnd mit der Sohle an, bewegt sich in kleinen Schritten um ihn herum und kann auf ein Signal mit dem Ball wegdribbeln. Im Spiel: schnelle Füße am Ball.',
+ orgAdd:['Für Stufe 3: 2 Kinder ohne Ball als Fänger'],
+ stufen:[['Stufe 1 · Antippen','Sohle abwechselnd auf den Ball tippen, um den Ball herum.'],['Stufe 2 · Richtungswechsel','Auf Pfiff Richtung wechseln, schneller werden.'],['Stufe 3 · Wegdribbeln','Auf Pfiff mit dem Ball wegdribbeln. Zwei Fänger versuchen, Kinder abzuklatschen, bevor sie über eine Linie dribbeln.']],
+ coach:[['Leicht','Ball nur antippen, er bleibt liegen. Fehlerbild: Der Ball rollt weg.'],['Klein','Viele kleine Schritte. Erkennbar: Das Kind bleibt beim Tippen im Rhythmus.'],['Gleichgewicht','Aufrecht bleiben, Arme helfen.'],['Schneller Start','Auf Pfiff sofort Ball mitnehmen.']],
+ last:['Dauer: 4 Runden à 45 Sekunden, 30 Sekunden Pause','Wartezeit: keine','Pro Kind: ca. 40–60 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Langsames Tempo','Nur antippen, nicht herumlaufen','Ball an eine Wand legen'],
+ steig:['Richtungswechsel auf Pfiff (Stufe 2)','Mit Hüpfen','Nur auf den Fußballen','Wegdribbeln mit Fängern (Stufe 3)']},
+finte:{ziel:'Das Kind dribbelt auf einen Gegner zu, macht etwa einen Schritt davor einen Übersteiger und geht auf der anderen Seite vorbei. Danach passt es ins Minitor. Im Spiel: Gegnerin mit einer Finte ausspielen.',
+ orgAdd:['Für Stufe 3: Leibchen für die Gegnerkinder'],
+ stufen:[['Stufe 1 · Stange','Übersteiger an einer Stange oder einem Hütchen, dann Minitor.'],['Stufe 2 · Halbaktiver Gegner','Ein Kind steht als Gegner und macht nur einen Schritt zur Seite.'],['Stufe 3 · 1 gegen 1','Der Gegner verteidigt richtig. Nach dem Übersteiger aufs Minitor, nach Ballgewinn darf der Gegner auf ein Minitor am Start kontern.']],
+ coach:[['Abstand','Finte etwa einen Meter vor dem Gegner. Fehlerbild: Finte zu früh oder direkt am Gegner.'],['Körper','Oberkörper mitbewegen. Erkennbar: Der Gegner macht einen Schritt in die falsche Richtung.'],['Antritt','Nach der Finte schnell vorbei.'],['Abschluss','Ruhig mit der Innenseite ins Minitor.']],
+ last:['Dauer: 4–6 Durchgänge pro Kind, ca. 6 Minuten','Wartezeit: kurz, 2–4 Kinder pro Bahn','Pro Kind: ca. 10–15 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Langsam, Übersteiger im Stand','Größeres Minitor','Ohne Tor, nur vorbei'],
+ steig:['Doppelter Übersteiger','Körpertäuschung als zweite Finte','Halbaktiver Gegner (Stufe 2)','1 gegen 1 (Stufe 3)']},
+labyrinth:{ziel:'Das Kind dribbelt mit Kopf hoch durch viele kleine Tore, sucht dabei freie Tore und weicht anderen Kindern aus. Im Spiel: Ballführung mit Überblick.',
+ orgAdd:['Für Stufe 3: 2 Kinder ohne Ball als Fänger'],
+ stufen:[['Stufe 1 · Freie Tore','Durch möglichst viele Tore dribbeln, laut zählen.'],['Stufe 2 · Aufgaben','Kein Tor zweimal hintereinander, durch das Tor nur mit der Sohle.'],['Stufe 3 · Fänger','Zwei Fänger stehen in Toren und dürfen sie mit dem Körper zustellen oder Bälle wegspitzeln.']],
+ coach:[['Kopf hoch','Freie Tore suchen. Erkennbar: Das Kind dribbelt zu Toren ohne andere Kinder.'],['Verlangsamen','Vor dem Tor langsamer, danach Tempo. Fehlerbild: Der Ball prallt am Hütchen ab.'],['Beide Füße','Abwechseln.'],['Zählen','Eigenen Rekord verbessern.']],
+ last:['Dauer: 4 Runden à 60 Sekunden','Wartezeit: keine','Pro Kind: ca. 50–60 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Breitere Tore','Mehr Tore','Nur gehend'],
+ steig:['Kein Tor zweimal hintereinander (Stufe 2)','Durch das Tor nur mit der Sohle','Nur schwacher Fuß','Fänger (Stufe 3)']},
+fussballtennis:{ziel:'Das Kind nimmt einen aufspringenden Ball mit Fuß oder Oberschenkel an und spielt ihn gezielt in das Feld des Gegners zurück. Im Spiel: hohe Bälle kontrollieren und genau weiterspielen.',
+ stufen:[['Stufe 1 · Aus der Hand','Ball fangen, aus der Hand über die Schnur spielen, zweimal Aufspringen erlaubt.'],['Stufe 2 · Annehmen und spielen','Ball darf einmal aufspringen, mit dem Fuß annehmen und zurückspielen.'],['Stufe 3 · Wettkampf','1 gegen 1 oder 2 gegen 2 mit Punkten: Ball im Feld des Gegners, der nicht zurückkommt = Punkt.']],
+ coach:[['Annahme','Ball mit dem Fuß abfedern. Fehlerbild: Der Fuß ist steif, der Ball springt ins Aus.'],['Zielen','In die freie Ecke spielen. Erkennbar: Der Gegner muss laufen.'],['Bereit stehen','Leicht in den Knien, auf den Fußballen.'],['Geduld','Erst kontrollieren, dann spielen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, mehrere kleine Felder','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Zweimal Aufspringen erlaubt','Ball aus der Hand (Stufe 1)','Weicherer Ball'],
+ steig:['Annehmen und spielen (Stufe 2)','Nur direkt zurück','Nur schwacher Fuß','Wettkampf mit Punkten (Stufe 3)']},
+wendekreis:{ziel:'Das Kind stoppt den Ball mit der Sohle, dreht sich mit dem Körper über den Ball und dribbelt sofort in die andere Richtung. Im Spiel: sich mit Ball vom Gegner wegdrehen.',
+ orgAdd:['Für Stufe 3: 2 Kinder ohne Ball als Verfolger'],
+ stufen:[['Stufe 1 · An der Linie','An der Linie stoppen, drehen, zurück.'],['Stufe 2 · Drehungen','Drehung mit Innenseite oder Außenseite, auf Pfiff statt an der Linie.'],['Stufe 3 · Verfolger','Ein Verfolger läuft ohne Ball hinterher. Auf Pfiff drehen und dem Verfolger entkommen bis zur Linie.']],
+ coach:[['Stoppen','Sohle oben auf den Ball. Fehlerbild: Das Kind läuft über den Ball hinaus.'],['Drehen','Körper über den Ball drehen. Erkennbar: Der Ball bleibt bei der Drehung nah am Fuß.'],['Weiter','Sofort wieder Tempo.'],['Kopf hoch','Nach der Drehung schauen, wo Platz ist.']],
+ last:['Dauer: 4 Runden à 45 Sekunden, 30 Sekunden Pause','Wartezeit: keine, alle nebeneinander','Pro Kind: ca. 40 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Kürzere Strecke (10 m)','Nur Sohlenstopp','Langsames Tempo'],
+ steig:['Innenseite oder Außenseite (Stufe 2)','Drehen auf Pfiff','Nur schwacher Fuß','Verfolger (Stufe 3)']},
+hochwerfen:{ziel:'Das Kind wirft sich den Ball leicht hoch und stoppt ihn nach dem Aufspringen sicher mit Sohle oder Innenseite. Im Spiel: aufspringende Bälle kontrollieren.',
+ orgAdd:['Für Stufe 3: Hütchentore im Feld'],
+ stufen:[['Stufe 1 · Mit Aufspringen','Hochwerfen, aufspringen lassen, mit der Sohle stoppen.'],['Stufe 2 · Ohne Aufspringen','Mit der Innenseite oder dem Oberschenkel annehmen.'],['Stufe 3 · Annehmen und weg','Nach der Annahme sofort durch ein freies Hütchentor dribbeln. Zwei Kinder ohne Ball dürfen Tore zustellen.']],
+ coach:[['Hinschauen','Ball beobachten, bis er unter dem Fuß ist.'],['Weich','Fuß locker lassen. Fehlerbild: Der Ball prallt vom Fuß weg.'],['Abwechseln','Rechts und links.'],['Erster Kontakt','In Stufe 3 Ball gleich in die Laufrichtung mitnehmen. Erkennbar: Kein Extra-Stopp nach der Annahme.']],
+ last:['Dauer: 3 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 20–30 Ballkontakte pro Runde','Intensität: niedrig'],
+ leicht:['Ball niedriger werfen','Zweimal aufspringen lassen','Weicherer Ball'],
+ steig:['Ohne Aufspringen (Stufe 2)','Mit dem Oberschenkel','Nach dem Stoppen wegdribbeln','Annehmen und weg (Stufe 3)']},
+staffelball:{ziel:'Das Kind führt den Ball auch im Wettkampftempo nah am Fuß, dreht eng um das Hütchen und übergibt den Ball kontrolliert. Im Spiel: Ballführung unter Zeitdruck.',
+ orgAdd:['Für Stufe 3: pro Bahn ein Minitor neben dem Wendehütchen'],
+ stufen:[['Stufe 1 · Übergabe','Um das Hütchen und zurück, Ball an der Linie stoppen und übergeben.'],['Stufe 2 · Slalom','Slalom hin, gerade zurück, Ball mit einem Pass übergeben.'],['Stufe 3 · Tor statt Wende','Am Wendepunkt erst ins Minitor treffen, dann Ball holen und zurück. Erst nach einem Tor darf das nächste Kind starten.']],
+ coach:[['Eng','Ball auch im Tempo nah am Fuß. Fehlerbild: Der Ball wird weit vorgelegt und rollt an der Bahn vorbei.'],['Wende','Eng um das Hütchen drehen.'],['Übergabe','Ball stoppen, nicht schießen. Erkennbar: Das nächste Kind kann sofort starten.'],['Anfeuern','Das Team feuert an.']],
+ last:['Dauer: 3–4 Staffeln, ca. 6 Minuten','Wartezeit: mittel, deshalb höchstens 3 Kinder pro Team','Pro Kind: ca. 15–20 Ballkontakte pro Lauf','Intensität: hoch beim Lauf'],
+ leicht:['Kürzere Strecke','Nur gehen','Ohne Wettkampf'],
+ steig:['Slalom hin (Stufe 2)','Nur schwacher Fuß','Pass zur Nächsten','Tor statt Wende (Stufe 3)']},
+abenteuer:{ziel:'Das Kind dribbelt einen Rundkurs mit verschiedenen Aufgaben (Slalom, enge Gasse, Linie) und hält dabei lange den Ball unter Kontrolle. Eine Geschichte hält alle in Bewegung.',
+ orgAdd:['Für Stufe 3: 2 Kinder ohne Ball als Räuber, am Ende des Kurses ein Minitor als Schatzkiste'],
+ stufen:[['Stufe 1 · Reise','Rundkurs mit Stationen: Wald (Slalom), Brücke (enge Gasse), Fluss (an der Linie entlang).'],['Stufe 2 · Aufgaben','An jeder Station eine Technik: Wald nur Außenseite, Brücke mit der Sohle, Fluss rückwärts ziehen.'],['Stufe 3 · Räuber','Zwei Räuber lauern an Stationen und dürfen Bälle wegspitzeln. Am Ende ins Minitor (Schatzkiste) treffen.']],
+ coach:[['Abstand','Nicht zu dicht auffahren. Fehlerbild: Stau an der Brücke.'],['Ball nah','In der engen Gasse kleine Kontakte. Erkennbar: Kein Hütchen fällt um.'],['Geschichte','Kinder dürfen Ideen einbringen.'],['Tempo','Gleichmäßig, an Stationen langsamer.']],
+ last:['Dauer: 3 Runden à 2 Minuten','Wartezeit: keine, alle sind gleichzeitig im Kurs','Pro Kind: ca. 60–80 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Weniger Stationen','Brücke breiter','Ohne Aufgaben (Stufe 1)'],
+ steig:['Aufgaben an den Stationen (Stufe 2)','Gegenverkehr','Brücke schmaler','Räuber und Schatzkiste (Stufe 3)']}
+};
+EX.forEach(e=>{const u=UPG_KT[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
 /* Reiter nach Spielphasen (Okt 2026): Mit Ball, Gegen den Ball, Umschalten, Torabschluss, Athletik */
@@ -6317,7 +6618,7 @@ function card(e){const a=A[e.id];
     (a.mirrorAxis?'<button id="mir-'+e.id+'" type="button" aria-pressed="false">'+a.mirrorLabel+'</button>':'')+
     (a.scLabels?Object.keys(a.scLabels).map((k,i)=>'<button type="button" data-sc="'+e.id+'" data-key="'+k+'" aria-pressed="'+(i===0)+'">'+a.scLabels[k]+'</button>').join(''):'')+
     '<label for="sp-'+e.id+'">Tempo</label><input id="sp-'+e.id+'" type="range" min="0.4" max="2" step="0.1" value="'+(a.speed||1)+'">';
-  const leg=e.legend.map(k=>{const l=LEG[k];const ex=k==='cone'||k==='hut'?';border-radius:2px':k==='schuessel'?';border:3px solid #E8962A;box-sizing:border-box':k==='insel'||k==='haus'?';border:2px solid #8A97A8;box-sizing:border-box':k==='minitor'||k==='bank'||k==='kegel'||k==='messzone'||k==='torrot'||k==='torgelb'?';border-radius:2px':'';return '<span><i class="dot" style="background:'+l[1]+';opacity:'+l[2]+ex+'"></i>'+l[0]+'</span>';}).join('');
+  const leg=e.legend.map(k=>{const l=LEG[k];const ex=k==='cone'||k==='hut'?';border-radius:2px':k==='schuessel'?';border:3px solid #E8962A;box-sizing:border-box':k==='insel'||k==='haus'||k==='garage'?';border:2px solid #8A97A8;box-sizing:border-box':k==='minitor'||k==='bank'||k==='kegel'||k==='messzone'||k==='torrot'||k==='torgelb'?';border-radius:2px':'';return '<span><i class="dot" style="background:'+l[1]+';opacity:'+l[2]+ex+'"></i>'+l[0]+'</span>';}).join('');
   const adapt=Object.keys(e.ad).map(k=>'<section class="full adapt" data-lv="'+k+'" hidden><h4>Anpassung für '+LV.find(l=>l.id===k).name+'</h4><p>'+e.ad[k]+'</p></section>').join('');
   return '<article class="card" id="ex-'+e.id+'" hidden>'+
    '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
