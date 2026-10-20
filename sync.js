@@ -1,6 +1,6 @@
 /* H.I. – Coaching · Sync über Supabase
    Stellt dieselbe Speicher-Schnittstelle bereit, die die Seite in claude.ai nutzt,
-   und speichert Trainingseinheiten und Termine in Supabase. Ohne Anmeldung
+   und speichert Trainingseinheiten, Termine und den Kader in Supabase. Ohne Anmeldung
    arbeitet die Seite wie gewohnt nur auf dem Gerät. */
 (function(){
   const cfg=window.HI_CONFIG||{};
@@ -54,7 +54,7 @@
   function openLogin(){let d=document.getElementById('login-dlg');
     if(!d){d=document.createElement('dialog');d.id='login-dlg';d.className='picker login-dlg';d.setAttribute('aria-labelledby','login-h');
       d.innerHTML='<form id="login-form" novalidate><div class="pk-head"><div class="pk-top"><h3 id="login-h">Anmelden</h3><button type="button" class="btn ghost" id="login-x">Schließen</button></div></div>'+
-        '<div class="login-body"><p class="login-lead">Mit deiner E-Mail-Adresse anmelden. Du bekommst einen Code per E-Mail. Danach sind Trainingseinheiten und Kalender auf allen deinen Geräten gleich.</p>'+
+        '<div class="login-body"><p class="login-lead">Mit deiner E-Mail-Adresse anmelden. Du bekommst einen Code per E-Mail. Danach sind Trainingseinheiten, Kalender, Kader, Spiele und Matchplan auf allen deinen Geräten gleich.</p>'+
         '<label class="fld">E-Mail-Adresse<input type="email" name="email" autocomplete="email" inputmode="email" required></label>'+
         '<label class="fld" id="login-code-wrap" hidden>Code aus der E-Mail<input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456"></label>'+
         '<div class="tfoot"><button type="submit" class="btn primary" id="login-go">Code senden</button><p id="login-msg" role="status" aria-live="polite"></p></div></div></form>';

@@ -1182,7 +1182,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
   </section>
   <section id="kader" hidden aria-labelledby="kader-h">
     <div class="plan-head" data-bg="Kader">
-      <div><p class="step-lbl">FC Bergheim Damen</p><h2 id="kader-h">Kader &amp; Spieltag</h2><p class="lead">Kader an der Stange, Aufstellung, Matchplan und Spielstatistik für die Saison.</p><p class="store-note">Gespeichert nur in diesem Browser auf diesem Gerät. Zum Übertragen auf ein anderes Gerät: ganz unten „Daten sichern“.</p></div>
+      <div><p class="step-lbl">FC Bergheim Damen</p><h2 id="kader-h">Kader &amp; Spieltag</h2><p class="lead">Kader an der Stange, Aufstellung, Matchplan und Spielstatistik für die Saison.</p><p class="store-note" id="kb-store">Gespeichert nur in diesem Browser auf diesem Gerät. Zum Übertragen auf ein anderes Gerät: ganz unten „Daten sichern“.</p></div>
       <div class="kb-head-tools"><div class="seg kb-seg" id="kb-tabs" role="group" aria-label="Ansicht"><button type="button" data-kbtab="kader" aria-pressed="true">Kabine</button><button type="button" data-kbtab="auf" aria-pressed="false">Aufstellung</button><button type="button" data-kbtab="mp" aria-pressed="false">Matchplan</button><button type="button" data-kbtab="spiele" aria-pressed="false">Spiele</button></div></div>
     </div>
     <div class="kb-demo" id="kb-demo" hidden>
@@ -5900,6 +5900,14 @@ async function saveSession(p){
   if(!db){renderStoreNote();termStore.attach(null);if(view==='list')renderList();return;}
   let w=null;try{w=user?await user.can('data.write'):null;}catch(_){w=null;}
   dbWritable=w!==false;dbCol=db.collection('einheiten');renderStoreNote();termStore.attach(db,dbWritable);
+  if(dbWritable)(async()=>{/* Einheiten und Termine, die vorher nur auf diesem Gerät lagen, einmalig hochladen */
+    for(const rec of localSessions.slice()){try{const body=clone(rec);delete body.id;await dbCol.doc(rec.id).set(body);localSessions=localSessions.filter(x=>x.id!==rec.id);saveLocal();}catch(_){break;}}
+    const tc=db.collection('termine');
+    for(const t of termStore.local.slice()){try{const body=clone(t);delete body.id;delete body.src;if(body.einheit&&body.einheit.src==='local')body.einheit.src='db';await tc.doc(t.id).set(body);termStore.local=termStore.local.filter(x=>x.id!==t.id);termStore.saveLocal();}catch(_){break;}}
+    if(plan&&plan.src==='local'&&!localSessions.some(x=>x.id===plan.sid)){plan.src='db';}
+    if(plan&&plan.termin&&plan.termin.src==='local'&&!termStore.local.some(x=>x.id===plan.termin.id)){plan.termin.src='db';}
+    try{savePlan(false);}catch(_){}
+    updateListCnt();if(view==='list')renderList();if(view==='cal')renderCal();})();
   dbCol.onSnapshot(snap=>{dbSessions=snap.docs.map(d=>Object.assign({},clone(d.data()),{id:d.id,src:'db'}));updateListCnt();if(view==='list')renderList();if(view==='cal')renderCal();},
     ()=>{dbCol=null;dbSessions=[];renderStoreNote();updateListCnt();if(view==='list')renderList();});})();
 
@@ -6252,9 +6260,11 @@ function fix(s){
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.players)&&s.lineup)return fix(s);}catch(e){}return demoState();}
 let S=load();
 let saveT=0;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function saveSoon(){clearTimeout(saveT);saveT=setTimeout(save,300);}
-function touch(){S.v=(S.v||0)+1;save();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(sync.col&&(S.ts||0)>sync.pushed)sync.schedule();}
+function saveSoon(){S.ts=Date.now();clearTimeout(saveT);saveT=setTimeout(save,300);}
+function touch(){S.v=(S.v||0)+1;S.ts=Date.now();save();}
+const sync={col:null,pushed:0,timer:0,schedule(){clearTimeout(sync.timer);sync.timer=setTimeout(sync.push,1200);},
+  async push(){sync.timer=0;if(!sync.col)return;const ts=S.ts||Date.now();if(!S.ts)S.ts=ts;try{await sync.col.doc('state').set(JSON.parse(JSON.stringify(S)));sync.pushed=ts;}catch(e){}}};
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -6871,6 +6881,29 @@ root.addEventListener('click',e=>{const b=e.target.closest('[data-kbgo]');if(b){
 function renderAll(){$('kb-demo').hidden=!S.demo;renderRail();cardKey='';showTab(tab);}
 renderAll();
 window.__kbShow=function(){showTab(tab);};
+/* ---------- Sync (Supabase) ---------- */
+(async()=>{
+  let db=null;try{if(window.claude&&typeof window.claude.use==='function')db=await window.claude.use('db');}catch(e){db=null;}
+  if(!db)return;
+  const col=db.collection('kader');
+  const busy=()=>{const a=document.activeElement;return a&&root.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||!$('kb-sheet').hidden||!!gEdit;};
+  function adopt(r){
+    try{localStorage.setItem('hi-kabine-backup',localStorage.getItem(KEY)||'');}catch(e){}
+    S=fix(JSON.parse(JSON.stringify(r)));sync.pushed=S.ts||0;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+    active=-1;cardKey='';renderAll();
+  }
+  col.onSnapshot(snap=>{
+    const d=snap.docs.find(x=>x.id==='state'),r=d&&d.data();
+    let first=false;try{first=localStorage.getItem('hi-kabine-synced')!=='1';localStorage.setItem('hi-kabine-synced','1');}catch(e){}
+    if(!sync.col){sync.col=col;$('kb-store').textContent='Synchronisiert: Kader, Spiele und Matchplan sind auf allen Geräten gleich, auf denen du angemeldet bist.';}
+    if(!r||!Array.isArray(r.players)){if(!S.ts)S.ts=Date.now();sync.push();return;}
+    if(first){adopt(r);return;}
+    if(sync.timer)return;
+    if((r.ts||0)>(S.ts||0)){if(!busy())adopt(r);}
+    else if((S.ts||0)>(r.ts||0))sync.push();
+    else sync.pushed=S.ts||0;
+  });
+})();
 })();
 </script>
 <!-- ---------- Ende Kabine-Skript ---------- -->
