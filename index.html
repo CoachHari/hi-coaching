@@ -1970,6 +1970,159 @@ const cone=(s,x,y,col)=>el('polygon',{points:(x-7)+','+(y+6)+' '+x+','+(y-8)+' '
   A.insel={vb:'0 0 360 360',cycle:7.2,fade:false,linear:true,
     draw(s){field(s,0,0,360,360);HO.forEach(p=>el('circle',{cx:p[0],cy:p[1],r:20,fill:'none',stroke:'#FFFFFF','stroke-width':'2.5',opacity:'.9'},s));},ents,sc:{a:S}};
 })();
+/* ---------- Passen Bambini – U9: zehn neue Spiele (5 Säulen) ---------- */
+const kpFoot=(p,q,d)=>toward(p,q,d||14);
+const mgoal=(s,x,y,w,h)=>el('rect',{x,y,width:w,height:h,fill:'rgba(255,255,255,.25)',stroke:'#FFFFFF','stroke-width':'2'},s);
+
+/* Passduell 1 gegen 1 */
+(function(){
+  const S={L:[[1.2,'Flach auf das Hütchentor des Partnerkinds passen'],[2.0,'Das Partnerkind stoppt den Ball mit der Sohle'],[3.0,'Zurückpassen: Treffer durchs Tor = Punkt'],[99,'Ball holen und weiterspielen']],BALLS:[]},ents=[],G=[];
+  const F=(kf,inv)=>inv?kf.map(r=>[r[0],r[1],360-r[2]]):kf;
+  [95,265].forEach((cx,li)=>{const inv=li===1;
+    const A=[[0,cx,300],[2.5,cx,300],[2.9,cx+8,300],[3.6,cx+20,332],[4.8,cx,300]];
+    const B=[[0,cx,60],[0.5,cx,60],[1.1,cx+24,60],[4.8,cx+24,60],[5.4,cx,60]];
+    const Bl=[[0,cx,286],[0.4,cx,286],[1.1,cx+24,74],[2.0,cx+24,74],[2.8,cx+28,346],[3.6,cx+28,346],[4.8,cx,286]];
+    S['a'+li]=F(A,inv);S['b'+li]=F(B,inv);S.BALLS.push(F(Bl,inv));ents.push({id:'a'+li},{id:'b'+li,fill:RED});
+    G.push([cx,30],[cx,330]);});
+  A.passduell={vb:'0 0 360 360',cycle:5.6,
+    draw(s){field(s,0,0,360,360);G.forEach(([x,y])=>{cone(s,x-46,y);cone(s,x+46,y);});},ents,sc:{a:S}};
+})();
+
+/* Riesenball treiben */
+(function(){
+  const BX=[60,140,220,300],HITS=[[0,'b',0.9],[2,'r',1.5],[1,'b',2.1],[3,'b',2.7],[1,'r',3.3],[2,'b',3.9]];
+  const GB=[[0,180,180]];let y=180;
+  HITS.forEach(([k,s,t])=>{GB.push([t,180,y]);y+=s==='b'?-16:16;GB.push([t+0.5,180,y]);});GB.push([5.6,180,y]);
+  const S={L:[[1.5,'Alle passen auf den Riesenball'],[3.3,'Jeder Treffer schiebt ihn zur anderen Seite'],[99,'Rollt er über die Linie der Gegner, gibt es einen Punkt']],BALLS:[]},ents=[];
+  ['b','r'].forEach(side=>BX.forEach((x,k)=>{const ky=side==='b'?300:60,kid=[x,ky],ft=[x,side==='b'?286:74],id=side+k;
+    S[id]=[[0,x,ky]];ents.push({id,fill:side==='b'?BLUE:RED});
+    const Bl=[[0,...ft]];HITS.filter(h=>h[0]===k&&h[1]===side).forEach(([,,t])=>{const c=at(GB,t);const hit=toward(c,kid,30);Bl.push([t-0.6,...ft],[t,...hit],[t+0.8,...ft]);});
+    Bl.push([5.6,...ft]);S.BALLS.push(Bl);}));
+  A.riesenball={vb:'0 0 360 360',cycle:5.6,
+    draw(s){field(s,0,0,360,360);line(s,10,36,350,36,'6 5','.8');line(s,10,324,350,324,'6 5','.8');
+      this._gb=el('circle',{cx:180,cy:180,r:24,fill:'#F2C230',stroke:'#7A5A00','stroke-width':'2'},s);},
+    tick(t,{mx}){const p=at(GB,t);this._gb.setAttribute('cx',mx(p[0]));this._gb.setAttribute('cy',p[1]);},ents,sc:{a:S}};
+})();
+
+/* Heiße Kartoffel */
+(function(){
+  const S={L:[[0.9,'Der Fänger darf nur das Kind mit Ball fangen'],[2.8,'Kommt er näher: schnell zum Partnerkind passen'],[99,'Ohne Ball bist du sicher, also immer anbieten']],BALLS:[]};
+  S.a1=[[0,110,130],[1.0,110,130],[1.8,80,200],[4.4,80,200]];
+  S.b1=[[0,210,80],[2.1,210,80],[3.0,250,120],[4.4,250,120]];
+  S.c=[[0,300,200],[0.9,140,150],[1.9,220,120],[2.7,100,235],[3.8,215,160],[4.4,215,160]];
+  S.BALLS.push([[0,124,124],[0.9,124,124],[1.4,197,86],[2.0,197,86],[2.6,92,192],[2.8,92,192],[3.4,238,124],[4.4,238,124]]);
+  const pp=(a,b,t0,per,n,C)=>{const fa=kpFoot(a,b),fb=kpFoot(b,a),Bl=[[0,...fa]];let h=0;for(let i=0;i<n;i++){const t=t0+i*per;Bl.push([t,...(h?fb:fa)],[t+0.5,...(h?fa:fb)]);h=1-h;}Bl.push([C,...(h?fb:fa)]);return Bl;};
+  const P2=[[60,300],[150,312]],P3=[[255,290],[312,236]];
+  S.a2=[[0,...P2[0]]];S.b2=[[0,...P2[1]]];S.a3=[[0,...P3[0]]];S.b3=[[0,...P3[1]]];
+  S.BALLS.push(pp(P2[0],P2[1],0.3,1.1,4,4.4),pp(P3[0],P3[1],0.6,1.3,3,4.4));
+  A.kartoffel={vb:'0 0 360 360',cycle:4.4,draw(s){field(s,0,0,360,360);},
+    ents:[{id:'a1'},{id:'b1'},{id:'a2'},{id:'b2'},{id:'a3'},{id:'b3'},{id:'c',fill:RED}],sc:{a:S}};
+})();
+
+/* Ball-Post */
+(function(){
+  const H=[[60,60],[300,60],[300,300],[60,300]],SP=H.map(h=>toward(h,[180,180],80));
+  const S={L:[[0.8,'Der Postbote passt den Brief ins Haus'],[1.6,'Das Kind im Haus stoppt und passt zurück'],[99,'Weiter zum nächsten Haus']],BALLS:[]},ents=[];
+  H.forEach((h,k)=>{S['h'+k]=[[0,...h]];ents.push({id:'h'+k,wait:true});});
+  for(let i=0;i<4;i++){const P=[],Bl=[];
+    for(let j=0;j<2;j++){const k=(i+j)%4,n=(k+1)%4,t=j*2.2,sp=SP[k],ft=kpFoot(sp,H[k]),rf=kpFoot(H[k],sp,15);
+      P.push([t,...sp],[t+1.6,...sp]);Bl.push([t,...ft],[t+0.2,...ft],[t+0.8,...rf],[t+1.0,...rf],[t+1.6,...ft]);
+      if(j===1){P.push([t+2.2,...SP[n]]);Bl.push([t+2.2,...kpFoot(SP[n],sp,-14)]);}}
+    S['p'+i]=P;S.BALLS.push(Bl);ents.push({id:'p'+i});}
+  A.post={vb:'0 0 360 360',cycle:4.4,
+    draw(s){field(s,0,0,360,360);H.forEach(h=>el('circle',{cx:h[0],cy:h[1],r:24,fill:'none',stroke:'#FFFFFF','stroke-width':'2.5',opacity:'.9'},s));
+      el('circle',{cx:180,cy:180,r:80,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.35'},s);},ents,sc:{a:S}};
+})();
+
+/* Hütchentor-Spiel */
+(function(){
+  const S={L:[[1.4,'Pass durch ein Hütchentor zum Mitspieler = 1 Punkt'],[2.6,'Der Mitspieler dribbelt zum nächsten freien Tor'],[3.3,'Wieder durchs Tor passen = noch ein Punkt'],[99,'Die Gegner versuchen, die Pässe abzufangen']],BALLS:[]};
+  S.a=[[0,210,300],[0.7,160,268],[1.0,160,268],[2.2,300,215],[3.0,318,140],[4.4,318,140]];
+  S.b=[[0,160,138],[1.5,160,138],[2.6,245,140],[4.4,245,140]];
+  S.c=[[0,262,250],[1.0,195,300],[2.4,265,270],[3.2,305,200],[4.4,305,200]];
+  S.d=[[0,100,140],[1.4,128,118],[2.6,215,108],[3.4,250,100],[4.4,250,100]];
+  S.BALLS.push([[0,198,292],[0.7,160,254],[0.8,160,254],[1.4,160,152],[1.5,160,152],[1.6,174,140],[2.6,259,140],[2.7,259,140],[3.2,304,140],[4.4,304,140]]);
+  const GT=[[142,200],[178,200],[280,122],[280,158],[50,90],[86,90],[230,310],[266,310]];
+  A.torpassspiel={vb:'0 0 360 360',cycle:4.4,draw(s){field(s,0,0,360,360);GT.forEach(([x,y])=>cone(s,x,y));},
+    ents:[{id:'a'},{id:'b'},{id:'c',fill:RED},{id:'d',fill:RED}],sc:{a:S}};
+})();
+
+/* Zu zweit zum Tor */
+(function(){
+  const S={L:[[2.9,'Zu zweit nach vorne: dreimal hin und her passen'],[4.0,'Dann ins Minitor passen'],[99,'Ball holen und zurück zur Startlinie']],BALLS:[]},ents=[];
+  [[70,150,110,0],[230,310,270,0.3]].forEach(([xa,xb,gx,off],li)=>{
+    const Y=t=>320-210*Math.max(0,Math.min(1,(t-0.3-off)/3.0));const fr=(w,t)=>[w?xb:xa,Y(t)-14];
+    const PT=[0.6,1.5,2.4].map(v=>v+off),Ak=[],Bk=[],Bl=[];
+    for(let k=0;k<=48;k++){const t=k/10;Ak.push([t,xa,Y(t)]);Bk.push([t,xb,Y(t)]);
+      let n=0,inP=null;PT.forEach(p=>{if(t>=p+0.5)n++;else if(t>=p)inP=p;});
+      const ts=3.4+off;
+      if(t>=ts){const e=ease(Math.min(1,(t-ts)/0.6)),f=fr(1,ts);Bl.push([t,f[0]+(gx-f[0])*e,f[1]+(20-f[1])*e]);}
+      else if(inP!=null){const e=ease((t-inP)/0.5),f=fr(n%2,inP),g=fr(1-n%2,inP+0.5);Bl.push([t,f[0]+(g[0]-f[0])*e,f[1]+(g[1]-f[1])*e]);}
+      else Bl.push([t,...fr(n%2,t)]);}
+    S['a'+li]=Ak;S['b'+li]=Bk;S.BALLS.push(Bl);ents.push({id:'a'+li},{id:'b'+li});});
+  A.zweitor={vb:'0 0 360 360',cycle:4.8,linear:true,
+    draw(s){field(s,0,0,360,360);mgoal(s,90,8,40,14);mgoal(s,250,8,40,14);line(s,10,336,350,336,'6 5','.7');},ents,sc:{a:S}};
+})();
+
+/* Ball-Treibjagd */
+(function(){
+  const S={L:[[1.6,'Die Jäger passen flach auf die Füße der Hasen'],[2.4,'Getroffen! Der Hase holt den Ball und wird Jäger'],[3.6,'Daneben: Ball holen und neu zielen'],[99,'Nur flach passen, nie hoch schießen']],BALLS:[]};
+  S.j1=[[0,60,320]];S.j2=[[0,330,200]];
+  S.h1=[[0,120,120],[1.2,180,160],[2.4,240,110],[4.4,300,80]];
+  S.h2=[[0,200,60],[1.6,140,100],[3.0,80,60],[4.4,60,120]];
+  S.h3=[[0,260,200],[1.6,200,232],[2.4,215,251],[4.4,215,251]];
+  S.h4=[[0,100,230],[1.5,60,170],[3.0,110,120],[4.4,170,110]];
+  const f1=kpFoot([60,320],[200,232]),d1=unit([60,320],[200,232]);
+  S.BALLS.push([[0,...f1],[1.0,...f1],[1.6,200-d1[0]*14,232-d1[1]*14],[2.1,215,265],[4.4,215,265]]);
+  const f2=kpFoot([330,200],[85,165]);
+  S.BALLS.push([[0,...f2],[2.3,...f2],[3.1,85,165],[3.6,58,172],[4.4,58,172]]);
+  A.treibjagd={vb:'0 0 360 360',cycle:4.8,draw(s){field(s,0,0,360,360);},
+    tick(t,{G}){setFill(G.h3,t>=1.65?RED:BLUE);},
+    ents:[{id:'j1',fill:RED},{id:'j2',fill:RED},{id:'h1'},{id:'h2'},{id:'h3'},{id:'h4'}],sc:{a:S}};
+})();
+
+/* Pass durch den Wald */
+(function(){
+  const S={L:[[2.0,'Zu zweit durch den Wald gehen und sich den Ball zupassen'],[99,'Immer durch eine Lücke zwischen den Bäumen passen']],BALLS:[]},ents=[],TR=[[40,40],[150,36],[260,42],[330,330],[210,328],[90,332]];
+  [[90,170,0],[210,290,0.4]].forEach(([ya,yb,off],li)=>{
+    const X=t=>30+300*Math.max(0,Math.min(1,(t-0.3-off)/4.5));const fr=(w,t)=>[X(t)+14,w?yb:ya];
+    const PT=[0.7,1.5,2.3,3.1,3.9].map(v=>v+off),Ak=[],Bk=[],Bl=[];
+    for(let k=0;k<=56;k++){const t=k/10;Ak.push([t,X(t),ya]);Bk.push([t,X(t),yb]);
+      let n=0,inP=null;PT.forEach(p=>{if(t>=p+0.5)n++;else if(t>=p)inP=p;});
+      if(inP!=null){const e=ease((t-inP)/0.5),f=fr(n%2,inP),g=fr(1-n%2,inP+0.5);Bl.push([t,f[0]+(g[0]-f[0])*e,f[1]+(g[1]-f[1])*e]);}
+      else Bl.push([t,...fr(n%2,t)]);}
+    PT.slice(0,4).forEach(p=>TR.push([X(p+0.65)+14,(ya+yb)/2]));
+    S['a'+li]=Ak;S['b'+li]=Bk;S.BALLS.push(Bl);ents.push({id:'a'+li},{id:'b'+li});});
+  A.wald={vb:'0 0 360 360',cycle:5.6,linear:true,
+    draw(s){field(s,0,0,360,360);TR.forEach(([x,y])=>el('circle',{cx:x,cy:y,r:9,fill:'#2E7D32',stroke:'#1B4D1E','stroke-width':'2'},s));},ents,sc:{a:S}};
+})();
+
+/* Ball einfrieren */
+(function(){
+  const YS=[60,140,220,300],C=2.8,S={L:[[99,'Pass zum Partnerkind: Ball mit der Sohle einfrieren und „Eis!“ rufen']],BALLS:[]},ents=[],PH=[0,0.35,0.7,1.05];
+  YS.forEach((y,i)=>{S['a'+i]=[[0,110,y]];S['b'+i]=[[0,250,y]];ents.push({id:'a'+i},{id:'b'+i});
+    const Bl=[[0,124,y],[0.2,124,y],[0.8,236,y],[1.4,236,y],[2.0,124,y],[2.8,124,y]];S.BALLS.push(samp(Bl,C,PH[i],5.6));});
+  A.einfrieren={vb:'0 0 360 360',cycle:5.6,fade:false,linear:true,
+    draw(s){field(s,0,0,360,360);this._f=YS.map(y=>[[150,y-16],[210,y-16]].map(([x,yy])=>{const t=el('text',{x,y:yy,'text-anchor':'middle','font-size':'18',fill:'#D6F0FF',opacity:'0'},s);t.textContent='❄';return t;}));},
+    tick(t,{mx}){this._f.forEach((p,i)=>{const u=(((t-PH[i])%C)+C)%C;p[1].setAttribute('opacity',u>=0.8&&u<1.4?'1':'0');p[0].setAttribute('opacity',u>=2.0||u<0.2&&t>0.5?'1':'0');
+      p[1].setAttribute('x',mx(268));p[0].setAttribute('x',mx(92));});},ents,sc:{a:S}};
+})();
+
+/* Trollbrücke */
+(function(){
+  const S={L:[[1.3,'Über die Brücke passen, die Trolle versuchen den Ball abzufangen'],[2.0,'Abgefangen!'],[99,'Wer den Ball verliert, wird zum Troll']],BALLS:[]};
+  S.o0=[[0,70,80]];S.u0=[[0,70,280]];S.o1=[[0,180,80]];S.o2=[[0,290,80]];S.u2=[[0,290,280]];
+  S.u1=[[0,180,280],[2.0,180,280],[2.8,130,180],[4.0,130,180]];
+  S.t1=[[0,60,180],[1.6,150,180],[3.2,60,180],[4.0,60,180]];
+  S.t2=[[0,300,180],[1.6,190,180],[2.0,190,180],[2.8,180,280],[4.0,180,280]];
+  S.BALLS.push([[0,70,94],[1.0,70,94],[1.6,70,266],[1.8,70,266],[2.4,70,94],[4.0,70,94]]);
+  S.BALLS.push([[0,180,94],[0.2,180,94],[0.8,180,266],[1.3,180,266],[1.7,186,194],[2.0,186,194],[2.8,180,294],[4.0,180,294]]);
+  S.BALLS.push([[0,290,94],[1.2,290,94],[1.8,290,266],[2.6,290,266],[3.2,290,94],[4.0,290,94]]);
+  A.troll={vb:'0 0 360 360',cycle:4.0,
+    draw(s){field(s,0,0,360,360);el('rect',{x:0,y:155,width:360,height:50,fill:'#8B5A2B',opacity:'.55'},s);txt(s,350,212,'end').textContent='Brücke';},
+    tick(t,{G}){const sw=t>=2.3;setFill(G.t2,sw?BLUE:RED);setFill(G.u1,sw?RED:BLUE);},
+    ents:[{id:'o0'},{id:'u0'},{id:'o1'},{id:'u1'},{id:'o2'},{id:'u2'},{id:'t1',fill:RED},{id:'t2',fill:RED}],sc:{a:S}};
+})();
 
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
@@ -3932,6 +4085,121 @@ EX.push(...[
  last:['4 Runden à 90 Sekunden'],
  steig:['Weniger Inseln','Ball muss in der Insel liegen bleiben','Ein Fängerkind darf Inseln besetzen']}
 ].map(e=>Object.assign({},KP,e)));
+/* ---------- Passen Bambini – U9: zehn neue Spiele, Inhalte (5 Säulen) ---------- */
+Object.assign(LEG,{riesenball:['Riesenball','#F2C230',1],postbote:['Postbote',BLUE,1],bewohner:['Kind im Haus',WAIT,1],haus:['Haus (Reifen)','transparent',1],baum:['Baum (Stange)','#2E7D32',1],troll:['Troll',RED,1],brueckezone:['Brücke','#8B5A2B',1]});
+const KP2={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'passen',lv:['kinder'],saeulen:true};
+EX.push(...[
+{id:'passduell',title:'Passduell 1 gegen 1',legend:['teamblau','teamrot','ball','cone'],
+ chips:[['Schwerpunkt','Passen · Stoppen · Zielen'],['','8–12 Kinder in Paaren'],['Feld','je Paar 6 × 3 m'],['Dauer','6–8 min'],['Material','1 Ball und 4 Hütchen pro Paar']],
+ ziel:'Das Kind passt flach und genau mit der Innenseite auf ein Hütchentor und stoppt den Ball, der auf das eigene Tor kommt, sicher mit der Sohle. Im Spiel: genau zur Mitspielerin passen und Bälle kontrollieren.',
+ org:['Pro Paar zwei Hütchentore (ca. 2 m breit) im Abstand von 5–6 m','Jedes Kind steht vor seinem Tor','Paare nebeneinander mit genug Platz'],
+ rot:'Nach jeder Runde gegen ein anderes Kind spielen (eins weiterrücken).',
+ ablauf:['Das Kind mit Ball passt flach auf das Tor gegenüber.','Das andere Kind verteidigt sein Tor, indem es den Ball stoppt.','Gestoppt? Jetzt passt es selbst zurück.','Rollt der Ball durchs Tor, gibt es einen Punkt.'],
+ stufen:[['Stufe 1 · Zupassen','Ohne Tore: Ball zupassen und mit der Sohle stoppen, gemeinsam zählen.'],['Stufe 2 · Tore','Hütchentore: Wer den Ball durch das Tor des Partnerkinds passt, bekommt einen Punkt.'],['Stufe 3 · Nur zwei Kontakte','Stoppen und sofort passen (zwei Kontakte). Wer den Ball nicht stoppt, gibt einen Punkt ab.']],
+ coach:[['Innenseite','Fuß quer, Fußspitze hoch. Fehlerbild: Pass mit der Spitze, der Ball springt.'],['Zielen','Erst auf eine Lücke schauen, dann passen. Erkennbar: Das Kind schaut zum Tor, bevor es passt.'],['Sohle','Ball mit der Sohle festmachen.'],['Bereit stehen','Leicht in den Knien, bereit zur Seite zu gehen. Fehlerbild: steif stehen, der Ball rollt vorbei.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, dazwischen Partnerwechsel','Wartezeit: keine, jedes Paar spielt gleichzeitig','Pro Kind: ca. 15–20 Pässe und Stopps pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Tore breiter (3 m)','Abstand 4 m','Ball darf erst gestoppt und dann mit der Hand zurechtgelegt werden'],
+ steig:['Tore schmaler','Nur schwacher Fuß','Zwei Kontakte (Stufe 3)','Nach dem Pass einmal um ein Hütchen laufen']},
+{id:'riesenball',title:'Riesenball treiben',legend:['teamblau','teamrot','ball','riesenball'],
+ chips:[['Schwerpunkt','Genaues Passen · Zielen'],['','8–12 Kinder in zwei Teams'],['Feld','15 × 15 m'],['Dauer','6–8 min'],['Material','1 Ball pro Kind, 1 Gymnastikball oder Wasserball']],
+ ziel:'Das Kind passt mit der Innenseite gezielt auf einen großen Ball und schiebt ihn gemeinsam mit seinem Team über die gegnerische Linie. Es lernt: Flach und genau gepasst trifft öfter als fest geschossen.',
+ org:['Zwei Linien im Abstand von ca. 12 m','Ein Team hinter jeder Linie, jedes Kind mit Ball','Riesenball in der Mitte'],
+ rot:'Nach jeder Runde die Seiten wechseln.',
+ ablauf:['Alle passen gleichzeitig auf den Riesenball.','Jeder Treffer schiebt ihn ein Stück weiter.','Abpraller werden gestoppt und wieder gepasst.','Rollt der Riesenball über die Linie der Gegner, gibt es einen Punkt.'],
+ stufen:[['Stufe 1 · Zielwerfen','Ein Team, Riesenball vor einer Wand oder Bank: Wie oft trefft ihr in einer Minute?'],['Stufe 2 · Zwei Teams','Beide Teams passen gleichzeitig, der Riesenball wandert hin und her.'],['Stufe 3 · Torwächter','Ein Kind pro Team darf vor der eigenen Linie Pässe abfangen. Abgefangene Bälle werden zurückgepasst.']],
+ coach:[['Innenseite','Schieben statt schießen. Fehlerbild: Der Ball fliegt über den Riesenball.'],['Standbein','Neben dem Ball, Fußspitze zeigt zum Ziel. Erkennbar: Der Ball rollt gerade auf den Riesenball.'],['Stoppen','Abpraller mit der Sohle stoppen, bevor wieder gepasst wird.'],['Hinter der Linie','Erst passen, wenn man hinter der Linie steht.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, alle passen gleichzeitig','Pro Kind: ca. 15–20 Pässe pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Linien näher am Riesenball','Zwei Riesenbälle','Ball darf vor jedem Pass gestoppt und hingelegt werden'],
+ steig:['Größerer Abstand','Nur schwacher Fuß','Torwächter (Stufe 3)','Pass erst nach einem Doppelpass mit dem Nachbarkind']},
+{id:'kartoffel',title:'Heiße Kartoffel',legend:['kind','faenger_k','ball'],
+ chips:[['Schwerpunkt','Passen unter Druck · Anbieten'],['','8–12 Kinder in Paaren, 1–2 Fänger'],['Feld','20 × 20 m'],['Dauer','6–8 min'],['Material','1 Ball pro Paar, Leibchen']],
+ ziel:'Das Kind erkennt, wann der Fänger kommt, passt den Ball rechtzeitig zum Partnerkind und läuft sich ohne Ball wieder frei. Im Spiel: unter Druck abspielen und anbieten.',
+ org:['Feld 20 × 20 m','Paare mit einem Ball','1 Fänger pro 8 Kinder mit Leibchen'],
+ rot:'Wer gefangen wird, tauscht mit dem Fänger. Spätestens nach jeder Runde neue Fänger.',
+ ablauf:['Die Paare passen sich im Feld den Ball zu.','Der Fänger darf nur das Kind fangen, das den Ball hat.','Kommt er näher, schnell zum Partnerkind passen.','Wer gefangen wird, ist neuer Fänger.'],
+ stufen:[['Stufe 1 · Langsamer Fänger','Der Fänger geht nur oder hüpft auf einem Bein.'],['Stufe 2 · Normal','Der Fänger läuft, die Kinder dürfen den Ball höchstens 3 Sekunden halten.'],['Stufe 3 · Fänger mit Fuß','Der Fänger fängt nicht mit der Hand, sondern muss den Ball wegspitzeln oder einen Pass abfangen.']],
+ coach:[['Hinschauen','Wo ist der Fänger? Erkennbar: Das Kind passt, bevor der Fänger da ist.'],['Anbieten','Ohne Ball weg vom Fänger und frei zum Partnerkind stellen. Fehlerbild: Das Partnerkind steht direkt hinter dem Fänger.'],['Flach passen','Innenseite, damit das Partnerkind gut stoppen kann.'],['Rufen','Den Namen rufen, wenn man frei ist.']],
+ last:['Dauer: 4 Runden à 90 Sekunden, 30 Sekunden Trinkpause','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Feld größer','Fänger geht nur (Stufe 1)','Ball darf in der Hand gehalten werden (Hand-Kartoffel)'],
+ steig:['Feld kleiner','Zwei Fänger','Höchstens 3 Sekunden am Ball (Stufe 2)','Fänger spitzelt den Ball weg (Stufe 3)']},
+{id:'post',title:'Ball-Post',legend:['postbote','bewohner','ball','haus'],
+ chips:[['Schwerpunkt','Passen auf Distanz · Annehmen'],['','8–12 Kinder'],['Feld','20 × 20 m'],['Dauer','6–8 min'],['Material','4–6 Reifen oder Hütchenkreise, 1 Ball pro Postbote']],
+ ziel:'Das Kind passt den Ball (den Brief) aus einigen Metern genau in ein Haus, nimmt den Rückpass an und läuft danach zum nächsten Haus. Im Spiel: Pass, Annahme und sofort weiter.',
+ org:['4–6 Häuser (Reifen) am Feldrand, in jedem ein Kind','Die Postboten mit Ball in der Mitte','Ein Kreis aus Hütchen um jedes Haus: Von dort wird gepasst (ca. 4 m)'],
+ rot:'Nach jeder Runde tauschen Postboten und Kinder in den Häusern.',
+ ablauf:['Der Postbote läuft zu einem Haus und passt den Brief hinein.','Das Kind im Haus stoppt den Ball und passt zurück.','Der Postbote nimmt den Ball an und läuft zum nächsten Haus.','Wie viele Briefe schafft ihr in einer Runde?'],
+ stufen:[['Stufe 1 · Nah','Abstand 3 m, das Kind im Haus rollt den Ball mit der Hand zurück.'],['Stufe 2 · Pass und Rückpass','Abstand 4–5 m, beide passen mit dem Fuß, jedes Haus nur einmal hintereinander.'],['Stufe 3 · Hunde','Zwei Kinder sind Hunde und versuchen, Briefe abzufangen. Abgefangener Brief = Tausch mit dem Postboten.']],
+ coach:[['Zielen','Das Haus anschauen, dann passen. Erkennbar: Der Ball bleibt im Reifen liegen.'],['Innenseite','Flach schieben. Fehlerbild: Der Ball springt über den Reifen.'],['Annahme','Rückpass mit der Sohle oder Innenseite stoppen, dann los.'],['Freies Haus','Ein Haus suchen, an dem gerade kein Postbote steht.']],
+ last:['Dauer: 4 Runden à 2 Minuten','Wartezeit: kurz, Kinder in den Häusern sind ständig beschäftigt','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Kürzerer Abstand','Größere Häuser','Rückpass mit der Hand (Stufe 1)'],
+ steig:['Größerer Abstand','Nur schwacher Fuß','Bestimmte Hausfarbe zurufen','Hunde (Stufe 3)']},
+{id:'torpassspiel',title:'Hütchentor-Spiel',legend:['teamblau','teamrot','ball','cone'],
+ chips:[['Schwerpunkt','Passen im Spiel · Freilaufen'],['','6–10 Kinder, 2 gegen 2 oder 3 gegen 3'],['Feld','20 × 15 m mit 4–6 Hütchentoren'],['Dauer','8–10 min'],['Material','1 Ball pro Feld, Hütchen, Leibchen']],
+ ziel:'Das Kind passt im Spiel durch ein Hütchentor zum Mitspieler und läuft sich hinter einem freien Tor an. Im Spiel: Pass zur freien Mitspielerin und Anbieten in einer Lücke.',
+ org:['4–6 Hütchentore (ca. 1,5 m breit) im Feld verteilen','Zwei Teams à 2–3 Kinder pro Feld','Mehrere Felder nebeneinander, damit alle spielen'],
+ rot:'Nach jedem Spiel gegen ein anderes Team.',
+ ablauf:['Gespielt wird ohne große Tore.','Einen Punkt gibt es für einen Pass durch ein Hütchentor zum Mitspieler.','Das gleiche Tor darf nicht zweimal hintereinander genutzt werden.','Die anderen versuchen, den Ball zu erobern.'],
+ stufen:[['Stufe 1 · Ohne Gegner','Zu zweit durch so viele Tore wie möglich passen.'],['Stufe 2 · Halbaktive Gegner','Die Gegner dürfen nur gehen und Pässe abfangen.'],['Stufe 3 · Spiel','2 gegen 2 oder 3 gegen 3, Pass durchs Tor = Punkt.']],
+ coach:[['Freies Tor','Kopf hoch, ein Tor ohne Gegner suchen. Erkennbar: Das Kind dribbelt weg vom Gegner zu einem freien Tor.'],['Anbieten','Ohne Ball hinter ein freies Tor laufen. Fehlerbild: Alle laufen zum Ball.'],['Pass','Flach mit der Innenseite.'],['Annahme','Den Ball nach dem Tor stoppen und weiterspielen.']],
+ last:['Dauer: 4 Spiele à 2 Minuten, 1 Minute Pause','Wartezeit: keine, mehrere Felder','Pro Kind: ca. 15–20 Ballkontakte pro Spiel','Intensität: mittel bis hoch'],
+ leicht:['Mehr und breitere Tore','Gegner halbaktiv (Stufe 2)','Überzahl: ein Joker spielt immer mit dem Ballbesitz'],
+ steig:['Weniger Tore','Nur schwacher Fuß zählt doppelt','3 gegen 3 auf kleinerem Feld','Punkt erst nach Pass und gestopptem Ball']},
+{id:'zweitor',title:'Zu zweit zum Tor',legend:['kind','ball','minitor'],
+ chips:[['Schwerpunkt','Passen in Bewegung · Abschluss'],['','8–12 Kinder in Paaren'],['Feld','20 × 15 m mit 2–4 Minitoren'],['Dauer','6–8 min'],['Material','1 Ball pro Paar, 2–4 Minitore']],
+ ziel:'Zwei Kinder spielen sich den Ball in der Bewegung nach vorne zu und passen ihn am Ende ins Minitor. Im Spiel: gemeinsam nach vorne kombinieren und abschließen.',
+ org:['Startlinie, gegenüber 2–4 Minitore','Paare mit einem Ball, nebeneinander im Abstand von 4–5 m'],
+ rot:'Nach jedem Durchgang die Seite tauschen (links/rechts).',
+ ablauf:['Die Paare gehen oder laufen gemeinsam Richtung Tor.','Unterwegs dreimal hin und her passen.','Das Kind mit dem letzten Ball passt ins Minitor.','Ball holen, zurück zur Startlinie.'],
+ stufen:[['Stufe 1 · Gehen','Im Gehen passen, vor dem Tor stoppen und ins Tor passen.'],['Stufe 2 · Laufen','Im Laufen passen, der Pass geht leicht nach vorne in den Weg.'],['Stufe 3 · Torwächter','Vor dem Minitor steht ein Kind, das Pässe abfangen darf (nur mit dem Fuß). Danach wird es Angreifer.']],
+ coach:[['Vor das Kind passen','In den Weg, nicht in den Rücken. Fehlerbild: Das Partnerkind muss stehen bleiben.'],['Gleiches Tempo','Nebeneinander bleiben. Erkennbar: Der Abstand bleibt gleich.'],['Ruhig abschließen','Mit der Innenseite ins Tor passen, nicht schießen.'],['Absprechen','Rufen, wer den Ball bekommt.']],
+ last:['Dauer: 8–10 Durchgänge, ca. 6–8 Minuten','Wartezeit: kurz, höchstens 2 Paare pro Tor','Pro Kind: ca. 4–5 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Nur gehen (Stufe 1)','Zwei Pässe statt drei','Größere Minitore'],
+ steig:['Im Laufen (Stufe 2)','Nur schwacher Fuß','Der letzte Pass direkt ins Tor','Torwächter (Stufe 3)']},
+{id:'treibjagd',title:'Ball-Treibjagd',legend:['jaeger','hase','ball'],
+ chips:[['Schwerpunkt','Genaues Passen auf Bewegliches'],['','8–12 Kinder, 2–3 Jäger'],['Feld','20 × 20 m'],['Dauer','6–8 min'],['Material','Weiche Bälle (z. B. Softbälle), Leibchen']],
+ ziel:'Das Kind passt flach und genau auf ein sich bewegendes Ziel und lernt dabei, den richtigen Moment und die richtige Stärke für den Pass zu wählen. Im Spiel: Pass in den Lauf der Mitspielerin.',
+ org:['Feld 20 × 20 m','2–3 Jäger mit weichem Ball','Alle anderen sind Hasen ohne Ball'],
+ rot:'Wer getroffen wird, wird Jäger. Die letzten drei Hasen beginnen die nächste Runde als Jäger.',
+ ablauf:['Die Jäger dribbeln und passen flach auf die Füße der Hasen.','Getroffen ist nur, wer unterhalb des Knies getroffen wird.','Wer getroffen wird, holt den Ball und wird Jäger.','Wer bleibt am längsten Hase?'],
+ stufen:[['Stufe 1 · Langsame Hasen','Hasen dürfen nur gehen.'],['Stufe 2 · Treibjagd','Hasen laufen, Jäger passen aus mindestens 3 m.'],['Stufe 3 · Jäger zu zweit','Jäger dürfen nicht dribbeln, sondern müssen sich den Ball zupassen, bis einer nah genug ist.']],
+ coach:[['Flach passen','Nur Innenseite, nie hoch. Fehlerbild: Der Ball fliegt in Kopfhöhe, sofort abbrechen und wiederholen.'],['Vor das Ziel','Dorthin passen, wo der Hase hinläuft. Erkennbar: Treffer auch auf laufende Hasen.'],['Ausweichen','Hasen schauen zum Ball und springen zur Seite.'],['Fair','Getroffen ist getroffen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine, Getroffene spielen sofort als Jäger weiter','Pro Kind: ca. 10–15 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Mehr Jäger','Hasen gehen (Stufe 1)','Kleineres Feld'],
+ steig:['Mindestabstand 3 m (Stufe 2)','Nur schwacher Fuß','Jäger passen sich zu (Stufe 3)']},
+{id:'wald',title:'Pass durch den Wald',legend:['kind','ball','baum'],
+ chips:[['Schwerpunkt','Passen in Bewegung · Lücken sehen'],['','8–12 Kinder in Paaren'],['Feld','20 × 20 m'],['Dauer','6–8 min'],['Material','1 Ball pro Paar, 10–15 Stangen oder Hütchen als Bäume']],
+ ziel:'Das Kind passt in der Bewegung durch Lücken zwischen den Bäumen zum Partnerkind und hält dabei den Kopf hoch. Im Spiel: Lücken zwischen Gegnern erkennen und durchspielen.',
+ org:['Stangen oder Hütchen als Bäume verteilt im Feld','Paare mit einem Ball, 4–6 m Abstand'],
+ rot:'Nach jeder Runde neue Paare.',
+ ablauf:['Die Paare bewegen sich gemeinsam durch den Wald.','Sie passen sich den Ball durch die Lücken zwischen den Bäumen zu.','Wer einen Baum trifft, muss den Ball dort stoppen und 3 Sekunden „Baum-Pause“ machen.','Wie viele Pässe schafft ihr ohne Baum?'],
+ stufen:[['Stufe 1 · Stehend','Das Partnerkind steht, der Pass geht durch eine Lücke.'],['Stufe 2 · Gemeinsam durch den Wald','Beide bewegen sich und passen durch Lücken.'],['Stufe 3 · Förster','Zwei Kinder sind Förster und dürfen Lücken mit dem Körper zustellen.']],
+ coach:[['Lücke sehen','Kopf hoch vor dem Pass. Erkennbar: Das Kind wartet kurz, bis eine Lücke frei ist.'],['Flach','Innenseite, Ball rollt. Fehlerbild: Der Ball prallt an einem Baum ab, weil zu früh gepasst wurde.'],['Bewegen','Ohne Ball in eine neue Lücke laufen.'],['Stoppen','Ball annehmen, dann weiter.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 20 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Weniger Bäume, größere Lücken','Partnerkind steht (Stufe 1)','Abstand 3 m'],
+ steig:['Mehr Bäume','Nur schwacher Fuß','Förster (Stufe 3)','Direkt weiterpassen']},
+{id:'einfrieren',title:'Ball einfrieren',legend:['kind','ball'],
+ chips:[['Schwerpunkt','Ballannahme mit der Sohle'],['','8–12 Kinder in Paaren'],['Feld','20 × 20 m'],['Dauer','5–6 min'],['Material','1 Ball pro Paar']],
+ ziel:'Das Kind stoppt einen zugepassten Ball mit einem Kontakt sicher mit der Sohle („einfrieren“) und passt danach genau zurück. Grundlage für jede Ballannahme im Spiel.',
+ org:['Paare mit einem Ball, Abstand 4–6 m','Paare nebeneinander mit genug Platz'],
+ rot:'Nach jeder Runde neue Paare.',
+ ablauf:['Pass zum Partnerkind.','Das Partnerkind friert den Ball mit der Sohle ein und ruft „Eis!“.','Erst dann wird zurückgepasst.','Jeder eingefrorene Ball zählt einen Punkt für das Paar.'],
+ stufen:[['Stufe 1 · Stehend','Ball zurollen (Hand oder Fuß), mit der Sohle einfrieren.'],['Stufe 2 · Entgegengehen','Dem Ball zwei Schritte entgegengehen und einfrieren.'],['Stufe 3 · Die Sonne','Ein Kind ist die Sonne und läuft herum. Ein Ball, der nicht sofort eingefroren ist, „schmilzt“: Die Sonne darf ihn wegspitzeln.']],
+ coach:[['Sohle oben','Fuß auf den Ball, Ferse unten. Fehlerbild: Der Ball rutscht unter dem Fuß durch.'],['Hinschauen','Bis der Ball unter der Sohle ist. Erkennbar: Ein Kontakt, Ball liegt still.'],['Pass','Flach mit der Innenseite, nicht zu fest.'],['Rufen','„Eis!“ laut rufen.']],
+ last:['Dauer: 4 Runden à 60 Sekunden','Wartezeit: keine','Pro Kind: ca. 20–25 Ballkontakte pro Runde','Intensität: niedrig'],
+ leicht:['Abstand 3 m','Ball mit der Hand zurollen (Stufe 1)','Zwei Kontakte zum Einfrieren erlaubt'],
+ steig:['Abstand vergrößern','Nur schwacher Fuß','Entgegengehen (Stufe 2)','Die Sonne (Stufe 3)']},
+{id:'troll',title:'Trollbrücke',legend:['kind','troll','ball','brueckezone'],
+ chips:[['Schwerpunkt','Passen gegen einen Gegner'],['','8–12 Kinder, 2 Trolle'],['Feld','15 × 20 m mit Brücke in der Mitte'],['Dauer','6–8 min'],['Material','1 Ball pro Paar, Hütchen für die Brücke, Leibchen']],
+ ziel:'Das Kind passt den Ball an einem Gegner vorbei, wählt den richtigen Moment und eine freie Passlinie. Im Spiel: Pässe an der Gegnerin vorbei spielen.',
+ org:['Brücke (Zone ca. 3 m breit) quer durch die Feldmitte','Paare stehen sich auf beiden Seiten der Brücke gegenüber, ein Ball pro Paar','Zwei Trolle in der Brücke'],
+ rot:'Wer einen Pass verliert, tauscht mit dem Troll.',
+ ablauf:['Die Paare passen sich den Ball über die Brücke zu.','Die Trolle dürfen nur auf der Brücke laufen und versuchen, Pässe abzufangen.','Fängt ein Troll den Ball, tauscht er mit dem Kind, das gepasst hat.','Wer schafft die meisten Pässe über die Brücke?'],
+ stufen:[['Stufe 1 · Schlafende Trolle','Die Trolle gehen nur langsam oder dürfen sich nur seitlich bewegen.'],['Stufe 2 · Wache Trolle','Die Trolle laufen und fangen ab.'],['Stufe 3 · Mehr Trolle','Drei Trolle, gezählt werden nur Pässe, die gestoppt werden.']],
+ coach:[['Hinschauen','Wo ist der Troll? Erkennbar: Das Kind wartet, bis die Passlinie frei ist.'],['Bewegen','Zur Seite gehen, damit der Troll nicht dazwischen steht. Fehlerbild: Beide Kinder bleiben stehen und der Troll wartet in der Mitte.'],['Pass','Flach und fest genug, damit der Troll nicht dazwischen kommt.'],['Troll','Mitte zustellen und auf den Ball schauen.']],
+ last:['Dauer: 4 Runden à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: niedrig bis mittel'],
+ leicht:['Brücke schmaler','Trolle nur gehend (Stufe 1)','Ein Troll weniger'],
+ steig:['Brücke breiter','Nur schwacher Fuß','Drei Trolle (Stufe 3)','Pass nur mit zwei Kontakten']}
+].map(e=>Object.assign({},KP2,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -5920,7 +6188,7 @@ function card(e){const a=A[e.id];
     (a.mirrorAxis?'<button id="mir-'+e.id+'" type="button" aria-pressed="false">'+a.mirrorLabel+'</button>':'')+
     (a.scLabels?Object.keys(a.scLabels).map((k,i)=>'<button type="button" data-sc="'+e.id+'" data-key="'+k+'" aria-pressed="'+(i===0)+'">'+a.scLabels[k]+'</button>').join(''):'')+
     '<label for="sp-'+e.id+'">Tempo</label><input id="sp-'+e.id+'" type="range" min="0.4" max="2" step="0.1" value="'+(a.speed||1)+'">';
-  const leg=e.legend.map(k=>{const l=LEG[k];const ex=k==='cone'||k==='hut'?';border-radius:2px':k==='schuessel'?';border:3px solid #E8962A;box-sizing:border-box':k==='insel'?';border:2px solid #8A97A8;box-sizing:border-box':k==='minitor'||k==='bank'||k==='kegel'||k==='messzone'||k==='torrot'||k==='torgelb'?';border-radius:2px':'';return '<span><i class="dot" style="background:'+l[1]+';opacity:'+l[2]+ex+'"></i>'+l[0]+'</span>';}).join('');
+  const leg=e.legend.map(k=>{const l=LEG[k];const ex=k==='cone'||k==='hut'?';border-radius:2px':k==='schuessel'?';border:3px solid #E8962A;box-sizing:border-box':k==='insel'||k==='haus'?';border:2px solid #8A97A8;box-sizing:border-box':k==='minitor'||k==='bank'||k==='kegel'||k==='messzone'||k==='torrot'||k==='torgelb'?';border-radius:2px':'';return '<span><i class="dot" style="background:'+l[1]+';opacity:'+l[2]+ex+'"></i>'+l[0]+'</span>';}).join('');
   const adapt=Object.keys(e.ad).map(k=>'<section class="full adapt" data-lv="'+k+'" hidden><h4>Anpassung für '+LV.find(l=>l.id===k).name+'</h4><p>'+e.ad[k]+'</p></section>').join('');
   return '<article class="card" id="ex-'+e.id+'" hidden>'+
    '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
