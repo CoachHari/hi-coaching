@@ -6887,6 +6887,20 @@ window.__kbShow=function(){showTab(tab);};
   if(!db)return;
   const col=db.collection('kader');
   const busy=()=>{const a=document.activeElement;return a&&root.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||!$('kb-sheet').hidden||!!gEdit;};
+  /* Beim ersten Anmelden: Kader dieses Geräts mit dem Online-Kader zusammenführen */
+  function merge(loc,rem){
+    const m=JSON.parse(JSON.stringify(rem)),L=JSON.parse(JSON.stringify(loc));m.demo=false;
+    const norm=x=>String(x||'').trim().toLowerCase();const map={};
+    L.players.forEach(p=>{const hit=m.players.find(q=>norm(q.name)===norm(p.name)&&(!p.first||!q.first||norm(q.first)===norm(p.first)))||m.players.find(q=>q.nr===p.nr&&norm(q.name)===norm(p.name));
+      if(hit)map[p.id]=hit.id;else{if(m.players.some(q=>q.id===p.id))p.id=uid();map[p.id]=p.id;m.players.push(p);}});
+    const re=id=>id?(map[id]||id):id;
+    m.games=Array.isArray(m.games)?m.games:[];
+    (L.games||[]).forEach(g=>{if(m.games.some(x=>x.datum===g.datum&&norm(x.gegner)===norm(g.gegner)))return;
+      g.starters=(g.starters||[]).map(re);g.bank=(g.bank||[]).map(re);(g.subs||[]).forEach(x=>{x.out=re(x.out);x.in=re(x.in);});(g.goals||[]).forEach(x=>{x.pid=re(x.pid);x.ast=re(x.ast);});
+      if(m.games.some(x=>x.id===g.id))g.id=uid();m.games.push(g);});
+    if(!(m.lineup&&m.lineup.slots&&m.lineup.slots.some(Boolean))&&L.lineup){m.lineup=L.lineup;m.lineup.slots=m.lineup.slots.map(re);m.lineup.bank=m.lineup.bank.map(re);}
+    return m;
+  }
   function adopt(r){
     try{localStorage.setItem('hi-kabine-backup',localStorage.getItem(KEY)||'');}catch(e){}
     S=fix(JSON.parse(JSON.stringify(r)));sync.pushed=S.ts||0;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
@@ -6897,7 +6911,10 @@ window.__kbShow=function(){showTab(tab);};
     let first=false;try{first=localStorage.getItem('hi-kabine-synced')!=='1';localStorage.setItem('hi-kabine-synced','1');}catch(e){}
     if(!sync.col){sync.col=col;$('kb-store').textContent='Synchronisiert: Kader, Spiele und Matchplan sind auf allen Geräten gleich, auf denen du angemeldet bist.';}
     if(!r||!Array.isArray(r.players)){if(!S.ts)S.ts=Date.now();sync.push();return;}
-    if(first){const remoteEmpty=r.demo||!r.players.length;if(remoteEmpty&&!S.demo&&S.players.length){S.ts=Date.now();sync.push();}else adopt(r);return;}
+    if(first){const remoteEmpty=r.demo||!r.players.length,localEmpty=S.demo||!S.players.length;
+      if(remoteEmpty&&!localEmpty){S.ts=Date.now();sync.push();}
+      else if(!remoteEmpty&&!localEmpty){const m=merge(S,r);adopt(m);S.ts=Date.now();save();sync.push();}
+      else adopt(r);return;}
     if(sync.timer)return;
     if((r.ts||0)>(S.ts||0)){if(!busy())adopt(r);}
     else if((S.ts||0)>(r.ts||0))sync.push();
