@@ -64,3 +64,5 @@ grant select, insert, update, delete on public.einheiten, public.termine to auth
 insert into public.trainer (email, name) values
   ('04coach.hari@gmail.com', 'Haris')
 on conflict (email) do nothing;
+
+-- Bewertungen der Testerinnen: siehe bewertungen.sql

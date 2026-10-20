@@ -1017,6 +1017,60 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 /* ---------- Ende Kabine ---------- */
 </style>
 
+<script>/* Testmodus für Trainerinnen: ?test schaltet ein, ?test=aus schaltet aus */
+(function(){var on=false;try{var q=new URLSearchParams(location.search).get('test');
+if(q!==null){if(q==='aus'||q==='0'){try{localStorage.removeItem('hi-test');}catch(e){}}else{on=true;try{localStorage.setItem('hi-test','1');}catch(e){}}}
+try{if(localStorage.getItem('hi-test')==='1')on=true;}catch(e){}}catch(e){}
+if(on)document.documentElement.classList.add('testmode');})();</script>
+<style>
+/* ---------- Testmodus und Bewertungsbogen ---------- */
+.test-banner{display:none}
+html.testmode .test-banner{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 14px;padding:9px 14px;border-radius:8px;background:linear-gradient(180deg,#FFF6D8,#F6E3A6);color:#4A3700;font-size:14px;line-height:1.4;border:1px solid #D4AF37}
+html.testmode .test-banner b{font-weight:700}
+html.testmode [data-view="cal"],html.testmode [data-view="kader"],html.testmode [data-go="cal"],html.testmode [data-go="kader"],html.testmode #sync,html.testmode #cal,html.testmode #kader{display:none!important}
+.rate-btn{display:none}
+html.testmode .rate-btn{display:inline-flex;align-items:center;gap:6px;font:700 13px var(--body);border:0;border-radius:999px;padding:4px 12px;cursor:pointer;background:var(--club,#1F53A0);color:#fff}
+.rate-btn.done{background:#2E7D32}
+.rate-res{display:inline-flex;align-items:center;gap:6px;font:700 13px var(--body);border:1px solid #D4AF37;border-radius:999px;padding:3px 11px;cursor:pointer;background:#FFF6D8;color:#4A3700}
+.rate-all{font:700 13px var(--body);border:1px solid #D4AF37;border-radius:999px;padding:6px 14px;cursor:pointer;background:#FFF6D8;color:#4A3700}
+dialog.rate-dlg{width:min(640px,calc(100vw - 24px))}
+dialog.rate-dlg.wide{width:min(1000px,calc(100vw - 24px))}
+.rate-sub{margin:0;color:var(--muted);font-size:14px}
+.rate-body{padding:16px;display:grid;gap:14px}
+.rate-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rate-3{display:grid;grid-template-columns:1.2fr .8fr 1fr;gap:12px}
+@media (max-width:560px){.rate-2,.rate-3{grid-template-columns:1fr}}
+.rate-q{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;background:var(--paper)}
+.rate-q legend{float:left;padding:0;font-size:14px;font-weight:600;color:var(--ink);max-width:100%}
+.rate-q legend small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.stars{display:inline-flex;flex-direction:row-reverse;gap:2px}
+.stars input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.stars label{font-size:28px;line-height:1;color:#C9D1DC;cursor:pointer;padding:2px}
+.stars label:hover,.stars label:hover~label,.stars input:checked~label{color:#E0A800}
+.stars input:focus-visible+label{outline:2px solid var(--club,#1F53A0);outline-offset:2px;border-radius:4px}
+.rate-seg{display:inline-flex;gap:6px;flex-wrap:wrap}
+.rate-seg label{position:relative}
+.rate-seg input{position:absolute;opacity:0;width:1px;height:1px}
+.rate-seg span{display:inline-block;font:600 14px var(--body);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;background:var(--paper);color:var(--ink)}
+.rate-seg input:checked+span{background:var(--club,#1F53A0);border-color:var(--club,#1F53A0);color:#fff}
+.rate-seg input:focus-visible+span{outline:2px solid var(--club,#1F53A0);outline-offset:2px}
+.rate-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.rate-foot p{margin:0;font-size:14px;color:var(--muted)}
+.rr-list{display:grid;gap:12px}
+.rr-item{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--paper);display:grid;gap:6px;font-size:14px}
+.rr-item h5{margin:0;font-size:15px}
+.rr-item .rr-sc{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--muted);font-size:13px}
+.rr-item .rr-sc b{color:var(--ink)}
+.rr-item p{margin:0}
+.rr-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.rr-tbl th,.rr-tbl td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rr-tbl th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap}
+.rr-tbl td.n{text-align:right;white-space:nowrap}
+.rr-tbl button{font:600 14px var(--body);background:none;border:0;padding:0;color:var(--club,#1F53A0);cursor:pointer;text-align:left}
+.rr-wrap{overflow-x:auto}
+.rr-empty{color:var(--muted);font-size:14px;margin:0}
+.rate-res[hidden]{display:none}
+</style>
 </head>
 <body>
 
@@ -1033,6 +1087,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     <nav class="menu" id="menu" aria-label="Hauptmenü"><button type="button" class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="views"><span class="mb-ic" aria-hidden="true"><i></i><i></i><i></i></span>Menü</button>
   <div class="views" id="views"><button type="button" data-view="home" aria-pressed="false">Start</button><button type="button" data-view="mappe" aria-pressed="true">Übungsmappe</button><button type="button" data-view="plan" aria-pressed="false">Einheit planen <span class="cnt" id="plan-cnt" hidden>0</span></button><button type="button" data-view="list" aria-pressed="false">Trainingseinheiten <span class="cnt" id="list-cnt" hidden>0</span></button><button type="button" data-view="cal" aria-pressed="false">Kalender</button><button type="button" data-view="kader" aria-pressed="false">Kader</button></div></nav>
   </header>
+  <div class="test-banner" role="note"><b>Testversion für Trainerinnen</b><span>Danke fürs Testen! In jeder Übung findest du den Knopf „★ Übung bewerten“.</span></div>
   <section id="home" class="home" aria-label="Start">
     <div class="hero bleed">
       <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
@@ -6267,7 +6322,7 @@ function card(e){const a=A[e.id];
   return '<article class="card" id="ex-'+e.id+'" hidden>'+
    '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
    '<div class="card-head"><h3>'+e.title+'</h3><div class="meta">'+
-     e.chips.map(c=>'<span class="chip">'+(c[0]?c[0]+' ':'')+'<b>'+c[1]+'</b></span>').join('')+(e.saeulen?'<span class="chip saeulen" title="Lernziel, Spielbezug, Progression, Belastung und Coaching-Punkte überarbeitet">✓ 5 Säulen</span>':'')+'</div></div>'+
+     e.chips.map(c=>'<span class="chip">'+(c[0]?c[0]+' ':'')+'<b>'+c[1]+'</b></span>').join('')+(e.saeulen?'<span class="chip saeulen" title="Lernziel, Spielbezug, Progression, Belastung und Coaching-Punkte überarbeitet">✓ 5 Säulen</span>':'')+'<button type="button" class="rate-btn" data-rate="'+e.id+'">★ Übung bewerten</button><button type="button" class="rate-res" data-rres="'+e.id+'" hidden></button></div></div>'+
    '<div class="grid"><div class="pitch"><svg id="svg-'+e.id+'" viewBox="'+a.vb+'" role="img" aria-label="Animierte Skizze: '+e.title+'"></svg>'+
      '<div class="legend">'+leg+'</div><div class="controls">'+ctr+'</div><div class="step" id="step-'+e.id+'" aria-live="polite"></div></div>'+
    '<div class="side"><section><h4>Ziel</h4><p>'+e.ziel+'</p></section><section><h4>Organisation</h4>'+li(e.org)+'</section><section><h4>'+(e.rotTitle||'Rotation')+'</h4><p>'+e.rot+'</p></section></div></div>'+
@@ -6285,7 +6340,7 @@ const lvlBox=document.getElementById('lvl'),lvlOpts=document.getElementById('lvl
 lvlOpts.innerHTML=LV.map(l=>'<button type="button" class="lvl-opt" data-lv="'+l.id+'" aria-pressed="false"><b>'+l.name+'</b><span class="s">'+l.sub+'</span><span class="d">'+l.d+'</span></button>').join('');
 tabs.innerHTML=CATS.map(c=>'<button class="tab" role="tab" type="button" id="tab-'+c[0]+'" data-cat="'+c[0]+'" aria-selected="false">'+c[1]+'<span class="cnt"></span></button>').join('');
 const tile=e=>'<button type="button" class="tile" data-open="'+e.id+'" data-cat="'+e.cats.join(' ')+'" data-lv="'+e.lv.join(' ')+'"><span class="thumb"><svg id="th-'+e.id+'" viewBox="'+A[e.id].vb+'" aria-hidden="true"></svg></span><span class="tt">'+e.title+'</span></button>';
-panel.innerHTML='<div id="overview"><div class="panel-head"><h2 id="cat-title"></h2><p id="cat-count"></p></div><div class="tiles" id="tiles">'+EX.map(tile).join('')+'</div><div class="empty" id="empty" hidden></div></div>'+EX.map(card).join('');
+panel.innerHTML='<div id="overview"><div class="panel-head"><h2 id="cat-title"></h2><p id="cat-count"></p><button type="button" class="rate-all" id="rate-all" hidden></button></div><div class="tiles" id="tiles">'+EX.map(tile).join('')+'</div><div class="empty" id="empty" hidden></div></div>'+EX.map(card).join('');
 EX.forEach(e=>{animator(e.id,A[e.id]);animator(e.id,A[e.id],{thumb:true});});
 const overview=document.getElementById('overview');let openId=null;
 const exnav=document.createElement('div');exnav.className='exnav';exnav.id='exnav';exnav.hidden=true;document.getElementById('stage2').insertBefore(exnav,panel);
@@ -6368,7 +6423,7 @@ const viewsEl=document.getElementById('views'),planEl=document.getElementById('p
 const planCnt=document.getElementById('plan-cnt'),planMsg=document.getElementById('plan-msg');
 document.getElementById('plan-lv').innerHTML=LV.map(l=>'<option value="'+l.id+'">'+esc(l.name)+'</option>').join('');
 let view='mappe';const kaderEl=document.getElementById('kader');
-function setView(v){view=v;viewsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===v)));
+function setView(v){if(document.documentElement.classList.contains('testmode')&&(v==='cal'||v==='kader'))v='home';view=v;viewsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===v)));
   planEl.hidden=v!=='plan';listEl.hidden=v!=='list';calEl.hidden=v!=='cal';kaderEl.hidden=v!=='kader';lvlBox.hidden=v!=='mappe';homeEl.hidden=v!=='home';
   if(v!=='home'){document.body.classList.remove('is-home');if(window.__heroAnim)window.__heroAnim(false);}
   if(v==='home'){stage2.hidden=true;homeEnter();}
@@ -6383,6 +6438,95 @@ viewsEl.addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(
 
 let toastT=null;const toastEl=document.getElementById('toast');
 function toast(t){toastEl.textContent=t;toastEl.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{toastEl.hidden=true;},2600);}
+/* ---------- Bewertungsbogen (Testmodus) und Auswertung ---------- */
+const TESTMODE=document.documentElement.classList.contains('testmode');
+const RQ=[['lernziel','Lernziel','Das Ziel der Übung war klar und passend.'],['spielbezug','Spielbezug','Die Übung war spielnah: mit Gegner, Entscheidung oder Tor.'],
+  ['progression','Leichter / Schwerer','Mit den Stufen und Varianten konnte ich das Niveau gut anpassen.','Anpassbar'],['belastung','Ballkontakte','Viele Ballkontakte, wenig Wartezeit.'],
+  ['coaching','Coaching-Punkte','Die Coaching-Punkte haben mir beim Korrigieren geholfen.','Coaching'],['spass','Spaß','Die Kinder hatten Spaß.']];
+const WIEDER={ja:'Ja',vielleicht:'Vielleicht',nein:'Nein'};
+const RKEY='hi-rate-me',RDONE='hi-rate-done',RQUEUE='hi-rate-queue';
+const rLoad=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v;}catch(_){return d;}};
+const rSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}};
+function rateBtnState(){const done=rLoad(RDONE,{});document.querySelectorAll('.rate-btn').forEach(b=>{const n=done[b.dataset.rate]||0;b.classList.toggle('done',n>0);b.textContent=n>0?'✓ Bewertet · nochmal bewerten':'★ Übung bewerten';});}
+async function rateSend(row){const sb=window.HI_SB;if(!sb)throw new Error('offline');const {error}=await sb.from('bewertungen').insert(row);if(error)throw error;}
+async function rateFlush(){const q=rLoad(RQUEUE,[]);if(!q.length||!window.HI_SB)return;const rest=[];
+  for(const row of q){try{await rateSend(row);}catch(_){rest.push(row);}}rSave(RQUEUE,rest);}
+let rateDlg=null;
+function rateStars(k){let h='<span class="stars" role="radiogroup">';for(let i=5;i>=1;i--)h+='<input type="radio" id="rs-'+k+'-'+i+'" name="'+k+'" value="'+i+'"><label for="rs-'+k+'-'+i+'" title="'+i+' von 5" aria-label="'+i+' von 5">★</label>';return h+'</span>';}
+function openRate(id){const e=EXM[id];if(!e)return;
+  if(!rateDlg){rateDlg=document.createElement('dialog');rateDlg.className='picker login-dlg rate-dlg';rateDlg.setAttribute('aria-labelledby','rate-h');document.body.appendChild(rateDlg);
+    rateDlg.addEventListener('click',ev=>{if(ev.target===rateDlg)rateDlg.close();});}
+  const me=rLoad(RKEY,{}),lvOpts=LV.map(l=>'<option value="'+l.id+'"'+((me.alter||level)===l.id?' selected':'')+'>'+esc(l.name)+'</option>').join('');
+  rateDlg.innerHTML='<form novalidate><div class="pk-head"><div class="pk-top"><h3 id="rate-h">Übung bewerten</h3><button type="button" class="btn ghost" data-rx>Schließen</button></div><p class="rate-sub">'+esc(e.title)+'</p></div>'+
+    '<div class="rate-body">'+
+    '<div class="rate-2"><label class="fld">Dein Name<input name="name" autocomplete="name" required value="'+esc(me.name||'')+'"></label><label class="fld">Verein / Team<input name="team" value="'+esc(me.team||'')+'"></label></div>'+
+    '<div class="rate-3"><label class="fld">Getestet mit<select name="alter">'+lvOpts+'</select></label><label class="fld">Anzahl Kinder<input name="kinder" type="number" min="1" max="60" inputmode="numeric"></label><label class="fld">Getestet am<input name="datum" type="date" value="'+today()+'"></label></div>'+
+    RQ.map(([k,t,d])=>'<fieldset class="rate-q"><legend>'+t+'<small>'+d+'</small></legend>'+rateStars(k)+'</fieldset>').join('')+
+    '<fieldset class="rate-q"><legend>Würdest du die Übung wieder machen?</legend><span class="rate-seg">'+Object.keys(WIEDER).map(k=>'<label><input type="radio" name="wieder" value="'+k+'"><span>'+WIEDER[k]+'</span></label>').join('')+'</span></fieldset>'+
+    '<label class="fld">Was hat gut funktioniert?<textarea name="gut" rows="3" maxlength="1500"></textarea></label>'+
+    '<label class="fld">Was würdest du ändern? (Erklärung, Skizze, Ablauf …)<textarea name="aendern" rows="3" maxlength="1500"></textarea></label>'+
+    '<div class="rate-foot"><button type="submit" class="btn primary">Bewertung absenden</button><p role="status" aria-live="polite" data-rmsg></p></div></div></form>';
+  const f=rateDlg.querySelector('form'),msg=rateDlg.querySelector('[data-rmsg]');
+  rateDlg.querySelector('[data-rx]').addEventListener('click',()=>rateDlg.close());
+  f.addEventListener('submit',async ev=>{ev.preventDefault();const fd=new FormData(f),name=String(fd.get('name')||'').trim();
+    if(!name){msg.textContent='Bitte deinen Namen eintragen.';f.name.focus();return;}
+    const d={titel:e.title,name:name.slice(0,80),team:String(fd.get('team')||'').trim().slice(0,80),alter:fd.get('alter'),kinder:+fd.get('kinder')||null,datum:fd.get('datum')||null,
+      wieder:fd.get('wieder')||null,gut:String(fd.get('gut')||'').trim().slice(0,1500),aendern:String(fd.get('aendern')||'').trim().slice(0,1500)};
+    let any=false;RQ.forEach(([k])=>{const v=+fd.get(k)||null;d[k]=v;if(v)any=true;});
+    if(!any&&!d.gut&&!d.aendern){msg.textContent='Bitte mindestens eine Frage mit Sternen beantworten oder einen Kommentar schreiben.';return;}
+    rSave(RKEY,{name:d.name,team:d.team,alter:d.alter});
+    const row={uebung:e.id,data:d},btn=f.querySelector('[type=submit]');btn.disabled=true;
+    let queued=false;try{await rateSend(row);}catch(_){const q=rLoad(RQUEUE,[]);q.push(row);rSave(RQUEUE,q);queued=true;}
+    const done=rLoad(RDONE,{});done[e.id]=(done[e.id]||0)+1;rSave(RDONE,done);rateBtnState();
+    btn.disabled=false;rateDlg.close();toast(queued?'Bewertung gespeichert. Sie wird gesendet, sobald Internet da ist.':'Danke! Deine Bewertung ist angekommen.');});
+  if(rateDlg.showModal)rateDlg.showModal();else rateDlg.setAttribute('open','');}
+
+/* Auswertung: nur für angemeldete Trainer */
+let rateData=null;
+const rAvg=a=>{const v=a.filter(x=>typeof x==='number'&&x>0);return v.length?v.reduce((s,x)=>s+x,0)/v.length:null;};
+const rFmt=v=>v==null?'–':v.toFixed(1).replace('.',',');
+function rStats(list){const s={n:list.length};RQ.forEach(([k])=>{s[k]=rAvg(list.map(r=>r.data[k]));});
+  s.gesamt=rAvg(RQ.map(([k])=>s[k]));const w=list.filter(r=>r.data.wieder);s.wieder=w.length?Math.round(100*w.filter(r=>r.data.wieder==='ja').length/w.length):null;return s;}
+function rateByEx(){const m={};(rateData||[]).forEach(r=>{(m[r.uebung]=m[r.uebung]||[]).push(r);});return m;}
+function rateResState(){if(!rateData)return;const m=rateByEx();
+  document.querySelectorAll('.rate-res').forEach(b=>{const l=m[b.dataset.rres];b.hidden=!l;if(l){const s=rStats(l);b.textContent='★ '+rFmt(s.gesamt)+' · '+l.length+(l.length===1?' Bewertung':' Bewertungen');}});
+  const all=document.getElementById('rate-all');if(all){all.hidden=false;all.textContent='Bewertungen der Testerinnen ('+rateData.length+')';}}
+function rDlg(title,sub,html,wide){let d=document.getElementById('rr-dlg');if(!d){d=document.createElement('dialog');d.id='rr-dlg';d.className='picker login-dlg rate-dlg';d.setAttribute('aria-labelledby','rr-h');document.body.appendChild(d);
+    d.addEventListener('click',ev=>{if(ev.target===d)d.close();const x=ev.target.closest('[data-rrx]');if(x)d.close();const o=ev.target.closest('[data-rropen]');if(o){d.close();openEx(o.dataset.rropen);}});}
+  d.classList.toggle('wide',!!wide);
+  d.innerHTML='<div class="pk-head"><div class="pk-top"><h3 id="rr-h">'+esc(title)+'</h3><button type="button" class="btn ghost" data-rrx>Schließen</button></div>'+(sub?'<p class="rate-sub">'+sub+'</p>':'')+'</div><div class="rate-body">'+html+'</div>';
+  if(d.showModal)d.showModal();else d.setAttribute('open','');return d;}
+function openEx(id){const e=EXM[id];if(!e)return;if(!e.lv.includes(level)){level=e.lv[0];try{localStorage.setItem(LKEY,level);}catch(_){}}
+  const c=catsOf(e,level)[0];setView('mappe');show(c,false);openDetail(id);}
+function showRateEx(id){const e=EXM[id],l=(rateByEx()[id]||[]).slice().sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));const s=rStats(l);
+  const sum='Ø gesamt <b>'+rFmt(s.gesamt)+'</b> · '+RQ.map(([k,t])=>t+' '+rFmt(s[k])).join(' · ')+(s.wieder!=null?' · wieder machen: '+s.wieder+' % ja':'');
+  const items=l.map(r=>{const d=r.data,lv=LV.find(x=>x.id===d.alter);
+    return '<div class="rr-item"><h5>'+esc(d.name)+(d.team?' · '+esc(d.team):'')+'</h5><div class="rr-sc">'+
+      [lv?lv.name:'',d.kinder?d.kinder+' Kinder':'',d.datum?esc(d.datum.split('-').reverse().join('.')):''].filter(Boolean).map(x=>'<span>'+x+'</span>').join('')+'</div>'+
+      '<div class="rr-sc">'+RQ.map(([k,t])=>'<span>'+t+' <b>'+(d[k]?'★'.repeat(d[k]):'–')+'</b></span>').join('')+(d.wieder?'<span>Wieder machen: <b>'+WIEDER[d.wieder]+'</b></span>':'')+'</div>'+
+      (d.gut?'<p><b>Gut:</b> '+esc(d.gut)+'</p>':'')+(d.aendern?'<p><b>Ändern:</b> '+esc(d.aendern)+'</p>':'')+'</div>';}).join('');
+  rDlg('Bewertungen',esc(e?e.title:id)+'<br>'+sum,'<div class="rr-list">'+(items||'<p class="rr-empty">Noch keine Bewertung.</p>')+'</div>');}
+function rateCsv(){const cols=['uebung','titel','name','team','alter','kinder','datum'].concat(RQ.map(r=>r[0]),['wieder','gut','aendern','eingegangen']);
+  const q=v=>{const s=v==null?'':String(v);return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  const rows=(rateData||[]).map(r=>cols.map(c=>c==='uebung'?r.uebung:c==='eingegangen'?r.created_at:c==='titel'?(r.data.titel||(EXM[r.uebung]||{}).title):r.data[c]).map(q).join(';'));
+  const blob=new Blob(['﻿'+[cols.join(';')].concat(rows).join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bewertungen-'+today()+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}
+function showRateAll(){const m=rateByEx(),rows=Object.keys(m).map(id=>({id,e:EXM[id],s:rStats(m[id])})).sort((a,b)=>(b.s.gesamt||0)-(a.s.gesamt||0));
+  const tbl=rows.length?'<div class="rr-wrap"><table class="rr-tbl"><thead><tr><th>Übung</th><th>Anz.</th><th>Ø</th>'+RQ.map(r=>'<th>'+(r[3]||r[1])+'</th>').join('')+'<th>Wieder</th></tr></thead><tbody>'+
+    rows.map(r=>'<tr><td><button type="button" data-rropen="'+r.id+'">'+esc(r.e?r.e.title:r.id)+'</button></td><td class="n">'+r.s.n+'</td><td class="n"><b>'+rFmt(r.s.gesamt)+'</b></td>'+RQ.map(([k])=>'<td class="n">'+rFmt(r.s[k])+'</td>').join('')+'<td class="n">'+(r.s.wieder==null?'–':r.s.wieder+' %')+'</td></tr>').join('')+'</tbody></table></div>'
+    :'<p class="rr-empty">Noch keine Bewertungen eingegangen.</p>';
+  const d=rDlg('Bewertungen der Testerinnen',(rateData||[]).length+' Bewertungen zu '+rows.length+' Übungen, sortiert nach Ø gesamt. Übung antippen, um sie zu öffnen; dort zeigt der goldene Knopf alle Kommentare.',
+    tbl+'<div class="rate-foot"><button type="button" class="btn" data-rcsv>Als Tabelle herunterladen (CSV)</button><button type="button" class="btn ghost" data-rreload>Aktualisieren</button></div>',true);
+  d.querySelector('[data-rcsv]').addEventListener('click',rateCsv);
+  d.querySelector('[data-rreload]').addEventListener('click',async()=>{await rateLoad();showRateAll();});}
+async function rateLoad(){const sb=window.HI_SB;if(!sb||!window.HI_isTrainer)return;let t=null;try{t=await window.HI_isTrainer();}catch(_){t=false;}if(t!==true)return;
+  try{const {data,error}=await sb.from('bewertungen').select('id,uebung,data,created_at').order('created_at',{ascending:false}).limit(5000);if(error)return;rateData=data||[];rateResState();}catch(_){}}
+window.__rateLoad=rateLoad;
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-rate]');if(b){openRate(b.dataset.rate);return;}
+  const r=ev.target.closest('[data-rres]');if(r){showRateEx(r.dataset.rres);return;}
+  if(ev.target.closest('#rate-all'))showRateAll();});
+rateBtnState();if(TESTMODE){rateFlush();window.addEventListener('online',rateFlush);}
+rateLoad();
 
 function updateTotals(){PARTS.forEach(([k])=>{const el=partsEl.querySelector('[data-pm="'+k+'"]');if(el)el.textContent=partMin(k)+' min';});
   document.getElementById('plan-total').textContent=totalMin()+' min';const n=itemCount();planCnt.textContent=n;planCnt.hidden=n===0;}

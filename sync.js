@@ -33,6 +33,7 @@
         async delete(){const {error}=await sb.from(name).delete().eq('id',id);if(error)throw toErr(error);rows=rows.filter(r=>r.id!==id);save(CACHE+name,rows);emit();}};},
       onSnapshot(next){ls.add(next);setTimeout(()=>next(snap()),0);start();return()=>ls.delete(next);}};
     cols[name]=c;return c;}
+  window.HI_SB=sb;window.HI_isTrainer=()=>sb?isTrainer():Promise.resolve(false);
   const db={collection,doc(p){const i=p.lastIndexOf('/');return collection(p.slice(0,i)).doc(p.slice(i+1));}};
   window.claude={use:async name=>{const s=await sessionP;if(!s)return null;
     if(name==='db'){const t=await isTrainer();return t===false?null:db;}
