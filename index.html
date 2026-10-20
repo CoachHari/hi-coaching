@@ -5627,12 +5627,23 @@ kopfballhand:{saeulen:true,
 EX.forEach(e=>{const u=UPG_W[e.id];if(!u)return;const {chip1,...rest}=u;Object.assign(e,rest);if(chip1&&e.chips[1])e.chips[1][1]=chip1;});
 const WARM=['raute','dreieck','quadrat','endlos'];
 EX.forEach(e=>{e.cats=[e.cat].concat(WARM.includes(e.id)?['aufwaermen']:[]);});
+/* Reiter nach Spielphasen (Okt 2026): Mit Ball, Gegen den Ball, Umschalten, Torabschluss, Athletik */
+const CATMAP={angriff:'mitball',verteidigung:'gegenball',schuss:'abschluss',schnelligkeit:'athletik',kondition:'athletik'};
+const UMSCHALT=['rondokonter','vierpress','konterschuss','umschaltrondo','dreiteam','zonenrondo','zonen42','kontertor','ausbruchrondo','gegenpress55','rueckwaerts','vierdrei','umschaltspiel','konter32','konter'];
+const HIDECAT={kinder:['umschalten','athletik']};
+/* Bambini – U9: Lauf- und Fangspiele aus Athletik wandern in passende Reiter */
+const KIDMOVE={feuerwasser:'aufwaermen',blaurot:'aufwaermen',hasejaeger:'aufwaermen',zahlenlauf:'aufwaermen',tunnelfangen:'aufwaermen',farbenlauf:'aufwaermen',platztausch:'aufwaermen',startsignal:'aufwaermen',kettenfangen:'aufwaermen',laufweg:'aufwaermen',
+  hindernis:'aufwaermen',tierparcours:'aufwaermen',huepfen:'aufwaermen',stationen:'aufwaermen',aufgabenstaffel:'aufwaermen',baelleklau:'aufwaermen',
+  staffelball:'technik',abenteuer:'technik',ballrennen:'mitball',endlosspiel:'mitball'};
+EX.forEach(e=>{const m=c=>CATMAP[c]||c;e.cat=m(e.cat);e.cats=[...new Set(e.cats.map(m).concat(UMSCHALT.includes(e.id)?['umschalten']:[]))];
+  if(KIDMOVE[e.id]&&e.lv.includes('kinder'))e.catsLv={kinder:[KIDMOVE[e.id]]};});
+function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e.cats.filter(c=>!h.includes(c));}
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
 if(!LV.some(l=>l.id===level))level=null;
 
 const PARTS=[['aufw','Aufwärmen'],['h1','Hauptteil 1'],['h2','Hauptteil 2'],['schluss','Schluss']];
-const CATS=[['aufwaermen','Aufwärmen'],['passen','Passen'],['schuss','Schuss'],['rondo','Rondo'],['verteidigung','Verteidigung'],['angriff','Angriff'],['technik','Technik'],['schnelligkeit','Schnelligkeit'],['kondition','Kondition']];
+const CATS=[['aufwaermen','Aufwärmen'],['passen','Passen'],['technik','Technik'],['rondo','Rondo'],['mitball','Mit Ball'],['gegenball','Gegen den Ball'],['umschalten','Umschalten'],['abschluss','Torabschluss'],['athletik','Athletik']];
 
 /* ---------- Rendering ---------- */
 const li=a=>'<ul>'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
@@ -5668,7 +5679,7 @@ panel.innerHTML='<div id="overview"><div class="panel-head"><h2 id="cat-title"><
 EX.forEach(e=>{animator(e.id,A[e.id]);animator(e.id,A[e.id],{thumb:true});});
 const overview=document.getElementById('overview');let openId=null;
 const exnav=document.createElement('div');exnav.className='exnav';exnav.id='exnav';exnav.hidden=true;document.getElementById('stage2').insertBefore(exnav,panel);
-function navList(){return EX.filter(e=>e.cats.includes(cur)&&e.lv.includes(level)).map(e=>e.id);}
+function navList(){return EX.filter(e=>catsOf(e,level).includes(cur)&&e.lv.includes(level)).map(e=>e.id);}
 function peekHtml(id,dir){const e=EXM[id],w=dir==='prev'?'Vorherige':'Nächste';return '<button type="button" class="peek '+dir+'" data-nav="'+id+'" aria-label="'+w+' Übung: '+e.title.replace(/"/g,'&quot;')+'"><span class="pk-th"><span class="pk-arr" aria-hidden="true">'+(dir==='prev'?'‹':'›')+'</span></span><span class="pk-t"><small>'+w+'</small>'+e.title+'</span></button>';}
 function updateNav(id){const L=navList(),i=L.indexOf(id);if(i<0||L.length<2){exnav.hidden=true;exnav.innerHTML='';return;}
   const p=L[(i-1+L.length)%L.length],n=L[(i+1)%L.length];
@@ -5696,21 +5707,21 @@ function renderLevel(){
   if(!level)return;
   const L=LV.find(l=>l.id===level);
   lvlInfo.innerHTML='<summary>Grundsätze für '+L.name+' ('+L.sub+')</summary>'+li(L.rules)+'<p class="src">Quellen: '+L.src+'</p>';
-  tabs.querySelectorAll('.tab').forEach(t=>{t.querySelector('.cnt').textContent=EX.filter(e=>e.cats.includes(t.dataset.cat)&&e.lv.includes(level)).length;});
+  tabs.querySelectorAll('.tab').forEach(t=>{t.hidden=(HIDECAT[level]||[]).includes(t.dataset.cat);t.querySelector('.cnt').textContent=EX.filter(e=>catsOf(e,level).includes(t.dataset.cat)&&e.lv.includes(level)).length;});
   panel.querySelectorAll('.adapt').forEach(s=>{s.hidden=s.dataset.lv!==level;});
   show(cur,false);
 }
 function show(cat,scroll){
-  if(!CATS.some(c=>c[0]===cat))cat='passen';cur=cat;
+  cat=CATMAP[cat]||cat;if(!CATS.some(c=>c[0]===cat))cat='passen';if(level&&(HIDECAT[level]||[]).includes(cat))cat='aufwaermen';cur=cat;
   if(!level)return;
   const name=CATS.find(c=>c[0]===cat)[1],L=LV.find(l=>l.id===level);
-  const list=EX.filter(e=>e.cats.includes(cat)&&e.lv.includes(level));
+  const list=EX.filter(e=>catsOf(e,level).includes(cat)&&e.lv.includes(level));
   tabs.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.cat===cat)));
   panel.setAttribute('aria-labelledby','tab-'+cat);
   document.getElementById('cat-title').textContent=name;
   document.getElementById('cat-count').textContent=(list.length===1?'1 Übung':list.length+' Übungen')+' · '+L.name;
   openId=null;exnav.hidden=true;overview.hidden=false;panel.querySelectorAll('article.card').forEach(a=>{a.hidden=true;});
-  let ti=0;panel.querySelectorAll('.tile').forEach(a=>{a.hidden=!(a.dataset.cat.split(' ').includes(cat)&&a.dataset.lv.split(' ').includes(level));if(!a.hidden&&a.style&&a.style.setProperty)a.style.setProperty('--i',Math.min(ti++,14));});
+  let ti=0;panel.querySelectorAll('.tile').forEach(a=>{const ex2=EXM[a.dataset.open];a.hidden=!(ex2&&catsOf(ex2,level).includes(cat)&&ex2.lv.includes(level));if(!a.hidden&&a.style&&a.style.setProperty)a.style.setProperty('--i',Math.min(ti++,14));});
   const em=document.getElementById('empty');em.hidden=list.length>0;
   const anyCat=EX.some(e=>e.cats.includes(cat));
   em.innerHTML=anyCat?'<strong>Keine Übung im Bereich '+name+' für '+L.name+'</strong>'+(L.empty||'Die vorhandenen Übungen in diesem Bereich sind für eine andere Altersgruppe gedacht.')
@@ -5807,9 +5818,10 @@ const pk=document.getElementById('picker'),pkTiles=document.getElementById('pk-t
 let pkPart=null,pkCat='alle',pkBuilt=false;
 pkFilters.innerHTML=[['alle','Alle']].concat(CATS).map(c=>'<button type="button" class="fchip" data-fc="'+c[0]+'" aria-pressed="false">'+c[1]+'</button>').join('');
 function pkFilter(){const q=pkQ.value.trim().toLowerCase(),lv=plan.meta.lv;let n=0;
-  pkFilters.querySelectorAll('.fchip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.fc===pkCat)));
+  if(!pkAll.checked&&(HIDECAT[lv]||[]).includes(pkCat))pkCat='alle';
+  pkFilters.querySelectorAll('.fchip').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.fc===pkCat));b.hidden=!pkAll.checked&&(HIDECAT[lv]||[]).includes(b.dataset.fc);});
   pkTiles.querySelectorAll('[data-pick]').forEach(t=>{const e=EXM[t.dataset.pick];
-    const ok=(pkCat==='alle'||e.cats.includes(pkCat))&&(pkAll.checked||e.lv.includes(lv))&&(!q||e.title.toLowerCase().includes(q));t.hidden=!ok;if(ok)n++;});
+    const ok=(pkCat==='alle'||(pkAll.checked?e.cats:catsOf(e,lv)).includes(pkCat))&&(pkAll.checked||e.lv.includes(lv))&&(!q||e.title.toLowerCase().includes(q));t.hidden=!ok;if(ok)n++;});
   document.getElementById('pk-count').textContent=n===1?'1 Übung':n+' Übungen';document.getElementById('pk-empty').hidden=n>0;}
 function openPicker(k){pkPart=k;pkCat=k==='aufw'?'aufwaermen':'alle';pkQ.value='';pkAll.checked=false;
   if(!pkBuilt){pkTiles.innerHTML=EX.map(e=>'<button type="button" class="tile" lang="de" data-pick="'+e.id+'"><span class="thumb">'+thumbSvg(e.id)+'</span><span class="tt">'+esc(e.title)+'</span><span class="tmeta">'+esc(catName(e.cat))+' · '+esc(LV.filter(l=>e.lv.includes(l.id)).map(l=>l.short).join(', '))+'</span></button>').join('');pkBuilt=true;}
@@ -6257,9 +6269,9 @@ let heroPlayed=false;
 function homeEnter(){fitTitle();document.body.classList.add('is-home');if(window.__heroAnim)window.__heroAnim(true);
   if(!heroPlayed){const go=()=>{heroPlayed=true;requestAnimationFrame(()=>heroEl.classList.add('go'));};if(document.getElementById('splash')){window.addEventListener('hi:splashdone',go,{once:true});setTimeout(go,4200);}else go();}}
 
-cur=location.hash.slice(1)||'passen';
+cur=CATMAP[location.hash.slice(1)]||location.hash.slice(1)||'passen';
 renderLevel();
-setView(location.hash==='#kader'?'kader':CATS.some(c=>c[0]===location.hash.slice(1))?'mappe':'home');
+setView(location.hash==='#kader'?'kader':CATS.some(c=>c[0]===(CATMAP[location.hash.slice(1)]||location.hash.slice(1)))?'mappe':'home');
 })();}
 (function(){var ran=false,rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
 window.__hiGo=function(){if(ran)return;ran=true;try{__hiMain();}finally{if(window.__splashHide)window.__splashHide(rm?900:2700);}};
