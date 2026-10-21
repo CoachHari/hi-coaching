@@ -1095,6 +1095,20 @@ html.testmode img,html.testmode svg{-webkit-user-drag:none}
 html.testmode #plan-pdf,html.testmode [data-pdf-s],html.testmode [data-t-pdf]{display:none!important}
 @media print{html.testmode body>*{display:none!important}html.testmode body::before{content:"Drucken ist in der Testversion nicht möglich. © H.I. – Coaching";display:block;padding:40px;font:600 18px Arial,sans-serif;color:#111}}
 dialog.wm-dlg{width:min(460px,calc(100vw - 24px))}
+.kb-bform{width:min(620px,100%);max-height:calc(100dvh - 40px);overflow:auto}
+.kb-bhint{margin:0;font-size:14px;line-height:1.5;color:var(--kb-muted)}
+.kb-bhint code{background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;color:#fff;font-size:13px}
+.kb-bform textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.25);color:#fff;font:400 15px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical;-webkit-user-select:text;user-select:text}
+.kb-bform textarea:focus{border-color:var(--kb-gold);outline:none}
+.kb-btab{width:100%;border-collapse:collapse;font-size:14px}
+.kb-btab th,.kb-btab td{text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.12)}
+.kb-btab th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--kb-muted)}
+.kb-btab tr.bad td{color:#FF9C8A}
+.kb-btab small{color:var(--kb-muted)}
+.kb-btab tr.bad small{color:#FF9C8A}
+.kb-bnote{margin:8px 0 0;font-size:13px;color:var(--kb-muted)}
+.kb-empty-act{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.kb-sheet{--kb-club:#1F53A0;--kb-club-deep:#163E7A;--kb-keeper:#3A3D46;--kb-gold:#F2C230;--kb-ink:#fff;--kb-muted:rgba(255,255,255,.72);--kb-faint:rgba(255,255,255,.48);--kb-line:rgba(255,255,255,.16);--kb-night:#060C20;--kb-danger:#FF8A7A}
 </style>
 </head>
 <body>
@@ -1305,7 +1319,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
           <div class="kb-room-tools">
             <button type="button" class="kb-arrow" id="kb-prev" aria-label="Vorheriges Trikot">‹</button>
             <button type="button" class="kb-arrow" id="kb-next" aria-label="Nächstes Trikot">›</button>
-            <button type="button" class="kb-btn kb-gold" id="kb-add">+ Spielerin</button>
+            <button type="button" class="kb-btn" id="kb-bulk">Liste einfügen</button><button type="button" class="kb-btn kb-gold" id="kb-add">+ Spielerin</button>
           </div>
         </div>
         <div class="kb-rail" id="kb-rail" tabindex="0" aria-label="Trikots an der Stange. Wischen oder Pfeiltasten zum Durchblättern.">
@@ -8657,13 +8671,23 @@ document.body.insertAdjacentHTML('beforeend',
  '<div class="kb-foot"><span id="kb-f-del-wrap"></span><div class="kb-r"><button type="button" class="kb-btn kb-plain" id="kb-f-cancel">Abbrechen</button><button type="submit" class="kb-btn kb-gold">Speichern</button></div></div>'+
  '</form></div>');
 
+/* ---------- Liste einfügen (mehrere Spielerinnen auf einmal) ---------- */
+document.body.insertAdjacentHTML('beforeend',
+ '<div class="kb-sheet" id="kb-bsheet" hidden><form class="kb-form kb-bform" id="kb-bform" novalidate>'+
+ '<h3>Liste einfügen</h3>'+
+ '<p class="kb-bhint">Eine Spielerin pro Zeile: <b>Nummer Vorname Nachname Position</b>. Du kannst die Liste aus Excel, Word oder WhatsApp kopieren. Trennzeichen (Leerzeichen, Tab, Komma, Strichpunkt) und Reihenfolge der Position sind egal.<br>Beispiel: <code>7 Anna Muster Sturm</code> · <code>1;Lena;Berger;Tor</code></p>'+
+ '<label>Liste<textarea id="kb-b-text" rows="8" autocomplete="off" spellcheck="false" placeholder="1 Lena Berger Tor&#10;4 Sara Huber Abwehr&#10;8 Mia Gruber Mittelfeld&#10;9 Anna Muster Sturm"></textarea></label>'+
+ '<div class="kb-bprev" id="kb-b-prev" aria-live="polite"></div>'+
+ '<div class="kb-foot"><span></span><div class="kb-r"><button type="button" class="kb-btn kb-plain" id="kb-b-cancel">Abbrechen</button><button type="submit" class="kb-btn kb-gold" id="kb-b-go" disabled>Übernehmen</button></div></div>'+
+ '</form></div>');
+
 /* ---------- Kabine ---------- */
 const rail=$('kb-rail'),track=$('kb-track');
 let items=[],active=-1,cardKey='';
 function renderRail(){
   track.querySelectorAll('.kb-hang,.kb-gap,.kb-empty').forEach(n=>n.remove());
   const list=sorted();
-  if(!list.length)track.insertAdjacentHTML('beforeend','<div class="kb-empty"><p>Noch keine Spielerin an der Stange.</p><button type="button" class="kb-btn kb-gold" data-kbadd>+ Erste Spielerin hinzufügen</button></div>');
+  if(!list.length)track.insertAdjacentHTML('beforeend','<div class="kb-empty"><p>Noch keine Spielerin an der Stange.</p><div class="kb-empty-act"><button type="button" class="kb-btn kb-gold" data-kbadd>+ Erste Spielerin hinzufügen</button><button type="button" class="kb-btn" data-kbbulk>Ganze Liste einfügen</button></div></div>');
   let last='';
   list.forEach((p,i)=>{
     const first=p.pos!==last;last=p.pos;
@@ -8713,6 +8737,7 @@ window.addEventListener('pointerup',()=>{if(!md)return;md=null;if(moved){rail.cl
 track.addEventListener('click',e=>{
   if(moved){moved=false;return;}
   if(e.target.closest('[data-kbadd]')){openForm();return;}
+  if(e.target.closest('[data-kbbulk]')){openBulk();return;}
   const h=e.target.closest('.kb-hang');if(!h)return;
   const i=items.indexOf(h);
   if(i===active){const p=pById(h.dataset.id);if(p)openForm(p);}else goTo(i);
@@ -8783,6 +8808,39 @@ $('kb-pform').addEventListener('submit',e=>{
   touch();closeForm();renderAll();
   const i=items.findIndex(it=>it.dataset.id===id);if(i>=0){active=i;requestAnimationFrame(()=>{goTo(i,false);layout();});}
 });
+/* ---------- Liste einfügen: Logik ---------- */
+const BPOS=[['TOR',/^(tor|tw|torfrau|torhüterin|torhueterin|torwart|goalie|gk)$/],['ABW',/^(abw|abwehr|verteidigung|verteidigerin|iv|av|lv|rv|lib|libero|innenverteidigerin|außenverteidigerin|aussenverteidigerin|df)$/],
+  ['MIT',/^(mit|mf|mittelfeld|zm|dm|om|lm|rm|zdm|zom|6er|8er|10er|sechser|achter|zehner)$/],['STU',/^(stu|st|sturm|stürmerin|stuermerin|angriff|la|ra|lf|rf|fl|flügel|fluegel|mittelstürmerin|cf)$/]];
+function bulkParse(txt){const out=[],used=new Set(S.demo?[]:S.players.map(p=>p.nr));
+  let firstLine=true;txt.split(/\r?\n/).forEach((raw,ln)=>{const line=raw.trim();if(!line)return;
+    const tk=line.split(/[\t;,]+|\s+/).map(t=>t.trim().replace(/^[#.]+|[.:]+$/g,'')).filter(Boolean);
+    const head=firstLine&&tk.filter(t=>/^(nr|nummer|name|vorname|nachname|position|pos)$/i.test(t)).length>=2&&!tk.some(t=>/^\d+$/.test(t));firstLine=false;if(head)return;
+    let nr=null,pos=null;const rest=[];
+    tk.forEach(t=>{const low=t.toLowerCase();
+      if(nr==null&&/^\d{1,2}$/.test(t)&&+t>=1&&+t<=99){nr=+t;return;}
+      const hit=pos==null&&BPOS.find(([,re])=>re.test(low));if(hit){pos=hit[0];return;}
+      rest.push(t);});
+    const r={line:ln+1,raw:line,nr,pos:pos||'MIT',posMissing:!pos,first:'',name:'',err:''};
+    if(rest.length===1)r.name=rest[0];else if(rest.length>1){r.name=rest[rest.length-1];r.first=rest.slice(0,-1).join(' ');}
+    r.name=r.name.slice(0,14);r.first=r.first.slice(0,30);
+    if(nr==null)r.err='Nummer fehlt';else if(!r.name)r.err='Name fehlt';else if(used.has(nr))r.err='Nummer '+nr+' ist schon vergeben';
+    if(!r.err)used.add(nr);out.push(r);});
+  return out;}
+function bulkPreview(){const rows=bulkParse($('kb-b-text').value),ok=rows.filter(r=>!r.err);
+  $('kb-b-go').disabled=!ok.length;$('kb-b-go').textContent=ok.length?(ok.length===1?'1 Spielerin übernehmen':ok.length+' Spielerinnen übernehmen'):'Übernehmen';
+  $('kb-b-prev').innerHTML=rows.length?'<table class="kb-btab"><thead><tr><th>Nr</th><th>Vorname</th><th>Name</th><th>Position</th><th></th></tr></thead><tbody>'+rows.map(r=>'<tr class="'+(r.err?'bad':'')+'"><td>'+(r.nr??'–')+'</td><td>'+esc(r.first)+'</td><td>'+esc(r.name)+'</td><td>'+POS[r.pos]+(r.posMissing&&!r.err?' <small>(ergänzt)</small>':'')+'</td><td>'+(r.err?'<small>'+esc(r.err)+'</small>':'✓')+'</td></tr>').join('')+'</tbody></table>'+
+    (rows.some(r=>r.posMissing&&!r.err)?'<p class="kb-bnote">Ohne Position wird „Mittelfeld“ eingetragen, du kannst es danach im Trikot ändern.</p>':''):'';}
+function openBulk(){$('kb-b-text').value='';bulkPreview();$('kb-bsheet').hidden=false;setTimeout(()=>$('kb-b-text').focus(),30);}
+function closeBulk(){$('kb-bsheet').hidden=true;}
+$('kb-bulk').onclick=openBulk;
+$('kb-b-cancel').onclick=closeBulk;
+$('kb-b-text').addEventListener('input',bulkPreview);
+$('kb-bsheet').addEventListener('click',e=>{if(e.target.id==='kb-bsheet')closeBulk();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('kb-bsheet').hidden)closeBulk();});
+$('kb-bform').addEventListener('submit',e=>{e.preventDefault();const ok=bulkParse($('kb-b-text').value).filter(r=>!r.err);if(!ok.length)return;
+  if(S.demo){const mp=S.mp;mp.uti=[];mp.capt=null;STD.forEach(([k])=>{mp.std[k].tk=mp.std[k].tk.filter(t=>!t.pid);});S={demo:false,v:(S.v||0)+1,players:[],lineup:{formation:S.lineup.formation,gegner:'',datum:'',slots:Array(11).fill(null),bank:[]},mp,games:[]};}
+  ok.forEach(r=>S.players.push({id:uid(),nr:r.nr,name:r.name,first:r.first,pos:r.pos,status:'fit',back:''}));
+  touch();closeBulk();active=0;renderAll();});
 $('kb-demo').addEventListener('click',e=>{
   const a=$('kb-demo-act');
   if(e.target.id==='kb-demo-clear')a.innerHTML='<span class="kb-confirm">Alle Beispiel-Spielerinnen und Beispielspiele löschen? <button type="button" class="kb-btn kb-danger" id="kb-demo-yes">Ja, löschen</button><button type="button" class="kb-btn kb-plain" id="kb-demo-no">Nein</button></span>';
