@@ -2967,6 +2967,69 @@ const jpPole=(s,x,y)=>el('rect',{x:x-3,y:y-14,width:6,height:28,rx:2,fill:'#D85A
     ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'g1',fill:RED},{id:'g2',fill:RED}],sc:{a:S}};
 })();
 
+/* ---------- Technik U13 – KM: sechs neue Formen (5 Säulen) ---------- */
+const jtQuad=(p0,p1,p2,t0,t1,n)=>{const r=[];for(let i=0;i<=n;i++){const u=i/n,a=(1-u)*(1-u),b=2*(1-u)*u,c=u*u;r.push([t0+(t1-t0)*u,a*p0[0]+b*p1[0]+c*p2[0],a*p0[1]+b*p1[1]+c*p2[1]]);}return r;};
+
+/* Flanke aus dem Lauf */
+(function(){const C=4.4;
+  const S={L:[[1.4,'Mit Tempo die Linie entlang, Blick in den Strafraum'],[2.2,'Flanke aus dem Lauf an den ersten Pfosten'],[99,'Die Stürmerinnen kreuzen und schließen ab']],
+    w:[[0,300,320],[1.5,312,126],[C,312,126]],s1:[[0,210,220],[1.2,214,200],[2.2,154,70],[C,154,70]],s2:[[0,150,230],[1.2,146,206],[2.3,214,104],[C,214,104]],k:[[0,180,32],[2.0,164,36],[C,164,36]]};
+  const wb=kmBall(S.w.slice(0,2),1.5);
+  S.BALLS=[kmCut(wb,0,1.5).concat(jtQuad([312,112],[250,40],[160,58],1.6,2.2,6),[[2.3,158,56],[2.6,206,14],[C,206,14]])];
+  A.tflanke={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.55'},s);},
+    ents:[{id:'w'},{id:'s1'},{id:'s2'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Chipball über die Gegnerin */
+(function(){const C=4.0;
+  const S={L:[[0.8,'Die Gegnerin steht im Passweg'],[1.6,'Chipball: kurz und hart unter den Ball'],[99,'Die Läuferin nimmt hinter der Gegnerin mit']],
+    p:[[0,180,310]],d:[[0,180,196],[1.0,178,190],[1.8,190,168],[C,190,168]],r:[[0,250,250],[0.6,250,250],[1.7,206,118],[2.6,200,74],[C,200,74]]};
+  const rb=kmBall([[1.7,206,118],[2.6,200,74]],2.6);
+  S.BALLS=[[[0,180,296],[0.7,180,296]].concat(jtQuad([180,296],[150,170],[200,128],0.8,1.65,8),kmCut(rb,1.75,2.6),[[C,200,60]])];
+  A.tchip={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('path',{d:'M180 296 Q 150 170 200 128',fill:'none',stroke:'#F2C230','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.7'},s);line(s,6,60,354,60,'8 6','.6');},
+    ents:[{id:'p'},{id:'d',fill:RED},{id:'r'}],sc:{a:S}};
+})();
+
+/* Schwacher-Fuß-Parcours */
+(function(){const C=4.6,Y=[286,246,206,166];
+  const S={L:[[1.8,'Slalom nur mit dem schwachen Fuß'],[2.6,'Pass mit dem schwachen Fuß durchs Tor'],[99,'Annahme mit dem schwachen Fuß und zurück']],
+    a:[[0,90,330],[0.5,100,300],[0.9,74,266],[1.3,106,226],[1.7,74,186],[2.1,96,146],[C,96,146]],a2:[[0,60,340]],b:[[0,286,110],[2.8,286,110],[3.4,286,140],[C,286,140]]};
+  const ab=kmBall(S.a.slice(0,6),2.1);
+  S.BALLS=[kmCut(ab,0,2.1).concat([[2.2,108,140],[2.8,272,118],[3.0,272,118],[3.5,286,154],[C,286,154]])];
+  A.tschwach={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);Y.forEach(y=>cone(s,90,y));cone(s,186,116);cone(s,186,140);},
+    ents:[{id:'a'},{id:'a2',fill:WAIT},{id:'b'}],sc:{a:S}};
+})();
+
+/* Drehtechniken mit Gegnerin im Rücken */
+(function(){const C=4.4;
+  const S={L:[[0.7,'Pass auf die Spielerin mit der Gegnerin im Rücken'],[1.3,'Antäuschen nach links, Drehung nach rechts'],[99,'Durch das freie Tor dribbeln']],
+    p:[[0,180,320]],a:[[0,180,190],[0.7,180,196],[1.0,170,190],[1.4,206,170],[2.6,282,74],[C,282,74]],d:[[0,180,150],[1.0,174,154],[1.6,186,150],[2.6,240,96],[C,240,96]]};
+  const ab=kmBall(S.a.slice(3,5),2.6);
+  S.BALLS=[[[0,180,306],[0.1,180,306],[0.7,180,210],[1.0,170,204],[1.35,214,178]].concat(kmCut(ab,1.45,2.6),[[3.0,286,40],[C,286,40]])];
+  A.tdreh={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);[[60,50],[100,50],[260,50],[300,50]].forEach(([x,y])=>cone(s,x,y));},
+    ents:[{id:'p',fill:WAIT},{id:'a'},{id:'d',fill:RED}],sc:{a:S}};
+})();
+
+/* Dribbeln mit Schulterblick: Farbsignal */
+(function(){const C=5.0,COL=[['#F2C230',300,60],['#3C78D8',60,60],['#E5484D',60,300],['#FFFFFF',300,300]];
+  const S={L:[[1.6,'Alle dribbeln frei, Kopf hoch'],[2.4,'Die Trainerin zeigt Gelb'],[99,'So schnell wie möglich durch das gelbe Tor']],
+    a:[[0,120,140],[1.6,200,170],[3.6,318,40],[C,318,40]],b:[[0,230,240],[1.6,150,220],[3.8,256,118],[C,256,118]],c:[[0,140,250],[1.6,210,250],[4.0,314,132],[C,314,132]],d:[[0,240,130],[1.6,140,120],[3.9,236,62],[C,236,62]],tr:[[0,180,346]],BALLS:[]};
+  ['a','b','c','d'].forEach(id=>S.BALLS.push(kmBall(S[id],C)));
+  A.tscan={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);COL.forEach(([c,x,y])=>{const dx=x<180?1:-1,dy=y<180?1:-1;cone(s,x,y+dy*28,c);cone(s,x+dx*28,y,c);});this._t=usTxt(s,196);this._t.textContent='GELB';},
+    tick(t){this._t.setAttribute('opacity',t>=1.6&&t<2.8?'1':'0');},
+    ents:[{id:'a'},{id:'b'},{id:'c'},{id:'d'},{id:'tr',fill:'#2C2C2A',label:'T'}],sc:{a:S}};
+})();
+
+/* Zweikampftechnik: Stellen und Tackling */
+(function(){const C=4.2;
+  const S={L:[[1.2,'Schnell annähern, dann abbremsen'],[1.9,'Seitlich stellen, auf den Ball schauen'],[99,'Im richtigen Moment mit dem vorderen Fuß den Ball wegspitzeln']],
+    a:[[0,180,60],[1.8,184,190],[2.2,184,196],[C,184,196]],d:[[0,180,320],[1.1,184,246],[1.8,190,232],[2.1,206,226],[2.9,248,272],[C,248,272]]};
+  const ab=kmBall(S.a.slice(0,2),1.8);
+  S.BALLS=[kmCut(ab,0,1.8).concat([[2.05,188,210],[2.6,250,252],[C,262,262]])];
+  A.ttackling={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);[110,250].forEach(x=>line(s,x,6,x,354,'5 6','.45'));},
+    ents:[{id:'a'},{id:'d',fill:RED}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -5770,6 +5833,76 @@ EX.push(...[
  leicht:['4 gegen 1 (Stufe 1)','Größeres Feld','Tiefere Zone'],
  steig:['4 gegen 2 (Stufe 2)','Höchstens zwei Kontakte','Verteidigerin in der Zone (Stufe 3)']}
 ].map(e=>Object.assign({},KJP,e)));
+/* ---------- Technik U13 – KM: Inhalte ---------- */
+const KJT={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'technik',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'tflanke',title:'Flanke aus dem Lauf',legend:['spielerin','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Flankentechnik · Laufwege im Strafraum'],['','12–18 Spielerinnen + Torfrau'],['Feld','Strafraum und Flügel'],['Dauer','12–15 min'],['Material','1 Tor, Bälle, Hütchen']],
+ ziel:'Die Außenspielerin flankt aus vollem Lauf gezielt an den ersten Pfosten oder in den Rückraum, die Stürmerinnen kreuzen und schließen ab. Im Spiel: Flanken, die ankommen, statt hoher Bälle ins Nichts.',
+ org:['Tor mit Torfrau','Außenspielerinnen mit Ball an der Seitenlinie auf Höhe der Mittellinie (beide Seiten)','Zwei Stürmerinnen ca. 25 m vor dem Tor','Für Stufe 3: eine Verteidigerin im Strafraum'],
+ rot:'Außenspielerin wird Stürmerin, Stürmerin holt Bälle und wird Außenspielerin. Seiten abwechselnd.',
+ ablauf:['Die Außenspielerin dribbelt mit Tempo die Linie entlang.','Die Stürmerinnen starten: eine an den ersten, eine an den zweiten Pfosten.','Flanke aus dem Lauf, ohne den Ball vorher zu stoppen.','Abschluss mit Kopf oder Fuß.'],
+ stufen:[['Stufe 1 · Aus dem Stand','Die Außenspielerin legt sich den Ball vor und flankt aus zwei Schritten Anlauf.'],['Stufe 2 · Aus dem Lauf','Flanke aus vollem Lauf, Ansage vorher: erster Pfosten, zweiter Pfosten oder Rückraum.'],['Stufe 3 · Gegen Verteidigerin','Eine Verteidigerin im Strafraum, eine Außenverteidigerin läuft der Flankengeberin nach. Die Flankengeberin entscheidet selbst.']],
+ coach:[['Blick vor der Flanke','Kurz hochschauen, wohin die Stürmerinnen laufen. Erkennbar: Die Flanke geht in den Raum, in den eine Stürmerin startet.'],['Technik','Standbein neben den Ball, Oberkörper über den Ball, mit dem Innenspann durch den Ball. Fehlerbild: Oberkörper nach hinten, der Ball fliegt zu hoch und zu lang.'],['Laufwege','Kreuzen, nicht nebeneinander laufen, eine vorne, eine hinten.'],['Timing','Die Stürmerinnen starten spät und explosiv, nicht schon im Strafraum warten.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Flanken abwechselnd von beiden Seiten','Pro Spielerin: ca. 6–8 Flanken oder Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Aus dem Stand (Stufe 1)','Ball flach in den Rückraum','Ohne Torfrau'],
+ steig:['Aus dem Lauf (Stufe 2)','Nur schwacher Fuß','Gegen Verteidigerin (Stufe 3)']},
+{id:'tchip',title:'Chipball über die Gegnerin',legend:['spielerin','gegner','ball'],
+ chips:[['Schwerpunkt','Chipball · Lupfer in den Lauf'],['','12–18 Spielerinnen in Dreiergruppen'],['Feld','Bahnen 15 × 35 m'],['Dauer','10–12 min'],['Material','Bälle, Hütchen']],
+ ziel:'Die Spielerin spielt einen kurzen Chipball über eine Gegnerin im Passweg genau in den Lauf der Mitspielerin. Im Spiel: den Ball über die Kette heben, wenn der flache Weg zu ist.',
+ org:['Bahnen 15 × 35 m','Pro Bahn Passgeberin, Gegnerin in der Mitte und Läuferin','Linie am Ende der Bahn'],
+ rot:'Nach 5 Chipbällen wechseln die Rollen.',
+ ablauf:['Die Gegnerin steht im Passweg.','Die Läuferin startet seitlich an der Gegnerin vorbei.','Chipball über die Gegnerin in den Lauf.','Die Läuferin nimmt mit und dribbelt über die Linie.'],
+ stufen:[['Stufe 1 · Aus der Hand','Ball aus der Hand fallen lassen und nach dem Aufspringen chippen.'],['Stufe 2 · Aus dem Ruhen','Ball liegt, Chip über die stehende Gegnerin.'],['Stufe 3 · Aktive Gegnerin','Die Gegnerin darf springen und einen Schritt Richtung Ball machen. Die Passgeberin entscheidet: flach vorbei oder Chip.']],
+ coach:[['Treffpunkt','Kurz und hart unter den Ball, Fußspitze nach unten, Ausholbewegung kurz. Erkennbar: Der Ball steigt steil und fällt hinter der Gegnerin.'],['Dosierung','Nicht zu fest, die Läuferin soll den Ball im Lauf mitnehmen können. Fehlerbild: Der Ball fliegt zu weit, die Läuferin muss abbremsen oder kommt nicht hin.'],['Läuferin','Seitlich an der Gegnerin vorbei starten, nicht hinter ihr.'],['Annahme','Ball mit dem ersten Kontakt in den Lauf mitnehmen.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, Dreiergruppen rotieren','Pro Spielerin: ca. 10–12 Chipbälle pro Durchgang','Intensität: niedrig bis mittel'],
+ leicht:['Aus der Hand (Stufe 1)','Gegnerin hockt','Kürzere Distanz'],
+ steig:['Aus dem Ruhen (Stufe 2)','Aus der Bewegung nach einer Annahme','Aktive Gegnerin (Stufe 3)']},
+{id:'tschwach',title:'Schwacher-Fuß-Parcours',legend:['spielerin','wartend','ball','cone'],
+ chips:[['Schwerpunkt','Beidfüßigkeit'],['','12–18 Spielerinnen, Paare'],['Feld','Slalom und Passtor, ca. 15 × 25 m'],['Dauer','10 min'],['Material','Hütchen, 1 Ball pro Paar']],
+ ziel:'Die Spielerin führt, passt und nimmt den Ball nur mit dem schwachen Fuß an, erst langsam, dann im Tempo. Im Spiel: auf beiden Seiten anspielbar und handlungsfähig sein.',
+ org:['Slalom aus 4 Hütchen, danach ein Passtor (1,5 m)','Partnerin 15 m hinter dem Tor','Mehrere Parcours nebeneinander'],
+ rot:'Nach jeder Runde wechseln Läuferin und Partnerin. Nach 5 Minuten anderer Fuß (wenn beide Füße gleich stark: Außenseite).',
+ ablauf:['Slalom nur mit dem schwachen Fuß.','Pass mit dem schwachen Fuß durch das Tor.','Die Partnerin nimmt mit dem schwachen Fuß an und spielt zurück.','Annahme mit dem schwachen Fuß, zurück zum Start dribbeln.'],
+ stufen:[['Stufe 1 · Langsam','Ohne Zeitdruck, jeder Kontakt sauber.'],['Stufe 2 · Gegen die Uhr','Zeit messen, zwei Bahnen gegeneinander.'],['Stufe 3 · Mit Gegnerin','Nach dem Rückpass läuft eine Gegnerin an, die Spielerin muss mit dem schwachen Fuß weiterdribbeln und durch ein Tor kommen.']],
+ coach:[['Nur der schwache Fuß','Auch wenn es langsamer ist. Erkennbar: Die Spielerin wechselt nicht heimlich auf den starken Fuß.'],['Fußgelenk fest','Beim Pass das Fußgelenk anspannen. Fehlerbild: Der Ball springt oder geht neben das Tor.'],['Kleine Kontakte','Im Slalom viele kleine Kontakte.'],['Kopf hoch','Zwischen den Hütchen kurz hochschauen.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, mehrere Parcours','Pro Spielerin: ca. 40–50 Ballkontakte pro Durchgang','Intensität: niedrig bis mittel'],
+ leicht:['Langsam (Stufe 1)','Größere Abstände im Slalom','Breiteres Passtor'],
+ steig:['Gegen die Uhr (Stufe 2)','Nur Außenseite des schwachen Fußes','Mit Gegnerin (Stufe 3)']},
+{id:'tdreh',title:'Drehtechniken mit Gegnerin im Rücken',legend:['spielerin','wartend','gegner','ball','cone'],
+ chips:[['Schwerpunkt','Aufdrehen · Finte'],['','12–18 Spielerinnen in Dreiergruppen'],['Feld','15 × 20 m, zwei Hütchentore'],['Dauer','10–12 min'],['Material','Hütchen, Bälle']],
+ ziel:'Die Spielerin bekommt den Ball mit der Gegnerin im Rücken, täuscht eine Richtung an, dreht in die andere und dribbelt durch das freie Tor. Im Spiel: als Sechserin oder Stürmerin mit dem Rücken zum Tor aufdrehen.',
+ org:['Feld 15 × 20 m','Zwei Hütchentore an der Stirnseite','Passgeberin an der anderen Seite, Angreiferin und Verteidigerin in der Mitte'],
+ rot:'Passgeberin → Angreiferin → Verteidigerin → Passgeberin.',
+ ablauf:['Die Passgeberin spielt flach auf die Angreiferin.','Die Verteidigerin steht im Rücken.','Antäuschen, aufdrehen (Cruyff, Außenrist, Sohle).','Durch eines der Tore dribbeln.'],
+ stufen:[['Stufe 1 · Passiv','Die Verteidigerin bleibt hinter der Angreiferin stehen und bewegt nur die Füße.'],['Stufe 2 · Halbaktiv','Die Verteidigerin folgt der Drehung, greift aber nicht an.'],['Stufe 3 · Aktiv','Aktive Verteidigerin. Gewinnt sie den Ball, kontert sie auf ein Minitor hinter der Passgeberin.']],
+ coach:[['Kontakt fühlen','Mit dem Arm oder Rücken spüren, wo die Verteidigerin steht. Erkennbar: Die Angreiferin dreht weg von der Seite, auf der die Verteidigerin steht.'],['Antäuschen','Deutlich mit Körper und Schulter in eine Richtung. Fehlerbild: Die Angreiferin dreht sofort, ohne Täuschung, und läuft in die Verteidigerin.'],['Tempo nach der Drehung','Nach dem Aufdrehen sofort beschleunigen.'],['Varianten','Mindestens zwei Drehungen üben: Cruyff und Sohle.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: kurz, Dreiergruppen rotieren','Pro Spielerin: ca. 8–10 Drehungen pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Passiv (Stufe 1)','Breitere Tore','Ball mit der Hand zuwerfen'],
+ steig:['Halbaktiv (Stufe 2)','Nur eine vorgegebene Drehung','Aktiv mit Konter (Stufe 3)']},
+{id:'tscan',title:'Dribbeln mit Schulterblick: Farbsignal',legend:['spielerin','trainer','ball','cone'],
+ chips:[['Schwerpunkt','Ballführung mit Kopf hoch · Wahrnehmung'],['','12–18 Spielerinnen, jede mit Ball'],['Feld','25 × 25 m, vier farbige Tore'],['Dauer','8–10 min'],['Material','1 Ball pro Spielerin, farbige Hütchen']],
+ ziel:'Die Spielerin führt den Ball eng und schaut dabei regelmäßig hoch, um das Farbsignal der Trainerin zu sehen. Im Spiel: wahrnehmen, was um sie herum passiert, ohne den Ball zu verlieren.',
+ org:['Feld 25 × 25 m, in jeder Ecke ein farbiges Hütchentor','Trainerin am Rand mit farbigen Hütchen','Alle Spielerinnen mit Ball im Feld'],
+ rot:'Nach jeder Runde andere Aufgaben bei der Ballführung (nur links, nur Außenseite).',
+ ablauf:['Alle dribbeln frei im Feld.','Die Trainerin zeigt still eine Farbe.','So schnell wie möglich durch das Tor dieser Farbe dribbeln.','Die letzten drei machen eine kleine Zusatzaufgabe.'],
+ stufen:[['Stufe 1 · Ruf und Zeichen','Die Trainerin ruft und zeigt die Farbe.'],['Stufe 2 · Nur Zeichen','Die Trainerin zeigt die Farbe nur, ohne zu rufen.'],['Stufe 3 · Gegenteil und Fängerinnen','Zwei Farben zeigen: durch das Tor der zweiten Farbe. Zwei Fängerinnen ohne Ball versuchen Bälle zu erobern.']],
+ coach:[['Kopf hoch','Alle 2–3 Kontakte hochschauen. Erkennbar: Die Spielerin reagiert auf das stille Zeichen sofort.'],['Ball eng','Kleine Kontakte, Ball nah am Fuß. Fehlerbild: Beim Hochschauen springt der Ball weg.'],['Raum nutzen','In freie Räume dribbeln, nicht hinter den anderen her.'],['Tempo nach dem Signal','Sofort beschleunigen, mit langen Kontakten in den freien Raum.']],
+ last:['Dauer: 4 × 2 Minuten, 45 Sekunden Pause','Wartezeit: keine, alle gleichzeitig','Pro Spielerin: ca. 80–100 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Ruf und Zeichen (Stufe 1)','Größeres Feld','Weniger Farben'],
+ steig:['Nur Zeichen (Stufe 2)','Nur schwacher Fuß','Gegenteil und Fängerinnen (Stufe 3)']},
+{id:'ttackling',title:'Zweikampftechnik: Stellen und Tackling',legend:['spielerin','gegner','ball'],
+ chips:[['Schwerpunkt','Defensives 1 gegen 1'],['','12–18 Spielerinnen in Paaren'],['Feld','Bahnen 10 × 25 m'],['Dauer','10–12 min'],['Material','Hütchen, 1 Ball pro Paar']],
+ ziel:'Die Verteidigerin läuft die Angreiferin schnell an, bremst rechtzeitig ab, stellt sich seitlich und spitzelt den Ball im richtigen Moment mit dem vorderen Fuß weg. Im Spiel: Bälle erobern, ohne zu foulen oder ausgespielt zu werden.',
+ org:['Bahnen 10 × 25 m','Angreiferin mit Ball an einem Ende, Verteidigerin am anderen'],
+ rot:'Nach jedem Durchgang Rollen tauschen.',
+ ablauf:['Die Verteidigerin passt zur Angreiferin.','Sie läuft schnell an und bremst 2–3 m vorher ab.','Seitlich stellen, die Angreiferin auf eine Seite lenken.','Bei einem zu weiten Kontakt den Ball wegspitzeln.'],
+ stufen:[['Stufe 1 · Langsame Angreiferin','Die Angreiferin dribbelt im Gehtempo, ohne Finten.'],['Stufe 2 · Halbes Tempo','Die Angreiferin darf Richtungswechsel machen, aber keine Finten.'],['Stufe 3 · Wettkampf','Freies 1 gegen 1: Die Angreiferin will über die Linie, die Verteidigerin erobert den Ball und dribbelt selbst über die andere Linie.']],
+ coach:[['Anlaufen und abbremsen','Schnell anlaufen, mit kleinen Schritten abbremsen. Erkennbar: Die Verteidigerin steht 1–2 m vor der Angreiferin, wenn diese den Ball führt.'],['Seitlich stellen','Ein Fuß vor, in die gewünschte Richtung lenken. Fehlerbild: Frontal und breitbeinig, die Angreiferin geht durch die Beine oder links vorbei.'],['Geduld','Erst angreifen, wenn der Ball weg vom Fuß ist.'],['Vorderer Fuß','Mit dem vorderen Fuß spitzeln, nicht springen, nicht grätschen.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: kurz, Paare wechseln sich ab','Pro Spielerin: ca. 10–12 Duelle pro Durchgang','Intensität: hoch'],
+ leicht:['Langsame Angreiferin (Stufe 1)','Schmalere Bahn','Kürzere Bahn'],
+ steig:['Halbes Tempo (Stufe 2)','Breitere Bahn','Wettkampf (Stufe 3)']}
+].map(e=>Object.assign({},KJT,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -8384,6 +8517,19 @@ function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e
   U('aufholjagd','Für U10–U12: Abstand 5 m, nach Ballgewinn Konter auf ein Minitor an der Startlinie.');
   ['gbfuenf','rjagd','mbpingpong','gbverfolger','rdreifarben','mbwelle','gbzeit','gbdreitore','aufholjagd','rwechsel','dreidrei_v'].forEach(id=>promote(id,null,['umschalten']));
   U('gbfuenf','Für U10–U12: 3 gegen 3 auf 25 × 20 m, alle pressen, Tor nach Rückeroberung dreifach.');
+})();
+/* ---------- U13 – U18 und KM auf 20 pro Reiter: U10 – U12-Übungen nach oben (mit Anpassung) ---------- */
+(function(){const X=id=>EX.find(e=>e.id===id);const order=LV.map(l=>l.id);
+  const J=(id,note,extra)=>{const e=X(id);if(!e)return;
+    ['jugend','km'].forEach(lv=>{if(!e.lv.includes(lv))e.lv.push(lv);});
+    e.lv.sort((a,b)=>order.indexOf(a)-order.indexOf(b));const ch=e.chips.find(c=>c[0]==='Alter');if(ch)ch[1]=LV.filter(l=>e.lv.includes(l.id)).map(l=>l.short).join(' · ');
+    e.ad=e.ad||{};if(note){e.ad.jugend=note;e.ad.km=note;}
+    if(extra){e.catsLv=e.catsLv||{};['jugend','km'].forEach(lv=>{const base=(e.catsLv[lv]||e.cats||[e.cat]);e.catsLv[lv]=[...new Set(base.concat(extra))];});}};
+  /* Technik */
+  J('mitnahme','Für U13–KM: Pass schärfer und aus 15 m, aktive Gegnerin ab Stufe 2. Nach der Mitnahme Pass in den Lauf einer zweiten Spielerin statt Dribbling durchs Tor.');
+  J('fintehalb','Für U13–KM: Verteidigerin von Beginn an halbaktiv, Finte im vollen Tempo, Abschluss aufs große Tor mit Torfrau statt Minitor.');
+  J('ballmanip','Für U13–KM als Technik-Aufwärmen: höheres Tempo, jede Aufgabe auch mit dem schwachen Fuß, zum Schluss Wettkampf gegen die Uhr.');
+  J('jongliertandem','Für U13–KM: nur Fuß und Kopf, Ball muss immer über Kopfhöhe, zum Schluss Fußballtennis über eine Linie.');
 })();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
