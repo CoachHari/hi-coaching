@@ -8905,6 +8905,18 @@ rueckwaerts:{ziel:'Die Verteidigerin startet hinter der Angreiferin, holt auf, l
  last:['Dauer: 3 × 3 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Paare wechseln','Pro Spielerin: ca. 6–8 Sprints pro Durchgang','Intensität: sehr hoch'],
  leicht:['3 m Abstand (Stufe 1)','Kürzere Strecke','Ohne Torfrau'],
  steig:['5 m Abstand (Stufe 2)','Größerer Abstand','Mit Mitspielerin (Stufe 3)']},
+konterschuss:{ziel:'Die Spielerin kontert mit drei Mitspielerinnen in hohem Tempo gegen drei Verteidigerinnen, besetzt Breite und Tiefe und schließt spätestens nach 8 Sekunden ab. Im Spiel: Überzahl-Konter konsequent zum Tor bringen.',
+ stufen:[['Stufe 1 · 4 gegen 2','Nur zwei Verteidigerinnen, 10 Sekunden Zeit.'],['Stufe 2 · 4 gegen 3','Normale Form, 8 Sekunden.'],['Stufe 3 · Nachlaufende und 6 Sekunden','Eine vierte Verteidigerin startet 2 Sekunden später, Abschluss in 6 Sekunden, höchstens vier Pässe.']],
+ coach:[['Tempo','Den Ball schnell nach vorne, lange Kontakte in den freien Raum. Erkennbar: Der Abschluss kommt vor der 8. Sekunde.'],['Laufwege','Zwei breit, eine in die Tiefe, eine nachrückend. Fehlerbild: Alle vier laufen durch die Mitte und stehen sich im Weg.'],['Abschluss','Die erste gute Chance nutzen, nicht noch einen Pass mehr.'],['Verteidigerinnen','Zeit gewinnen, Mitte schließen, nach Ballgewinn über die Linie kontern.']],
+ last:['Dauer: 4 × 3 Minuten, 2 Minuten Pause','Wartezeit: mittel, Gruppen im Wechsel','Pro Spielerin: ca. 5–6 Konter pro Durchgang','Intensität: sehr hoch'],
+ leicht:['4 gegen 2 (Stufe 1)','Kürzere Strecke','Mehr Zeit'],
+ steig:['4 gegen 3 (Stufe 2)','Tor nur nach höchstens vier Pässen','Nachlaufende und 6 Sekunden (Stufe 3)']},
+konter:{ziel:'Die Spielerin schaltet nach dem Zuspiel der Trainerin sofort um, kontert im Vollsprint mit ihrer Partnerin 2 gegen 1 und schließt ab, bevor die Verteidigerin eingreift. Im Spiel: Umschaltschnelligkeit im Wettkampftempo.',
+ stufen:[['Stufe 1 · Großer Vorsprung','Die Verteidigerin startet 8 m hinter den Angreiferinnen.'],['Stufe 2 · 5 m Vorsprung','Normale Form.'],['Stufe 3 · 3 gegen 2 mit Gegenkonter','Drei Angreiferinnen gegen zwei Verteidigerinnen, Abschluss in 8 Sekunden. Ballverlust = Gegenkonter auf zwei Minitore.']],
+ coach:[['Erster Kontakt','In die Tiefe mitnehmen, nicht stoppen. Erkennbar: Die Ballführende ist nach dem ersten Kontakt schon im Sprint.'],['Partnerin','Breite halten und auf Höhe bleiben, nicht ins Abseits. Fehlerbild: Die Partnerin läuft hinter der Ballführenden, das 2 gegen 1 ist weg.'],['Timing','Abspielen, wenn die Verteidigerin sich festlegt.'],['Verteidigerin','Den Weg zum Tor zulaufen, nicht nur hinterherrennen.']],
+ last:['Umfang: 6 Konter pro Gruppe, maximal 8–10 Sekunden pro Aktion','Pause: 2 Minuten zwischen den Kontern (vollständige Erholung)','Wartezeit: in Dreiergruppen kurz','Intensität: maximal'],
+ leicht:['Großer Vorsprung (Stufe 1)','Kürzere Strecke','Ohne Torfrau'],
+ steig:['5 m Vorsprung (Stufe 2)','Abschluss nur nach Pass','3 gegen 2 mit Gegenkonter (Stufe 3)']},
 };
 EX.forEach(e=>{const u=UPG_JKM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 
@@ -9040,6 +9052,13 @@ function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e
   J('dreizweidef','Für U13–KM: 3 gegen 2 auf 30 × 35 m, die Angreiferinnen haben 10 Sekunden, eine dritte Verteidigerin startet nach 4 Sekunden von hinten.');
   J('vierpress','Für U13–KM: 5 gegen 5 auf 40 × 35 m, Rückeroberung in 5 Sekunden zählt doppelt, Tor danach dreifach.',['umschalten']);
   J('dreieckstor','Für U13–KM als Zweikampf-Aufwärmen: Tore 2 m, Angreiferin startet mit Tempo, Verteidigerin gibt die Richtung vor und kontert nach Ballgewinn durch ein Tor auf der Gegenseite.');
+  /* Umschalten */
+  J('usflut','Für U13–KM: Feld 35 × 40 m, Gegenrichtung startet sofort mit dem Abschluss (Stufe 2 als Grundform), Abseits ab der Mittellinie.');
+  J('uskonter','Für U13–KM: Blau 4 gegen 3 auf das große Tor, Rot mit zwei Konterspielerinnen, Konter in 8 Sekunden, Blau presst sofort.');
+  J('uspfiff','Für U13–KM: 4 gegen 4 auf 35 × 30 m, die Trainerin spielt den neuen Ball auch hoch oder in den Rücken der Verteidigung.');
+  J('usrueckzug','Für U13–KM: Blau mit 4, Rot mit 3 Konterspielerinnen, alle Blauen müssen in 5 Sekunden hinter dem Ball sein.');
+  J('uszone','Für U13–KM: 4 gegen 4 + 2 Zielspielerinnen, 4 Sekunden nach Ballgewinn, Punkt nur mit Nachrücken (Stufe 3 als Grundform).');
+  J('usendlos','Für U13–KM: 3 gegen 2 auf 40 m, Abschluss in 8 Sekunden, Nachlaufende ab Beginn (Stufe 3 als Grundform).');
 })();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
