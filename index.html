@@ -3249,6 +3249,23 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
     ents:[{id:'l1'},{id:'l1b'},{id:'r1'},{id:'r1b'},{id:'l2'},{id:'l2b'},{id:'r2'},{id:'r2b'},{id:'a',label:'6'},{id:'b',label:'6'}],sc:{a:S}};
 })();
 
+/* ---------- Rondo U13 – KM: Feldwechsel-Rondo 5 gegen 2 ---------- */
+(function(){const C=7.6;
+  const S={L:[[2.3,'Feld 1: Blau hält den Ball 5 gegen 2'],[3.1,'Ballgewinn Rot: Abschluss aufs Minitor'],[4.2,'Wechsel: Rot spielt in Feld 2, zwei Blaue sprinten zum Pressen hinüber'],[99,'Jetzt hält Rot 5 gegen 2, und es geht hin und her']],
+    b1:[[0,110,66]],b2:[[0,250,66]],b3:[[0,110,150]],b4:[[0,250,150],[3.2,250,150],[4.2,205,246],[5.0,228,268],[6.0,224,224],[C,206,232]],b5:[[0,180,176],[3.2,180,176],[4.2,160,236],[5.0,142,262],[5.8,166,292],[6.6,150,226],[C,150,226]],
+    r1:[[0,165,95],[1.0,212,86],[1.6,226,124],[2.2,200,146],[3.2,200,146],[4.2,120,196],[C,120,196]],
+    r2:[[0,195,128],[1.2,180,116],[2.0,164,146],[2.35,148,160],[2.8,170,96],[3.2,170,96],[4.3,240,196],[C,240,196]],
+    r3:[[0,140,244],[3.0,140,244],[3.7,110,284],[C,110,284]],r4:[[0,220,244],[3.0,220,244],[3.7,250,284],[C,250,284]],r5:[[0,180,296],[3.0,180,296],[3.7,180,314],[C,180,314]],
+    tr:[[0,336,240]]};
+  S.BALLS=[jrSeq(S,[['p','b1','b2',0.2,0.6],['p','b2','b4',0.9,1.25],['p','b4','b5',1.5,1.9],['s','b5',2.1,2.35,152,148],['d','r2',2.4,2.8],['s','r2',2.85,3.1,212,24]],C),
+    jrSeq(S,[['p','tr','r3',3.4,3.95],['p','r3','r5',4.25,4.6],['p','r5','r4',4.9,5.3],['p','r4','r2',5.6,6.05],['p','r2','r1',6.35,6.8]],C)];
+  A.rjfeldwechsel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);
+      el('rect',{x:110,y:40,width:140,height:280,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);line(s,110,180,250,180,'8 6','.7');
+      [[135,18],[200,18],[135,330],[200,330]].forEach(([x,y])=>mgoal(s,x,y,26,12));
+      txt(s,104,114,'end','12').textContent='Feld 1';txt(s,104,254,'end','12').textContent='Feld 2';txt(s,180,354,'middle','11').textContent='je 8 × 8 m';},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'b5'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'r5',fill:RED},{id:'tr',fill:'#2C2C2A',label:'T'}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -6347,6 +6364,19 @@ EX.push(...[
  leicht:['Mit Annahme (Stufe 1)','Pass langsamer','Ohne Torfrau'],
  steig:['Direkt (Stufe 2)','Halbhohe Pässe','Mit Störerin (Stufe 3)']}
 ].map(e=>Object.assign({},KJA,e)));
+/* ---------- Rondo U13 – KM: Feldwechsel-Rondo 5 gegen 2 ---------- */
+EX.push(Object.assign({},KJR,{id:'rjfeldwechsel',title:'Feldwechsel-Rondo 5 gegen 2',legend:['teamblau','teamrot','trainer','minitor','ball'],
+ catsLv:{jugend:['rondo','umschalten'],km:['rondo','umschalten']},
+ chips:[['Schwerpunkt','Ballbesitz · Umschalten · Gegenpressing'],['','10 Spielerinnen (5 gegen 5)'],['Feld','2 Felder à 8 × 8 m nebeneinander'],['Dauer','3 min pro Durchgang, 4–6 Durchgänge'],['Material','4 Minitore, Hütchen, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Spielerin hält mit ihrem Team im 5 gegen 2 den Ball, und nach jedem Ballgewinn schalten beide Teams sofort um: Die Eroberinnen schließen ab und spielen im anderen Feld weiter, zwei Spielerinnen des anderen Teams sprinten hinüber und pressen. Im Spiel: Ballbesitz unter Druck und schnelles Umschalten in beide Richtungen.',
+ org:['Zwei Felder à 8 × 8 m direkt nebeneinander (gesamt 16 × 8 m)','An beiden Stirnseiten je zwei Minitore (4 Minitore)','Team Blau (5) hält in Feld 1 den Ball, zwei Rote pressen dort','Die anderen drei Roten warten in Feld 2','Trainerin mit Bällen an der Seite, auf Höhe der Mittellinie'],
+ rot:'Ein Durchgang dauert 3 Minuten, bei passender Belastung auch länger. Danach Pause und neue Teams oder neue Jägerinnenpaare. Innerhalb eines Durchgangs pressen immer die zwei Spielerinnen, die gerade dran sind; abwechseln, damit nicht immer dieselben laufen.',
+ ablauf:['Blau hält in Feld 1 den Ball gegen zwei Rote.','Erobert Rot den Ball, schließt es sofort auf eines der zwei Minitore hinter Feld 1 ab (je nach Stufe mit oder ohne Abschluss).','Danach wechselt das Spiel: Die zwei Roten laufen in Feld 2, die Trainerin spielt einen neuen Ball zu Rot. Jetzt hält Rot 5 gegen 2.','Zwei Blaue sprinten hinüber und pressen in Feld 2, die anderen drei Blauen warten in Feld 1.','So geht es hin und her. Punkte: 8 Pässe in Folge = 1 Punkt, Ballgewinn = 1 Punkt, Tor nach Ballgewinn = 2 Punkte.'],
+ stufen:[['Stufe 1 · Ohne Abschluss','Ballgewinn = Wechsel ins andere Feld, ohne Torabschluss. Freie Kontakte im Ballbesitz.'],['Stufe 2 · Mit Minitor','Nach Ballgewinn Abschluss aufs Minitor innerhalb von 5 Sekunden, dann Wechsel. Ballbesitz mit höchstens zwei Kontakten.'],['Stufe 3 · Ohne neuen Ball','Kein Ball von der Trainerin: Die Eroberinnen müssen den gewonnenen Ball selbst ins andere Feld zu ihrem Team passen, die zwei Blauen versuchen das zu verhindern (Gegenpressing). Kommt der Pass an, geht es 5 gegen 2 weiter.']],
+ coach:[['Ballbesitz','Breite nutzen, immer zwei Anspielstationen im Winkel. Erkennbar: Das Ballbesitz-Team schafft regelmäßig 8 Pässe in Folge.'],['Jägerinnen','Zu zweit anlaufen: eine presst die Ballführende, die andere stellt den Pass durch die Mitte zu. Fehlerbild: Beide laufen auf die Ballführende, der Pass durch die Mitte ist offen.'],['Nach Ballgewinn','Kopf hoch und schnell aufs freie Minitor. Erkennbar: Abschluss innerhalb von 3 Sekunden.'],['Wechsel','Das neue Jägerinnenpaar sprintet sofort ins andere Feld, damit Rot keine Zeit zum Sortieren hat.'],['Kommunikation','Wer läuft rüber? Vorher klar absprechen.']],
+ last:['Dauer: 3 Minuten pro Durchgang (je nach Belastung auch länger), 1–2 Minuten Pause, 4–6 Durchgänge','Wartezeit: kurz, je drei Spielerinnen warten im anderen Feld und sind nach dem nächsten Ballgewinn sofort dran','Pro Spielerin: ca. 15–25 Ballkontakte pro Durchgang, als Jägerin viele kurze Sprints','Intensität: hoch'],
+ leicht:['Ohne Abschluss (Stufe 1)','Felder 10 × 10 m','Joker im Ballbesitz (6 gegen 2)'],
+ steig:['Mit Minitor in 5 Sekunden (Stufe 2)','Felder 7 × 7 m','Ohne neuen Ball (Stufe 3)','5 gegen 3 mit 11–12 Spielerinnen']}));
 /* ---------- Passen U13 – KM: Doppelsechs-Passform ---------- */
 EX.push(Object.assign({},KJP,{id:'pdoppelsechs',title:'Doppelsechs-Passform',legend:['spielerin','ball','cone'],
  chips:[['Schwerpunkt','Spiel über die Doppelsechs · Klatschen und Verlagern'],['','10 Spielerinnen pro Station (8 außen, 2 Sechserinnen)'],['Feld','15 × 30 m'],['Dauer','12–16 min'],['Material','4 Hütchen, Bälle']],
