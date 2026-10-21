@@ -3055,6 +3055,78 @@ const jrBall=(S,P,C)=>{const k=[];P.forEach(([a,b,t0,t1])=>{const pa=at(S[a],t0)
     ents:[0,1,2,3,4,5].map(i=>({id:'p'+i})).concat([{id:'g1',fill:RED},{id:'g2',fill:RED},{id:'g3',fill:RED}]),sc:{a:S}};
 })();
 
+/* ---------- Mit Ball U13 – KM: sechs neue Spielformen (5 Säulen) ---------- */
+const jrSeq=(S,Q,C)=>{let k=[];const U=(a,b)=>{const d=Math.hypot(b[0]-a[0],b[1]-a[1])||1;return[(b[0]-a[0])/d,(b[1]-a[1])/d];};
+  Q.forEach(q=>{if(q[0]==='p'){const pa=at(S[q[1]],q[3]),pb=at(S[q[2]],q[4]);k.push([q[3],...toward(pa,pb,14),q[1]],[q[4],...toward(pb,pa,14),q[2]]);}
+    else if(q[0]==='d'){for(let t=q[2];t<=q[3]+1e-9;t+=0.1){const p=at(S[q[1]],t),n=at(S[q[1]],t+0.08);let u=U(p,n);if(Math.hypot(n[0]-p[0],n[1]-p[1])<0.4)u=k.length?U(p,[k[k.length-1][1],k[k.length-1][2]]):[0,-1];k.push([+t.toFixed(2),p[0]+u[0]*14,p[1]+u[1]*14,q[1]]);}}
+    else if(q[0]==='s'){const pa=at(S[q[1]],q[2]);k.push([q[2],...toward(pa,[q[4],q[5]],14),q[1]],[q[3],q[4],q[5],null]);}});
+  k.sort((a,b)=>a[0]-b[0]);const o=[];
+  k.forEach((r,i)=>{o.push(r);const n=k[i+1];if(n&&r[3]&&r[3]===n[3]&&n[0]-r[0]>0.15){const tm=(r[0]+n[0])/2,p=at(S[r[3]],tm),v=[r[1]-p[0]+n[1]-p[0],r[2]-p[1]+n[2]-p[1]];let d=Math.hypot(v[0],v[1]);const w=d<1?[-(r[2]-p[1]),r[1]-p[0]]:v;d=Math.hypot(w[0],w[1])||1;o.push([tm,p[0]+w[0]/d*14,p[1]+w[1]/d*14,r[3]]);}});
+  k=o.map(r=>[r[0],r[1],r[2]]);const f=k[0],l=k[k.length-1];return [[0,f[1],f[2]]].concat(k,[[C,l[1],l[2]]]);};
+
+/* Drei-Zonen-Angriff */
+(function(){const C=5.0;
+  const S={L:[[1.6,'Zone 1: 4 gegen 2, Ball sichern'],[3.0,'Pass in Zone 2: 2 gegen 2, die Angreiferinnen lösen sich'],[99,'In Zone 3 durchbrechen und abschließen']],
+    b1:[[0,80,300]],b2:[[0,180,334]],b3:[[0,280,300]],b4:[[0,180,262],[1.4,200,264],[C,200,264]],
+    r1:[[0,150,300],[1.2,226,310],[C,226,310]],r2:[[0,210,286],[1.2,250,280],[C,250,280]],
+    s1:[[0,150,170],[1.6,128,196],[2.2,130,190],[C,130,190]],s2:[[0,240,180],[2.2,236,166],[3.0,246,104],[3.6,240,78],[C,240,78]],
+    r3:[[0,170,150],[1.6,150,170],[2.6,170,150],[3.4,200,112],[C,200,112]],r4:[[0,214,150],[2.6,206,152],[3.2,226,146],[C,226,146]],k:[[0,180,30],[3.6,198,36],[C,198,36]]};
+  S.BALLS=[jrSeq(S,[['p','b1','b2',0.2,0.6],['p','b2','b3',0.9,1.3],['p','b3','s1',1.6,2.2],['p','s1','s2',2.4,2.9],['d','s2',2.9,3.6],['s','s2',3.7,4.1,152,14]],C)];
+  A.mjzonen={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);line(s,6,120,354,120,'8 6','.6');line(s,6,240,354,240,'8 6','.6');[['3',100],['2',220],['1',340]].forEach(([n,y])=>{txt(s,348,y-6,'end','14').textContent=n;});},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'s1'},{id:'s2'},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Halbraum-Spiel 5 gegen 4 */
+(function(){const C=4.8;
+  const S={L:[[1.2,'Die Achterin löst sich in den Halbraum zwischen den Linien'],[2.2,'Offen annehmen und aufdrehen'],[99,'Steilpass auf die Neun und Abschluss']],
+    s6:[[0,180,320]],e8:[[0,130,270],[1.1,112,196],[1.6,116,190],[C,116,190]],w1:[[0,40,220],[2.0,44,170],[C,44,170]],w2:[[0,320,220],[2.0,316,150],[C,316,150]],n9:[[0,200,160],[1.6,204,146],[2.6,170,74],[C,170,74]],
+    r1:[[0,150,226],[1.4,168,236],[C,168,236]],r2:[[0,220,226],[C,214,232]],r3:[[0,140,120],[1.8,128,136],[2.8,150,98],[C,150,98]],r4:[[0,224,118],[2.4,214,104],[C,214,104]],k:[[0,180,30],[2.8,168,36],[C,168,36]]};
+  S.BALLS=[jrSeq(S,[['p','s6','e8',0.6,1.2],['d','e8',1.25,1.6],['p','e8','n9',1.9,2.6],['s','n9',2.7,3.1,212,14]],C)];
+  A.mjhalbraum={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);[[80,60],[220,60]].forEach(([x,w])=>el('rect',{x,y:6,width:w,height:348,fill:'#FFFFFF',opacity:'.07'},s));[80,140,220,280].forEach(x=>line(s,x,6,x,354,'4 6','.3'));},
+    ents:[{id:'s6',label:'6'},{id:'e8',label:'8'},{id:'w1'},{id:'w2'},{id:'n9',label:'9'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* 1 gegen 1 auf dem Flügel mit Flanke */
+(function(){const C=4.6;
+  const S={L:[[1.0,'1 gegen 1 im Flügelkanal'],[1.8,'Antäuschen nach innen, außen vorbei'],[99,'Flanke auf die zwei Stürmerinnen im Strafraum']],
+    w:[[0,306,316],[0.9,300,222],[1.1,290,206],[1.5,330,176],[1.9,328,128],[C,328,128]],d:[[0,300,170],[0.9,300,188],[1.15,282,186],[1.9,296,166],[C,296,166]],
+    s1:[[0,190,206],[1.6,196,200],[2.4,166,62],[C,166,62]],s2:[[0,130,216],[1.6,126,206],[2.5,226,84],[C,226,84]],cb:[[0,236,160],[2.0,240,150],[2.6,240,112],[C,240,112]],k:[[0,180,30],[2.4,170,34],[C,170,34]]};
+  S.BALLS=[jrSeq(S,[['d','w',0,1.9],['p','w','s1',2.0,2.45],['s','s1',2.55,2.9,206,14]],C)];
+  A.mjflugel1={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);el('rect',{x:270,y:6,width:84,height:348,fill:'#FFFFFF',opacity:'.08'},s);line(s,270,6,270,354,'6 5','.5');el('rect',{x:70,y:6,width:220,height:90,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.5'},s);},
+    ents:[{id:'w'},{id:'d',fill:RED},{id:'s1'},{id:'s2'},{id:'cb',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Letztes Drittel 4 gegen 4 mit Anspielerinnen */
+(function(){const C=4.8;
+  const S={L:[[1.0,'Die Anspielerin spielt in die Spitze'],[2.0,'Ablage und Steilpass in den Lauf'],[99,'Abschluss, die Anspielerinnen rücken nach']],
+    a1:[[0,120,340]],a2:[[0,240,340]],b1:[[0,140,180],[0.8,136,214],[C,136,214]],b2:[[0,200,250],[1.2,196,238],[C,196,238]],b3:[[0,270,190],[1.5,268,184],[2.6,236,86],[C,236,86]],b4:[[0,90,120],[C,100,110]],
+    r1:[[0,140,150],[0.9,136,184],[C,136,184]],r2:[[0,210,200],[1.2,186,206],[C,186,206]],r3:[[0,232,150],[1.8,240,152],[2.6,214,118],[C,214,118]],r4:[[0,110,90],[C,120,96]],k:[[0,180,30],[2.8,200,38],[C,200,38]]};
+  S.BALLS=[jrSeq(S,[['p','a1','b1',0.2,0.8],['p','b1','b2',1.0,1.3],['p','b2','b3',1.6,2.4],['d','b3',2.4,2.6],['s','b3',2.75,3.1,150,14]],C)];
+  A.mjdrittel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);line(s,6,300,354,300,'8 6','.6');el('rect',{x:70,y:6,width:220,height:90,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.5'},s);},
+    ents:[{id:'a1',fill:WAIT},{id:'a2',fill:WAIT},{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Aufbauspiel 6 gegen 4 */
+(function(){const C=5.2;
+  const S={L:[[1.3,'Torfrau und Viererkette bauen gegen vier Pressende auf'],[2.6,'Locken, dann auf die freie Seite'],[99,'Die Sechserin dreht auf und dribbelt über die Mittellinie']],
+    t:[[0,180,334]],v1:[[0,124,296]],v2:[[0,236,296]],a1:[[0,46,236]],a2:[[0,314,236],[2.4,318,214],[C,318,214]],s6:[[0,180,236],[1.6,206,224],[2.4,240,214],[3.6,240,112],[C,240,112]],
+    r1:[[0,150,264],[1.0,214,276],[C,214,276]],r2:[[0,214,250],[1.6,284,240],[C,284,240]],r3:[[0,90,190],[2.0,150,200],[C,150,200]],r4:[[0,270,180],[2.0,290,190],[3.4,270,150],[C,270,150]]};
+  S.BALLS=[jrSeq(S,[['p','t','v2',0.3,0.8],['p','v2','a2',1.2,1.7],['p','a2','s6',2.0,2.5],['d','s6',2.5,3.6]],C)];
+  A.mjaufbau={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);usGoalB(s);line(s,6,110,354,110,'10 6','.8');txt(s,348,102,'end','12').textContent='Mittellinie';},
+    ents:[{id:'t',fill:NEU},{id:'v1',label:'IV'},{id:'v2',label:'IV'},{id:'a1',label:'AV'},{id:'a2',label:'AV'},{id:'s6',label:'6'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED}],sc:{a:S}};
+})();
+
+/* Angriff mit Restverteidigung */
+(function(){const C=5.4;
+  const S={L:[[1.8,'Drei greifen an, zwei sichern hinten ab'],[2.6,'Die Torfrau fängt und wirft sofort zur Konterspielerin'],[99,'Die Restverteidigung stoppt den Konter']],
+    a1:[[0,110,190],[1.4,120,110],[C,120,112]],a2:[[0,180,200],[1.2,184,120],[1.6,190,100],[C,190,100]],a3:[[0,250,190],[1.4,250,110],[C,250,112]],
+    h1:[[0,140,250],[2.6,140,250],[3.6,110,286],[C,110,286]],h2:[[0,220,250],[2.6,220,250],[3.6,190,280],[C,190,280]],
+    d1:[[0,150,80],[1.4,148,92],[C,148,92]],d2:[[0,220,80],[1.4,226,92],[C,226,92]],c1:[[0,60,170],[2.5,60,170],[3.6,110,262],[C,110,262]],c2:[[0,300,170],[2.6,300,180],[3.6,256,250],[C,256,250]],k:[[0,180,30]]};
+  S.BALLS=[jrSeq(S,[['d','a2',0,1.5],['s','a2',1.6,1.9,180,44],['p','k','c1',2.2,2.8],['d','c1',2.85,3.4],['p','c1','h1',3.45,3.6]],C)];
+  A.mjrest={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);usGoalB(s);line(s,6,180,354,180,'8 6','.5');},
+    ents:[{id:'a1'},{id:'a2'},{id:'a3'},{id:'h1'},{id:'h2'},{id:'d1',fill:RED},{id:'d2',fill:RED},{id:'c1',fill:RED},{id:'c2',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -5954,6 +6026,76 @@ EX.push(...[
  leicht:['Zwei Jägerinnen (Stufe 1)','Größerer Kreis','Freie Kontakte'],
  steig:['Drei Jägerinnen (Stufe 2)','Nicht zur Nachbarin (Stufe 3)','Kleinerer Kreis']}
 ].map(e=>Object.assign({},KJR,e)));
+/* ---------- Mit Ball U13 – KM: Inhalte ---------- */
+const KJM={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'mitball',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'mjzonen',title:'Drei-Zonen-Angriff',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Linien überspielen · Abschluss'],['','14–18 Spielerinnen + Torfrau'],['Feld','Halbes Feld in drei Zonen'],['Dauer','15 min'],['Material','1 Tor, Hütchen, Bälle, Leibchen']],
+ ziel:'Die Mannschaft sichert in Zone 1 den Ball in Überzahl, spielt im richtigen Moment in Zone 2 und bricht von dort in Zone 3 zum Abschluss durch. Im Spiel: vom Aufbau über das Mittelfeld zum Tor, Linie für Linie.',
+ org:['Halbes Feld in drei gleich große Zonen geteilt, Tor mit Torfrau','Zone 1: 4 Blaue gegen 2 Rote','Zone 2: 2 Blaue gegen 2 Rote','Zone 3: nur die Torfrau'],
+ rot:'Nach 4 Minuten wechseln die Rollen innerhalb des Teams, nach 8 Minuten verteidigt das andere Team.',
+ ablauf:['Blau hält in Zone 1 den Ball.','Pass in Zone 2, eine Spielerin aus Zone 1 darf nachrücken (3 gegen 2).','Aus Zone 2 Pass oder Dribbling in Zone 3.','Abschluss. Erobert Rot den Ball, kontert es auf zwei Minitore an der Grundlinie von Zone 1.'],
+ stufen:[['Stufe 1 · Ohne Nachrücken','Pass in Zone 2, dort 2 gegen 2, kein Nachrücken.'],['Stufe 2 · Nachrücken','Die Passgeberin rückt in Zone 2 nach, 3 gegen 2.'],['Stufe 3 · Zeit und Konter','Von Zone 1 bis zum Abschluss höchstens 12 Sekunden. Rot kontert nach Ballgewinn sofort.']],
+ coach:[['Geduld in Zone 1','Erst spielen, wenn eine Spielerin in Zone 2 frei ist. Erkennbar: Der Pass in Zone 2 kommt an, ohne dass eine Rote ihn abfängt.'],['Freilaufen in Zone 2','Gegenbewegung, dann entgegenkommen oder in die Tiefe. Fehlerbild: Die Spielerin in Zone 2 steht im Deckungsschatten.'],['Nachrücken','Nach dem Pass sofort hinterher.'],['Abschluss','Früh und flach in Zone 3.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine, alle Zonen besetzt','Pro Spielerin: ca. 12–18 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Nachrücken (Stufe 1)','Zone 1 mit 5 gegen 2','Größere Zonen'],
+ steig:['Nachrücken (Stufe 2)','Höchstens zwei Kontakte in Zone 1','Zeit und Konter (Stufe 3)']},
+{id:'mjhalbraum',title:'Halbraum-Spiel 5 gegen 4',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Spiel zwischen den Linien · Halbräume'],['','10–14 Spielerinnen + Torfrau'],['Feld','40 × 40 m vor dem Tor, Halbräume markiert'],['Dauer','15 min'],['Material','1 Tor, Hütchen, Bälle, Leibchen']],
+ ziel:'Die Achterin löst sich in den Halbraum zwischen Mittelfeld- und Abwehrlinie, nimmt offen an, dreht auf und spielt in die Tiefe. Im Spiel: die Räume zwischen den Linien nutzen, die am schwersten zu verteidigen sind.',
+ org:['Feld 40 × 40 m vor dem Tor, die zwei Halbräume mit Hütchen markiert','Blau: Sechserin, Achterin, zwei Außen, Neun','Rot: zwei Mittelfeldspielerinnen, zwei Verteidigerinnen, Torfrau'],
+ rot:'Nach 5 Minuten wechseln Blau und Rot, innerhalb von Blau rotieren die Positionen.',
+ ablauf:['Die Sechserin hat den Ball.','Die Achterin löst sich in den Halbraum.','Annahme, aufdrehen, Steilpass oder Dribbling.','Abschluss. Ballgewinn Rot = Konter über die Mittellinie.'],
+ stufen:[['Stufe 1 · 5 gegen 3','Nur eine rote Mittelfeldspielerin.'],['Stufe 2 · 5 gegen 4','Normale Form.'],['Stufe 3 · Halbraum-Punkt','Ein Tor zählt nur doppelt, wenn der Ball vorher im Halbraum angenommen wurde. Höchstens zwei Kontakte außerhalb der Halbräume.']],
+ coach:[['Zwischen die Linien','Die Achterin steht hinter der roten Mittelfeldlinie und vor der Abwehr. Erkennbar: Sie bekommt den Ball, ohne dass eine Gegnerin direkt am Mann ist.'],['Offene Stellung','Seitlich zum Ball, Blick zum Tor. Fehlerbild: Frontal annehmen, dann muss sie zurückspielen.'],['Breite','Die Außen bleiben breit, damit die Halbräume offen sind.'],['Neun','Bindet die Verteidigerinnen und startet in die Tiefe, wenn die Achterin aufdreht.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 12–15 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['5 gegen 3 (Stufe 1)','Größeres Feld','Freie Kontakte'],
+ steig:['5 gegen 4 (Stufe 2)','Halbraum-Punkt (Stufe 3)','5 gegen 5']},
+{id:'mjflugel1',title:'1 gegen 1 auf dem Flügel mit Flanke',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','1 gegen 1 · Flanke · Strafraumbesetzung'],['','10–14 Spielerinnen + Torfrau'],['Feld','Flügelkanal 10 m breit, Strafraum'],['Dauer','15 min'],['Material','1 Tor, Hütchen, Bälle']],
+ ziel:'Die Flügelspielerin gewinnt das 1 gegen 1 im Flügelkanal und flankt auf zwei Stürmerinnen, die gegen eine Verteidigerin den Strafraum besetzen. Im Spiel: Durchsetzen auf außen und Flanken, die verwertet werden.',
+ org:['Flügelkanal 10 m breit an beiden Seiten','Flügelspielerin gegen Außenverteidigerin im Kanal','Zwei Stürmerinnen gegen eine Innenverteidigerin im Strafraum, Torfrau'],
+ rot:'Flügel und Außenverteidigerin tauschen nach jedem Durchgang, Stürmerinnen nach 3 Minuten. Seiten abwechselnd.',
+ ablauf:['Die Flügelspielerin bekommt den Ball im Kanal.','1 gegen 1 gegen die Außenverteidigerin.','Nach dem Durchbruch Flanke.','Zwei Stürmerinnen gegen eine Verteidigerin, Abschluss.'],
+ stufen:[['Stufe 1 · Halbaktive Außenverteidigerin','Die Außenverteidigerin begleitet nur, greift nicht an.'],['Stufe 2 · Aktiv','Aktives 1 gegen 1 im Kanal.'],['Stufe 3 · Hinterlaufen','Eine Außenverteidigerin des eigenen Teams darf hinterlaufen (2 gegen 1 im Kanal). Flanke innerhalb von 8 Sekunden.']],
+ coach:[['Tempo ins Duell','Mit Tempo auf die Gegnerin zu, kurz vorher Finte. Erkennbar: Die Flügelspielerin kommt an der Gegnerin vorbei oder zieht ein Foul.'],['Flanke nach dem Durchbruch','Sofort flanken, nicht noch einmal abbremsen. Fehlerbild: Die Flügelspielerin stoppt, die Gegnerin ist wieder da.'],['Strafraum','Erster und zweiter Pfosten, nicht nebeneinander.'],['Timing der Stürmerinnen','Spät starten, mit der Ausholbewegung der Flankengeberin.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Seiten im Wechsel','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Halbaktive Außenverteidigerin (Stufe 1)','Breiterer Kanal','Stürmerinnen ohne Verteidigerin'],
+ steig:['Aktiv (Stufe 2)','Zwei Verteidigerinnen im Strafraum','Hinterlaufen und Zeit (Stufe 3)']},
+{id:'mjdrittel',title:'Letztes Drittel 4 gegen 4 mit Anspielerinnen',legend:['spielerin','passgeberin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Angriff im letzten Drittel'],['','10–14 Spielerinnen + Torfrau'],['Feld','35 × 30 m vor dem Tor'],['Dauer','15 min'],['Material','1 Tor, Hütchen, Bälle']],
+ ziel:'Vier Angreiferinnen kombinieren mit zwei Anspielerinnen aus dem Rückraum gegen vier Verteidigerinnen zum Abschluss. Im Spiel: im letzten Drittel mit Ablagen, Steilpässen und Nachrücken zum Tor kommen.',
+ org:['Feld 35 × 30 m vor dem Tor, hinten eine Linie für die Anspielerinnen','4 gegen 4 im Feld','Zwei Anspielerinnen hinter der Linie, sie spielen immer mit Blau'],
+ rot:'Nach 4 Minuten tauschen Anspielerinnen und Angreiferinnen, nach 8 Minuten verteidigt Blau.',
+ ablauf:['Eine Anspielerin spielt ins Feld.','Blau kombiniert, die Anspielerinnen dürfen jederzeit angespielt werden.','Abschluss aufs Tor.','Ballgewinn Rot: Pass auf eine Anspielerin = Punkt für Rot.'],
+ stufen:[['Stufe 1 · 4 gegen 3','Eine Verteidigerin weniger.'],['Stufe 2 · 4 gegen 4','Normale Form.'],['Stufe 3 · Nachrücken','Eine Anspielerin darf nach ihrem Pass ins Feld nachrücken (5 gegen 4), dann muss eine Angreiferin hinter die Linie. Abschluss in 10 Sekunden.']],
+ coach:[['Entgegenkommen und Ablage','Die Spitze kommt entgegen und legt auf die nachrückende Spielerin ab. Erkennbar: Der Ball geht nach der Ablage sofort in die Tiefe.'],['Laufwege','Eine kommt, eine geht. Fehlerbild: Alle vier kommen gleichzeitig entgegen, niemand ist in der Tiefe.'],['Anspielerinnen','Immer anbieten, den Ball schnell wieder ins Feld spielen.'],['Abschluss','Aus der zweiten Reihe nachschießen.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 12–15 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['4 gegen 3 (Stufe 1)','Breiteres Feld','Drei Anspielerinnen'],
+ steig:['4 gegen 4 (Stufe 2)','Anspielerinnen nur direkt','Nachrücken und Zeit (Stufe 3)']},
+{id:'mjaufbau',title:'Aufbauspiel 6 gegen 4',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Spielaufbau gegen Pressing'],['','10–14 Spielerinnen + Torfrau'],['Feld','Eigene Hälfte'],['Dauer','15 min'],['Material','1 Tor, Hütchen, Bälle, Leibchen']],
+ ziel:'Torfrau, Viererkette und Sechserin bauen gegen vier pressende Gegnerinnen auf und bringen den Ball kontrolliert über die Mittellinie. Im Spiel: ruhiger Aufbau gegen hohes Pressing.',
+ org:['Eigene Hälfte, Tor mit Torfrau','Blau: Torfrau, zwei Innen-, zwei Außenverteidigerinnen, Sechserin','Rot: vier Pressende'],
+ rot:'Nach 4 Minuten wechseln die Pressenden mit vier Spielerinnen aus dem Aufbau.',
+ ablauf:['Die Torfrau eröffnet.','Blau spielt sich gegen das Pressing frei.','Dribbling oder Pass über die Mittellinie = Punkt.','Ballgewinn Rot = Abschluss aufs Tor in 8 Sekunden.'],
+ stufen:[['Stufe 1 · Drei Pressende','Nur drei Gegnerinnen pressen.'],['Stufe 2 · Vier Pressende','Normale Form.'],['Stufe 3 · Fünf Pressende','Eine fünfte Gegnerin presst die Sechserin. Punkt nur nach Pass über die Mittellinie auf eine Zielspielerin.']],
+ coach:[['Breite','Außenverteidigerinnen hoch und breit, Innenverteidigerinnen an den Strafraumecken. Erkennbar: Die Pressenden müssen lange Wege gehen.'],['Torfrau als Anspielstation','Immer neben dem Tor anbieten. Fehlerbild: Die Torfrau steht auf der Linie und ist nicht anspielbar.'],['Locken','Ball bewusst auf eine Seite, dann schnell über Sechserin oder Torfrau verlagern.'],['Sechserin','Im Rücken der ersten Pressenden, Schulterblick vor der Annahme.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 10–15 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Drei Pressende (Stufe 1)','Freie Kontakte','Torfrau darf den Ball in die Hand nehmen'],
+ steig:['Vier Pressende (Stufe 2)','Höchstens zwei Kontakte','Fünf Pressende (Stufe 3)']},
+{id:'mjrest',title:'Angriff mit Restverteidigung',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Angreifen und absichern'],['','10–14 Spielerinnen + 2 Torfrauen'],['Feld','Halbes Feld bis über die Mittellinie, zwei Tore'],['Dauer','15 min'],['Material','2 Tore, Bälle, Leibchen']],
+ ziel:'Drei Spielerinnen greifen an, zwei bleiben als Restverteidigung hinter dem Ball und stoppen den sofortigen Konter der Gegnerinnen. Im Spiel: mutig angreifen, ohne offen zu sein.',
+ org:['Zwei Tore, 50 m auseinander','Blau: 3 Angreiferinnen, 2 Restverteidigerinnen an der Mittellinie','Rot: 2 Verteidigerinnen vor dem Tor, 2 Konterspielerinnen an der Mittellinie'],
+ rot:'Nach 3 Angriffen wechseln die Rollen innerhalb von Blau. Nach 6 Minuten tauschen Blau und Rot.',
+ ablauf:['Blau greift 3 gegen 2 an.','Die Restverteidigerinnen bleiben hinter der Mittellinie.','Nach Abschluss oder Ballverlust kontert Rot sofort 2 gegen 2 aufs andere Tor.','Punkte: Tor für Blau, Konterstopp der Restverteidigung, Tor für Rot.'],
+ stufen:[['Stufe 1 · Verzögerter Konter','Rot darf erst 3 Sekunden nach dem Ballgewinn kontern.'],['Stufe 2 · Sofort','Rot kontert sofort.'],['Stufe 3 · Drei Konterspielerinnen','Drei Konterspielerinnen, die Restverteidigung muss zu zweit gegen drei verteidigen, bis eine Angreiferin zurück ist.']],
+ coach:[['Restverteidigung','Hinter dem Ball, zentral und versetzt stehen. Erkennbar: Beim Ballverlust stehen beide zwischen Konterspielerin und Tor.'],['Abstand','Nicht zu weit weg von den Angreiferinnen. Fehlerbild: Die Restverteidigerinnen stehen an der eigenen Strafraumgrenze, im Mittelfeld ist Platz ohne Ende.'],['Konterspielerinnen eng nehmen','Vor dem Ballverlust schon nah an den Konterspielerinnen stehen.'],['Angreiferinnen','Nach Ballverlust sofort zurück.']],
+ last:['Dauer: 3 × 5 Minuten, 2 Minuten Pause','Wartezeit: keine','Pro Spielerin: ca. 8–10 Aktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Verzögerter Konter (Stufe 1)','Drei Restverteidigerinnen','Kürzeres Feld'],
+ steig:['Sofort (Stufe 2)','Abschluss in 10 Sekunden','Drei Konterspielerinnen (Stufe 3)']}
+].map(e=>Object.assign({},KJM,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -8533,6 +8675,66 @@ zielrondo:{ziel:'Die Spielerin spielt die Zielspielerin an, rückt für die Abla
  last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, Zielspielerinnen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
  leicht:['Zwei Jägerinnen (Stufe 1)','Größeres Feld','Zielspielerin darf andribbeln (5 gegen 3)'],
  steig:['Drei Jägerinnen (Stufe 2)','Zielspielerin direkt (Stufe 3)','4 gegen 4 ohne Überzahl']},
+dreizweiwelle:{ziel:'Die Spielerin hält im 3 gegen 2 die Breite, bindet mit dem Dribbling eine Verteidigerin und spielt im richtigen Moment zur freien Mitspielerin. Im Spiel: Überzahl nach vorne konsequent ausspielen.',
+ stufen:[['Stufe 1 · 3 gegen 1','Nur eine Verteidigerin, Fokus auf Breite und Abschluss.'],['Stufe 2 · 3 gegen 2','Normale Form in Wellen.'],['Stufe 3 · Nachlaufende Verteidigerin','Eine dritte Verteidigerin startet 3 Sekunden später von der Mittellinie, Abschluss innerhalb von 10 Sekunden.']],
+ coach:[['Breite','Die äußeren Angreiferinnen bleiben breit. Erkennbar: Die zwei Verteidigerinnen können nicht beide Außen gleichzeitig decken.'],['Binden','Auf eine Verteidigerin zudribbeln, bis sie sich festlegt. Fehlerbild: Der Pass kommt zu früh, die Verteidigerin kann einfach verschieben.'],['Pass in den Lauf','Zur freien Spielerin, vor sie in den Raum.'],['Abschluss','Früh und flach, die anderen gehen auf den Abpraller.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Wellen alle 20 Sekunden','Pro Spielerin: ca. 6–8 Angriffe pro Durchgang','Intensität: hoch'],
+ leicht:['3 gegen 1 (Stufe 1)','Kürzere Strecke','Ohne Torfrau aufs große Tor'],
+ steig:['3 gegen 2 (Stufe 2)','Höchstens zwei Kontakte','Nachlaufende Verteidigerin (Stufe 3)']},
+vierdrei:{ziel:'Die Spielerin spielt mit ihrem Team die 4-gegen-3-Überzahl schnell zum Abschluss aus und sichert gleichzeitig gegen den Konter ab. Im Spiel: Überzahl nutzen, ohne die Restverteidigung zu vergessen.',
+ stufen:[['Stufe 1 · Ohne Konter','4 gegen 3 bis zum Abschluss, die Verteidigerinnen kontern nicht.'],['Stufe 2 · Mit Konter','Nach Ballgewinn kontern die Verteidigerinnen auf zwei Minitore an der Mittellinie.'],['Stufe 3 · Zeitlimit','Abschluss in 12 Sekunden, Tor nach Flanke doppelt, Konter in 6 Sekunden.']],
+ coach:[['Freie Spielerin finden','Der Ball läuft zur Spielerin ohne Gegenspielerin. Erkennbar: Der Abschluss kommt aus einer Situation ohne direkten Druck.'],['Tempo','Schnell spielen, bevor die Abwehr sich ordnet.'],['Restverteidigung','Eine Spielerin bleibt hinter dem Ball. Fehlerbild: Alle vier gehen in den Strafraum, der Konter läuft ohne Gegenwehr.'],['Konter','Nach Ballgewinn erster Pass nach vorne.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: kurz, Teams wechseln nach jedem Durchgang','Pro Spielerin: ca. 8–10 Aktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Ohne Konter (Stufe 1)','5 gegen 3','Breiteres Feld'],
+ steig:['Mit Konter (Stufe 2)','Kontaktbegrenzung','Zeitlimit (Stufe 3)']},
+aufbaumuster:{ziel:'Torfrau, Innenverteidigerin, Außenverteidigerin und Sechserin spielen sich gegen pressende Gegnerinnen frei und überspielen mit dem Steilpass auf die Achterin die erste Pressinglinie. Im Spiel: geordneter Spielaufbau von hinten.',
+ stufen:[['Stufe 1 · Passive Gegnerinnen','Zwei Gegnerinnen stehen im Raum und bewegen sich nur langsam.'],['Stufe 2 · Aktives Pressing','Zwei Gegnerinnen pressen aktiv, Ziel ist der Pass auf die Achterin.'],['Stufe 3 · Drei Pressende','Eine dritte Gegnerin deckt die Sechserin. Nach Ballgewinn schließen die Gegnerinnen aufs Tor ab.']],
+ coach:[['Körperstellung','Offen zum Spielfeld annehmen. Erkennbar: Die Sechserin spielt nach der Annahme nach vorne, nicht zurück.'],['Rhythmus','Schnell spielen, wenn die Gegnerin anläuft. Fehlerbild: Die Innenverteidigerin hält den Ball zu lange und wird gestellt.'],['Locken und auflösen','Gegnerinnen bewusst auf eine Seite ziehen, dann auf die andere.'],['Achterin','Im Rücken der ersten Pressinglinie anbieten.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, zwei Gruppen im Wechsel','Pro Spielerin: ca. 12–15 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Passive Gegnerinnen (Stufe 1)','Breiteres Feld','Freie Kontakte'],
+ steig:['Aktives Pressing (Stufe 2)','Kontaktbegrenzung','Drei Pressende (Stufe 3)']},
+fluegelkombi:{ziel:'Außenverteidigerin, Flügelspielerin und Achterin spielen das Muster Klatsch, Steilpass und Hinterlaufen, die Neun verwertet die Flanke. Im Spiel: ein festes Angriffsmuster über außen, das unter Druck funktioniert.',
+ stufen:[['Stufe 1 · Ohne Gegnerin','Fester Ablauf, Fokus auf Timing und Passqualität.'],['Stufe 2 · Gegnerin aktiv','Eine Außenverteidigerin verteidigt aktiv gegen die Flügelspielerin.'],['Stufe 3 · Zwei Verteidigerinnen','Zusätzlich eine Innenverteidigerin im Strafraum gegen die Neun. Die Flügelspielerin entscheidet: Klatsch oder Aufdrehen.']],
+ coach:[['Timing','Die Außenverteidigerin startet mit dem Klatschpass. Erkennbar: Sie bekommt den Steilpass im vollen Lauf.'],['Pass in den Lauf','Der Steilpass geht vor die Außenverteidigerin, nicht auf sie. Fehlerbild: Sie muss abbremsen, die Gegnerin holt auf.'],['Flanke','Früh, flach oder scharf an den ersten Pfosten.'],['Neun','Spät starten, Gegenbewegung vor dem Lauf.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause, Seiten wechseln','Wartezeit: mittel, ein Durchgang alle 15 Sekunden','Pro Spielerin: ca. 8–10 Aktionen pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Gegnerin (Stufe 1)','Kürzere Abstände','Flanke aus dem Stand'],
+ steig:['Gegnerin aktiv (Stufe 2)','Zwei Verteidigerinnen (Stufe 3)','Gespiegelt auf der anderen Seite']},
+positionsangriff:{ziel:'Die Spielerin nutzt mit ihrem Team die Überzahl durch die Joker, spielt zwischen die Linien, dreht auf und sucht früh den Abschluss. Im Spiel: aus dem Ballbesitz gezielt zum Tor kommen.',
+ stufen:[['Stufe 1 · Zwei Joker frei','4 gegen 4 + 2 Joker, freie Kontakte.'],['Stufe 2 · Joker direkt','Joker nur direkt, Tor nach Jokerpass doppelt.'],['Stufe 3 · Ein Joker und Kontaktlimit','Nur ein Joker, höchstens zwei Kontakte, nach Ballverlust 5 Sekunden Gegenpressing.']],
+ coach:[['Zwischen den Linien','Anbieten in der Lücke, aufdrehen. Erkennbar: Die Spielerin nimmt zwischen zwei Gegnerinnen an und dreht Richtung Tor.'],['Tempo','Schnell den Ball laufen lassen. Fehlerbild: Zu viele Kontakte, die Gegnerinnen stehen wieder kompakt.'],['Abschluss','Früh und flach, wenn die Lücke da ist.'],['Umschalten','Nach Ballverlust sofort Druck.']],
+ last:['Dauer: 4 × 4 Minuten, 90 Sekunden Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Zwei Joker frei (Stufe 1)','Größeres Feld','Drei Joker'],
+ steig:['Joker direkt (Stufe 2)','Ein Joker und Kontaktlimit (Stufe 3)','Tor nur nach Spiel zwischen den Linien']},
+umschaltspiel:{ziel:'Die Spielerin schaltet nach jedem Ballgewinn sofort auf Angriff um und schließt in 6 Sekunden ab, nach jedem Ballverlust presst sie sofort. Im Spiel: Umschaltmomente entscheiden Spiele.',
+ stufen:[['Stufe 1 · 8 Sekunden','Abschluss innerhalb von 8 Sekunden nach Ballgewinn.'],['Stufe 2 · 6 Sekunden','Normale Form.'],['Stufe 3 · 4 Sekunden','Abschluss in 4 Sekunden, Rückeroberung in 5 Sekunden zählt doppelt.']],
+ coach:[['Umschalten','Sofort nach Ballgewinn nach vorne schauen. Erkennbar: Der erste Kontakt nach dem Ballgewinn geht Richtung Tor.'],['Tempo','Wenige Kontakte, schnell nach vorne. Fehlerbild: Querpass nach dem Ballgewinn, die Zeit läuft ab.'],['Gegenpressing','Nach Ballverlust sofort Druck, die Nächste attackiert.'],['Abschluss','Früh schießen, nicht zu weit ins Tor tragen.']],
+ last:['Dauer: 6 × 90 Sekunden, 90 Sekunden Pause','Wartezeit: kurz, Teams wechseln','Pro Spielerin: ca. 10–12 Umschaltaktionen pro Durchgang','Intensität: sehr hoch'],
+ leicht:['8 Sekunden (Stufe 1)','Feld größer','4 gegen 4'],
+ steig:['6 Sekunden (Stufe 2)','4 Sekunden (Stufe 3)','Kleineres Feld']},
+tiefenlauf:{ziel:'Die Neun kommt entgegen und legt ab, die Elf startet diagonal hinter die Kette und bekommt den Steilpass in den Lauf. Im Spiel: mit dem Lauf hinter die Abwehr Torchancen erzeugen.',
+ stufen:[['Stufe 1 · Passive Verteidigerinnen','Die Verteidigerinnen stehen und drehen sich nur.'],['Stufe 2 · Aktiv mit Abseits','Die Verteidigerinnen verteidigen aktiv, Abseits wird gepfiffen.'],['Stufe 3 · Zwei Läufe','Zwei Spielerinnen starten in die Tiefe, die Achterin wählt. Nach Ballgewinn kontern die Verteidigerinnen auf ein Minitor.']],
+ coach:[['Timing','Die Elf startet mit der Ablage. Erkennbar: Sie ist beim Steilpass auf Höhe der letzten Verteidigerin.'],['Pass in den Lauf','Vor die Läuferin, nicht in die Füße. Fehlerbild: Der Pass kommt zu spät, die Läuferin steht im Abseits.'],['Neun','Gegenbewegung, dann entgegenkommen und klatschen lassen.'],['Abschluss','Ruhig bleiben, flach ins lange Eck.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Seiten im Wechsel','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Passive Verteidigerinnen (Stufe 1)','Ohne Abseits','Größere Abstände'],
+ steig:['Aktiv mit Abseits (Stufe 2)','Zwei Läufe (Stufe 3)','Abschluss nur direkt']},
+doppelpassabschluss:{ziel:'Die Spielerin dribbelt auf die Verteidigerin zu, bindet sie, spielt den Doppelpass mit der Wand und schließt hinter der Verteidigerin ab. Im Spiel: eine Gegnerin mit dem Doppelpass überspielen.',
+ stufen:[['Stufe 1 · Passive Verteidigerin','Die Verteidigerin bleibt stehen.'],['Stufe 2 · Halbaktiv','Die Verteidigerin darf sich drehen und mitlaufen.'],['Stufe 3 · Aktiv','Aktive Verteidigerin, die Angreiferin entscheidet: Doppelpass oder Dribbling. Nach Ballgewinn Konter auf ein Minitor.']],
+ coach:[['Binden','Die Verteidigerin anlaufen, bis sie sich festlegt. Erkennbar: Die Verteidigerin steht frontal, wenn der Pass zur Wand geht.'],['Antritt','Sofort nach dem Pass hinter die Verteidigerin. Fehlerbild: Die Angreiferin schaut ihrem Pass hinterher.'],['Wand','Mit der Innenseite in den Lauf.'],['Abschluss','Mit dem ersten Kontakt.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Stationen','Pro Spielerin: ca. 8–10 Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Passive Verteidigerin (Stufe 1)','Wand mit zwei Kontakten','Ohne Torfrau'],
+ steig:['Halbaktiv (Stufe 2)','Wand nur direkt','Aktiv (Stufe 3)']},
+fluegelzonen:{ziel:'Die Spielerin nutzt die freien Flügelzonen, um in Ruhe zu flanken, und besetzt den Strafraum mit zwei Spielerinnen. Im Spiel: Angriffe über außen mit Flanke und Strafraumbesetzung.',
+ stufen:[['Stufe 1 · Freie Zonen','In den Flügelzonen darf nicht angegriffen werden, Tor nach Flanke doppelt.'],['Stufe 2 · Kontaktlimit','In der Zone höchstens drei Kontakte.'],['Stufe 3 · Verteidigerin darf folgen','Eine Verteidigerin darf in die Zone folgen. Tor nur nach Flanke.']],
+ coach:[['Breite','Den Ball nach außen spielen, wenn innen kein Weg ist. Erkennbar: Mindestens jeder zweite Angriff geht über eine Flügelzone.'],['Strafraum','Zwei Spielerinnen im Strafraum, erster und zweiter Pfosten. Fehlerbild: Flanke, aber niemand im Strafraum.'],['Flanke','Früh und flach oder hoch an den zweiten Pfosten.'],['Rückraum','Eine Spielerin besetzt den Rückraum.']],
+ last:['Dauer: 4 × 4 Minuten, 90 Sekunden Pause','Wartezeit: keine','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Freie Zonen (Stufe 1)','Breitere Zonen','Joker im Zentrum'],
+ steig:['Kontaktlimit (Stufe 2)','Verteidigerin folgt (Stufe 3)','5 gegen 5']},
+konter32:{ziel:'Drei Angreiferinnen kontern mit Tempo und wenigen Pässen, bevor die zwei nachlaufenden Verteidigerinnen aufholen. Im Spiel: Konter schnell und direkt ausspielen.',
+ stufen:[['Stufe 1 · Großer Vorsprung','Die Verteidigerinnen starten 5 m hinter den Angreiferinnen.'],['Stufe 2 · Kleiner Vorsprung','Die Verteidigerinnen starten 2 m dahinter.'],['Stufe 3 · 4 gegen 3','Vier Angreiferinnen, drei Verteidigerinnen, Abschluss in 8 Sekunden.']],
+ coach:[['Tempo','Ball weit vorlegen und laufen. Erkennbar: Der Abschluss kommt, bevor die Verteidigerinnen auf Höhe der Ballführenden sind.'],['Wenige Pässe','Höchstens zwei Pässe bis zum Abschluss. Fehlerbild: Querpässe, die Verteidigerinnen holen auf.'],['Breite','Die Mitspielerinnen laufen breit, nicht hinter der Ballführenden.'],['Abschluss','Früh, flach, ins lange Eck.']],
+ last:['Dauer: 3 × 4 Minuten, 2 Minuten Pause','Wartezeit: mittel, Gruppen wechseln sich ab','Pro Spielerin: ca. 5–6 Konter pro Durchgang','Intensität: sehr hoch'],
+ leicht:['Großer Vorsprung (Stufe 1)','Kürzere Strecke','Nur eine Verteidigerin'],
+ steig:['Kleiner Vorsprung (Stufe 2)','Zeitlimit','4 gegen 3 (Stufe 3)']},
 };
 EX.forEach(e=>{const u=UPG_JKM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 
@@ -8657,6 +8859,11 @@ function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e
   J('rondo4p1','Für U13–KM: Quadrat 10 × 10 m, Außen höchstens zwei Kontakte, Joker nur direkt. Pass durch die Mitte zum Joker und weiter auf die andere Seite = Doppelpunkt.');
   J('ballhalten','Für U13–KM: Feld 20 × 20 m, höchstens zwei Kontakte, Joker nur direkt. Nach Ballverlust 5 Sekunden Gegenpressing, Rückeroberung = Punkt.');
   J('rondokonter','Für U13–KM: Quadrat 12 × 12 m, 5 gegen 2. Nach Ballgewinn Konter in 6 Sekunden, zwei Rondospielerinnen jagen sofort hinterher.',['umschalten']);
+  /* Mit Ball */
+  J('fluegel','Für U13–KM: auf dem halben Feld mit Torfrau, aktive Außenverteidigerin ab Stufe 2, zwei Stürmerinnen gegen eine Innenverteidigerin im Strafraum.');
+  J('anspieler','Für U13–KM: 4 gegen 4 mit Anspielerinnen, Anspielerinnen nur direkt, Punkt nur von Anspielerin zu Anspielerin über eine Spielerin im Feld.');
+  J('endzone','Für U13–KM: 4 gegen 4 + Joker auf 30 × 25 m, Punkt nur, wenn die Spielerin in die Endzone startet und den Ball im Lauf annimmt (Abseitsregel an der Endzonenlinie).');
+  J('zweieinstw','Für U13–KM: Start auf 30 m, Verteidigerin startet von der Seite, Abschluss innerhalb von 6 Sekunden, Abseits beachten.');
 })();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
