@@ -1,5 +1,5 @@
 /* Offline-Speicher für die App. Bei jeder neuen Version VERSION hochzählen. */
-const VERSION='hi-coaching-v51';
+const VERSION='hi-coaching-v52';
 const CORE=['./','./index.html','./config.js','./sync.js','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png','./bergheim-logo.png','./coach-pfiff.jpg'];
 const EXTRA=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'];
 self.addEventListener('install',e=>{e.waitUntil((async()=>{const c=await caches.open(VERSION);await c.addAll(CORE);
