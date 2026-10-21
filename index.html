@@ -2860,6 +2860,113 @@ const usTxt=(s,y)=>{const t=el('text',{x:180,y,'text-anchor':'middle','font-size
     ents:[{id:'a1'},{id:'a2'},{id:'a3'},{id:'d1',fill:RED},{id:'d2',fill:RED},{id:'n',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
 })();
 
+/* ---------- Passen U13 – KM: zehn neue Formen (5 Säulen) ---------- */
+const jpPole=(s,x,y)=>el('rect',{x:x-3,y:y-14,width:6,height:28,rx:2,fill:'#D85A30',stroke:'#7A2A10','stroke-width':'1'},s);
+
+/* Passstern: Pass und folge */
+(function(){const C=4.8,P={A:[180,320],M:[180,205],B:[64,140],T:[180,56],D:[296,140]};
+  const S={L:[[1.0,'Pass in die Mitte, die Mitte spielt direkt nach außen'],[2.6,'Diagonal nach vorne, dann quer'],[99,'Jede läuft ihrem Pass hinterher']],
+    a1:[[0,180,320],[0.5,180,320],[2.0,166,214],[C,166,214]],a2:[[0,204,334]],
+    m1:[[0,180,205],[1.0,180,205],[2.4,52,156],[C,52,156]],
+    b1:[[0,64,140],[1.8,64,140],[3.2,166,48],[C,166,48]],
+    t1:[[0,180,56],[2.6,180,56],[3.9,308,128],[C,308,128]],
+    d1:[[0,296,140],[3.3,296,140],[C,240,250]]};
+  S.BALLS=[[[0,180,306],[0.15,180,306],[0.55,180,219],[0.7,180,219],[1.05,78,146],[1.25,78,146],[1.7,172,68],[1.95,172,68],[2.5,282,136],[2.75,282,136],[3.4,196,322],[C,196,322]]];
+  A.pstern={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);Object.values(P).forEach(([x,y])=>cone(s,x+16,y+12));},
+    ents:[{id:'a1'},{id:'a2',fill:WAIT},{id:'m1'},{id:'b1'},{id:'t1'},{id:'d1'}],sc:{a:S}};
+})();
+
+/* Pass in die Schnittstelle */
+(function(){const C=4.0;
+  const S={L:[[0.9,'Die Läuferin startet diagonal von außen'],[1.6,'Flacher Pass genau zwischen die zwei Verteidigerinnen'],[99,'Mitnahme in den Lauf und Abschluss']],
+    p:[[0,180,300],[1.6,180,290],[C,180,290]],r:[[0,50,175],[0.3,50,175],[1.7,170,92],[2.1,176,80],[C,176,80]],s2:[[0,290,180],[0.6,290,180],[2.0,250,110],[C,250,110]],
+    d1:[[0,150,140],[1.0,150,140],[2.2,158,108],[C,156,108]],d2:[[0,226,140],[1.1,226,140],[2.2,216,116],[C,214,116]],k:[[0,180,32],[1.8,172,40],[C,172,40]]};
+  S.BALLS=[[[0,180,286],[0.9,180,286],[1.7,178,100],[1.9,180,92],[2.3,214,14],[C,214,14]]];
+  A.pschnitt={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);line(s,6,170,354,170,'6 5','.35');},
+    ents:[{id:'p'},{id:'r'},{id:'s2'},{id:'d1',fill:RED},{id:'d2',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Diagonalball mit Ablage */
+(function(){const C=4.6;
+  const S={L:[[1.4,'Die Innenverteidigerin verlagert mit dem langen Diagonalball'],[2.0,'Ablage auf die nachrückende Achterin'],[99,'Steilpass in den Tiefenlauf der Außenspielerin']],
+    iv:[[0,70,316]],iv2:[[0,40,334]],w:[[0,300,124],[1.2,300,124],[1.5,296,128],[2.0,300,120],[2.8,318,46],[C,318,46]],
+    e8:[[0,240,262],[0.8,240,262],[1.9,236,170],[C,236,170]]};
+  const wb=kmBall([[2.0,300,120],[2.8,318,46]],2.8);
+  S.BALLS=[[[0,84,310],[0.3,84,310],[1.4,288,128],[1.5,288,128],[1.9,247,161],[2.1,247,161],[2.6,312,72]].concat(kmCut(wb,2.75,2.8),[[C,320,32]])];
+  A.pdiagonal={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);line(s,6,180,354,180,'6 5','.35');cone(s,70,340);cone(s,312,140);},
+    ents:[{id:'iv',label:'IV'},{id:'iv2',fill:WAIT},{id:'w'},{id:'e8',label:'8'}],sc:{a:S}};
+})();
+
+/* Aufbau mit der Torfrau 4 gegen 2 */
+(function(){const C=5.2;
+  const S={L:[[1.5,'Die Torfrau eröffnet, die Stürmerin presst an'],[2.8,'Zurück zur Torfrau und Verlagerung auf die andere Seite'],[99,'Die freie Innenverteidigerin dribbelt über die Linie']],
+    t:[[0,180,326]],l:[[0,74,282]],r:[[0,286,282],[2.8,286,282],[4.0,290,128],[C,290,128]],s6:[[0,180,214],[1.4,196,224],[2.6,206,216],[C,206,216]],
+    g1:[[0,150,186],[0.8,150,186],[1.5,104,262],[2.4,140,290],[C,140,290]],g2:[[0,214,150],[1.6,192,190],[2.8,236,196],[4.0,262,168],[C,262,168]]};
+  const rb=kmBall(S.r.slice(1,3),4.0);
+  S.BALLS=[[[0,180,312],[0.3,180,312],[0.9,88,282],[1.4,88,282],[1.9,180,312],[2.2,180,312],[2.8,272,282]].concat(kmCut(rb,2.85,4.0),[[C,290,114]])];
+  A.ptorfrau={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);usGoalB(s);line(s,6,140,354,140,'8 6','.7');txt(s,348,132,'end','12').textContent='Linie';},
+    ents:[{id:'t',fill:NEU},{id:'l',label:'IV'},{id:'r',label:'IV'},{id:'s6',label:'6'},{id:'g1',fill:RED},{id:'g2',fill:RED}],sc:{a:S}};
+})();
+
+/* Ablage und Steilpass zum Abschluss */
+(function(){const C=4.4;
+  const S={L:[[0.9,'Vertikalpass auf die Stürmerin'],[1.5,'Ablage auf die Achterin'],[99,'Steilpass in den Lauf der zweiten Achterin und Abschluss']],
+    a:[[0,180,322],[C,180,322]],st:[[0,180,140],[0.6,180,150],[1.6,170,166],[2.4,150,110],[C,150,110]],
+    b:[[0,100,210],[0.9,100,210],[1.4,116,196],[C,116,196]],c:[[0,262,206],[1.1,262,206],[2.2,222,80],[2.6,214,70],[C,214,70]],k:[[0,180,32],[2.4,194,38],[C,194,38]]};
+  S.BALLS=[[[0,180,308],[0.2,180,308],[0.9,180,164],[1.0,180,164],[1.45,128,192],[1.6,128,192],[2.2,216,94],[2.35,214,84],[2.8,150,14],[C,150,14]]];
+  A.pvierplus={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);},
+    ents:[{id:'a',label:'6'},{id:'st',label:'9'},{id:'b',label:'8'},{id:'c',label:'8'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Verlagerungsspiel auf vier Minitore */
+(function(){const C=5.0;
+  const S={L:[[1.2,'Blau lockt die Gegnerinnen auf die linke Seite'],[2.2,'Zwei schnelle Pässe: Verlagerung'],[99,'Auf der freien Seite durchbrechen und ins Minitor']],
+    b1:[[0,90,230],[1.6,96,214],[C,96,214]],b2:[[0,180,290],[1.3,170,270],[C,170,270]],b3:[[0,280,240],[2.2,282,226],[3.2,286,90],[C,286,90]],b4:[[0,150,150],[C,150,150]],
+    r1:[[0,140,190],[1.2,110,180],[2.6,200,176],[C,214,170]],r2:[[0,210,210],[1.2,150,226],[2.6,230,220],[C,240,210]],r3:[[0,240,120],[1.2,170,110],[2.8,250,96],[C,256,92]]};
+  const db=kmBall([[2.2,282,226],[3.2,286,90]],3.2);
+  S.BALLS=[[[0,104,222],[1.2,104,222],[1.6,162,262],[1.75,162,262],[2.2,270,232]].concat(kmCut(db,2.25,3.2),[[3.6,288,14],[C,288,14]])];
+  A.pzonenwechsel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);mgoal(s,50,4,50,12);mgoal(s,260,4,50,12);mgoal(s,50,344,50,12);mgoal(s,260,344,50,12);line(s,180,6,180,354,'6 5','.3');},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED}],sc:{a:S}};
+})();
+
+/* Flachpass-Duell durch die Tore */
+(function(){const C=4.4,X=[100,180,260];
+  const S={L:[[1.2,'Flacher Pass durch das Hütchentor zur Partnerin'],[2.4,'Annahme in die Bewegung zur Seite'],[99,'Zurück durch das nächste Tor, schwacher Fuß zählt doppelt']],BALLS:[]},ents=[];
+  X.forEach((x,i)=>{S['u'+i]=[[0,x,316],[1.8,x,316],[2.8,x+30,316],[C,x+30,316]];S['o'+i]=[[0,x,48],[1.2,x,48],[1.7,x+30,48],[C,x+30,48]];ents.push({id:'u'+i},{id:'o'+i,fill:RED});
+    S.BALLS.push([[0,x,302],[0.2+i*0.15,x,302],[1.2+i*0.15,x,64],[1.25+i*0.15,x,64],[1.7,x+30,64],[2.0,x+30,64],[3.0,x+30,302],[C,x+30,302]]);});
+  A.pflachduell={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);X.forEach(x=>{cone(s,x-8,182);cone(s,x+8,182);cone(s,x+22,182);cone(s,x+38,182);});},ents,sc:{a:S}};
+})();
+
+/* Doppelpass-Parcours */
+(function(){const C=4.6;
+  const S={L:[[1.2,'Pass zur ersten Wand, an der Stange vorbei'],[2.6,'Doppelpass mit der zweiten und dritten Wand'],[99,'Mit dem letzten Kontakt aufs Tor']],
+    r:[[0,180,334],[0.45,176,298],[0.85,206,262],[1.15,198,238],[1.55,156,198],[1.85,164,170],[2.2,206,134],[2.55,204,106],[3.0,192,86],[C,192,86]],w1:[[0,80,264]],w2:[[0,290,196]],w3:[[0,80,128]],k:[[0,180,32],[3.0,166,36],[C,166,36]]};
+  S.BALLS=[[[0,180,320],[0.45,176,284],[0.75,94,264],[0.85,94,264],[1.15,194,224],[1.45,276,196],[1.55,276,196],[1.85,160,156],[2.15,108,130],[2.25,108,130],[2.55,198,92],[3.0,216,14],[C,216,14]]];
+  A.pdoppelpasslauf={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);jpPole(s,180,262);jpPole(s,182,196);jpPole(s,180,130);},
+    ents:[{id:'r'},{id:'w1',fill:WAIT,label:'W'},{id:'w2',fill:WAIT,label:'W'},{id:'w3',fill:WAIT,label:'W'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Dreiecke bilden: 3 gegen 1 nach vorne */
+(function(){const C=4.6;
+  const S={L:[[1.2,'Drei Spielerinnen bilden ein Dreieck um die Gegnerin'],[2.2,'Die Gegnerin presst: Pass auf die freie Seite'],[99,'Über die Linie dribbeln = Punkt']],
+    a:[[0,110,290],[1.0,110,250],[2.2,110,210],[C,110,210]],b:[[0,180,320],[0.9,180,290],[2.0,200,250],[C,200,250]],c:[[0,252,286],[1.4,252,240],[2.0,256,214],[3.4,262,70],[C,262,70]],
+    g:[[0,180,190],[1.0,146,214],[1.8,168,220],[2.6,214,170],[C,226,150]]};
+  const cb=kmBall([[2.0,256,214],[3.4,262,70]],3.4);
+  S.BALLS=[[[0,180,306],[0.5,180,290],[1.0,124,250],[1.25,124,250],[1.55,190,286],[1.65,190,280],[2.0,244,224]].concat(kmCut(cb,2.05,3.4),[[C,262,56]])];
+  A.pdreiecke={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);line(s,6,60,354,60,'8 6','.75');line(s,6,128,354,128,'4 6','.3');},
+    ents:[{id:'a'},{id:'b'},{id:'c'},{id:'g',fill:RED}],sc:{a:S}};
+})();
+
+/* Pass in die Zielzone */
+(function(){const C=4.6;
+  const S={L:[[1.2,'4 gegen 2: In der Zielzone steht niemand'],[2.2,'Eine Spielerin startet in die Zone, der Pass kommt in den Lauf'],[99,'Annahme in der Zone = Punkt']],
+    b1:[[0,96,250],[C,96,250]],b2:[[0,180,210],[1.0,170,200],[C,170,200]],b3:[[0,264,170],[1.2,264,170],[2.3,236,44],[C,236,44]],b4:[[0,180,300],[C,180,300]],
+    g1:[[0,140,190],[1.0,124,196],[2.2,150,180],[C,150,180]],g2:[[0,220,150],[1.0,206,170],[2.4,230,92],[C,230,92]]};
+  S.BALLS=[[[0,110,246],[0.5,110,246],[0.95,158,204],[1.2,158,204],[2.1,234,66],[2.35,232,58],[C,232,58]]];
+  A.pzielzone={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('rect',{x:6,y:6,width:348,height:58,fill:'#F2C230',opacity:'.16'},s);line(s,6,64,354,64,'6 5','.7');},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'g1',fill:RED},{id:'g2',fill:RED}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -5548,6 +5655,121 @@ EX.push(...[
  leicht:['3 gegen 1 (Stufe 1)','Kürzeres Feld','Torfrauen spielen den Ball ab'],
  steig:['3 gegen 2 (Stufe 2)','Zeitlimit von 10 Sekunden','Nachlaufende (Stufe 3)']}
 ].map(e=>Object.assign({},KUS,e)));
+/* ---------- Passen U13 – KM: Inhalte ---------- */
+Object.assign(LEG,{wandsp:['Wandspielerin',WAIT,1],stange:['Stange','#D85A30',1]});
+const KJP={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'passen',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'pstern',title:'Passstern – Pass und folge',legend:['spielerin','wartend','ball','cone'],
+ chips:[['Schwerpunkt','Passschärfe · Annahme in die Bewegung'],['','16–18 Spielerinnen, 3 Sterne à 6'],['Feld','5 Hütchen, Abstände 12–15 m'],['Dauer','12 min'],['Material','5 Hütchen und 2 Bälle pro Stern']],
+ ziel:'Die Spielerin spielt flache, scharfe Pässe auf den richtigen Fuß und nimmt den Ball mit dem ersten Kontakt in die neue Richtung mit. Im Spiel: sauberes Passspiel unter Zeitdruck, ohne den Ball zu stoppen.',
+ org:['5 Hütchen als Stern: Start, Mitte, links, vorne, rechts','6 Spielerinnen pro Stern, 2 am Start mit Ball','Für Stufe 3: eine halbaktive Gegnerin in der Mitte'],
+ rot:'Jede läuft ihrem Pass hinterher zur nächsten Position. Nach 3 Minuten Richtung wechseln.',
+ ablauf:['Start passt flach in die Mitte.','Die Mitte spielt direkt nach links.','Links spielt diagonal nach vorne, vorne quer nach rechts.','Rechts spielt zurück zum Start, alle laufen ihrem Pass hinterher.'],
+ stufen:[['Stufe 1 · Zwei Kontakte','Annahme und Pass, Fokus auf Passschärfe und Annahme in die Bewegung.'],['Stufe 2 · Direkt und Doppelpass','Mitte und vorne spielen direkt, links spielt einen Doppelpass mit der Mitte.'],['Stufe 3 · Gegnerin in der Mitte','Eine halbaktive Gegnerin stört die Mitte. Steht sie eng, lässt die Mitte prallen, steht sie weg, dreht die Mitte auf.']],
+ coach:[['Passschärfe','Flach und mit Tempo auf den vorderen Fuß. Erkennbar: Der Ball springt nicht und kommt ohne Abbremsen an.'],['Offene Stellung','Seitlich zur Passgeberin, Blick schon zur nächsten Station. Fehlerbild: Frontal annehmen und erst dann drehen.'],['Erster Kontakt','In die Richtung des nächsten Passes mitnehmen.'],['Kommunikation','Vor jedem Pass Name oder Handzeichen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, 2 Bälle pro Stern','Pro Spielerin: ca. 25–30 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Zwei Kontakte (Stufe 1)','Kürzere Abstände','Nur ein Ball'],
+ steig:['Direkt und Doppelpass (Stufe 2)','Nur schwacher Fuß','Zwei Bälle gleichzeitig','Gegnerin in der Mitte (Stufe 3)']},
+{id:'pschnitt',title:'Pass in die Schnittstelle',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Steilpass · Timing des Laufwegs'],['','12–18 Spielerinnen + Torfrau'],['Feld','30 × 35 m vor dem Tor'],['Dauer','12–15 min'],['Material','1 Tor, Bälle, Hütchen, Leibchen']],
+ ziel:'Die Spielerin erkennt die Lücke zwischen zwei Verteidigerinnen und spielt den Pass flach hinein, wenn die Mitspielerin von außen diagonal startet. Im Spiel: Steilpass hinter die Kette statt Querpass davor.',
+ org:['Tor mit Torfrau','Zwei Verteidigerinnen auf einer Linie ca. 18 m vor dem Tor','Passgeberin 30 m vor dem Tor, zwei Angreiferinnen an den Seiten auf Höhe der Verteidigerinnen'],
+ rot:'Nach jedem Angriff: Passgeberin wird Angreiferin, Angreiferinnen gehen in die Verteidigung, Verteidigerinnen holen Bälle und werden Passgeberin.',
+ ablauf:['Die Passgeberin dribbelt an.','Eine Angreiferin startet diagonal von außen hinter die Verteidigerinnen.','Pass flach in die Lücke zwischen die Verteidigerinnen.','Mitnahme in den Lauf und Abschluss, die zweite Angreiferin geht auf den Abpraller.'],
+ stufen:[['Stufe 1 · Passive Verteidigerinnen','Die Verteidigerinnen bleiben stehen, nur Timing von Pass und Laufweg.'],['Stufe 2 · Halbaktiv','Die Verteidigerinnen dürfen sich drehen und nachlaufen, aber nicht in den Pass gehen.'],['Stufe 3 · Aktiv mit Abseits','Aktive Verteidigerinnen mit Abseitsregel. Nach Ballgewinn kontern sie auf zwei Minitore.']],
+ coach:[['Timing','Der Pass kommt, wenn die Läuferin startet, nicht wenn sie schon vorbei ist. Erkennbar: Die Läuferin bekommt den Ball im vollen Lauf und muss nicht abbremsen.'],['Laufweg','Diagonal von außen nach innen, auf Höhe der letzten Verteidigerin starten. Fehlerbild: Die Läuferin steht schon hinter der Kette (Abseits).'],['Passqualität','Flach, mit Tempo, in den Raum vor die Läuferin.'],['Blickkontakt','Kurzer Blick, dann Pass. Die Läuferin zeigt mit dem Arm, wohin sie will.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Gruppen auf zwei Tore','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Passive Verteidigerinnen (Stufe 1)','Größere Lücke','Ohne Abseits'],
+ steig:['Halbaktiv (Stufe 2)','Pass nur direkt','Aktiv mit Abseits und Konter (Stufe 3)']},
+{id:'pdiagonal',title:'Diagonalball mit Ablage',legend:['spielerin','wartend','ball','cone'],
+ chips:[['Schwerpunkt','Langer Ball · Ablage · Steilpass'],['','12–18 Spielerinnen, Gruppen zu 6'],['Feld','Halbes Spielfeld'],['Dauer','12–15 min'],['Material','Bälle, Hütchen']],
+ ziel:'Die Innenverteidigerin verlagert mit einem langen Diagonalball auf die Außenspielerin, die den Ball direkt auf die nachrückende Achterin ablegt und dann in die Tiefe startet. Im Spiel: schnelle Verlagerung und Durchbruch auf der ballfernen Seite.',
+ org:['Hütchen für Innenverteidigerin (links hinten), Achterin (Halbraum rechts) und Außenspielerin (rechts vorne), Abstand IV zu Außen ca. 35 m','Je 2 Spielerinnen pro Position, Bälle bei der IV','Für Stufe 3: Tor mit Torfrau und eine Verteidigerin'],
+ rot:'IV → Achterin → Außen → IV. Nach 5 Minuten Seite wechseln.',
+ ablauf:['Die IV dribbelt an und spielt den Diagonalball auf die Außenspielerin.','Die Außenspielerin legt mit dem ersten Kontakt auf die Achterin ab.','Die Achterin spielt steil in den Tiefenlauf der Außenspielerin.','Die Außenspielerin nimmt mit, dribbelt bis zur Linie und spielt zur nächsten IV zurück.'],
+ stufen:[['Stufe 1 · Mit Annahme','Die Außenspielerin nimmt den langen Ball an, dann Ablage.'],['Stufe 2 · Direkte Ablage','Ablage mit dem ersten Kontakt (Brust, Oberschenkel oder Fuß).'],['Stufe 3 · Gegenspielerin und Abschluss','Eine Außenverteidigerin presst die Außenspielerin. Nach dem Steilpass Flanke auf zwei Stürmerinnen gegen eine Verteidigerin und Torfrau.']],
+ coach:[['Langer Ball','Standbein neben den Ball, Oberkörper leicht zurück, mit dem Spann unter den Ball. Erkennbar: Der Ball kommt ohne Aufsetzen bei der Außenspielerin an.'],['Ablage','Weich in den Lauf der Achterin, nicht auf den Körper. Fehlerbild: Die Ablage springt weg, die Achterin muss stoppen.'],['Tiefenlauf','Nach der Ablage sofort Richtung Tor starten.'],['Achterin','Rechtzeitig nachrücken und offen zur Außenspielerin stehen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, ein Durchgang alle 10–12 Sekunden','Pro Spielerin: ca. 10–15 Ballkontakte und 3–4 Sprints pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Mit Annahme (Stufe 1)','Kürzerer Diagonalball','Ball halbhoch statt hoch'],
+ steig:['Direkte Ablage (Stufe 2)','Nur schwacher Fuß beim langen Ball','Gegenspielerin und Abschluss (Stufe 3)']},
+{id:'ptorfrau',title:'Aufbau mit der Torfrau 4 gegen 2',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Spielaufbau · Passwege öffnen'],['','12–18 Spielerinnen + 2 Torfrauen'],['Feld','Strafraum bis 30 m davor'],['Dauer','12–15 min'],['Material','1 Tor, Hütchen, Bälle, Leibchen']],
+ ziel:'Torfrau, zwei Innenverteidigerinnen und die Sechserin spielen sich gegen zwei pressende Stürmerinnen frei und dribbeln oder passen über die Linie. Im Spiel: ruhiger Aufbau von hinten, die Torfrau als zusätzliche Anspielstation.',
+ org:['Tor mit Torfrau','Zwei Innenverteidigerinnen breit an den Strafraumecken, Sechserin davor','Zwei Stürmerinnen pressen','Linie ca. 30 m vor dem Tor'],
+ rot:'Nach 3 Minuten wechseln die Stürmerinnen mit zwei Spielerinnen aus dem Aufbau.',
+ ablauf:['Die Torfrau eröffnet auf eine Innenverteidigerin.','Die Stürmerinnen pressen.','Über Torfrau oder Sechserin auf die freie Seite verlagern.','Dribbling oder Pass über die Linie = Punkt. Ballgewinn der Stürmerinnen = Abschluss aufs Tor.'],
+ stufen:[['Stufe 1 · Eine Pressende','Nur eine Stürmerin presst, die zweite schützt die Sechserin passiv.'],['Stufe 2 · Zwei Pressende','Beide Stürmerinnen pressen aktiv.'],['Stufe 3 · Zeitlimit und dritte Pressende','Eine dritte Gegnerin kommt nach 5 Sekunden dazu. Punkt nur in 10 Sekunden.']],
+ coach:[['Breite','Innenverteidigerinnen weit auseinander, bis an die Strafraumecken. Erkennbar: Die Stürmerinnen können nicht beide Innenverteidigerinnen gleichzeitig pressen.'],['Torfrau mitspielen','Anbieten neben dem Tor, Pass mit dem ersten Kontakt auf die freie Seite. Fehlerbild: Die Torfrau stoppt den Ball und wird angelaufen.'],['Sechserin','Im Rücken der Stürmerinnen anbieten, Schulterblick vor der Annahme.'],['Andribbeln','Ist der Raum frei, mit Ball nach vorne, nicht sofort passen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, zwei Gruppen im Wechsel','Pro Spielerin: ca. 12–18 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Eine Pressende (Stufe 1)','Breiteres Feld','Torfrau darf den Ball in die Hand nehmen'],
+ steig:['Zwei Pressende (Stufe 2)','Höchstens zwei Kontakte','Dritte Pressende und Zeitlimit (Stufe 3)']},
+{id:'pvierplus',title:'Ablage und Steilpass zum Abschluss',legend:['spielerin','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Spiel über die dritte Frau · Abschluss'],['','12–18 Spielerinnen + Torfrau'],['Feld','30 × 35 m vor dem Tor'],['Dauer','12–15 min'],['Material','1 Tor, Bälle, Hütchen']],
+ ziel:'Die Sechserin spielt vertikal auf die Stürmerin, die auf eine Achterin ablegt. Die Achterin spielt sofort steil in den Lauf der zweiten Achterin, die abschließt. Im Spiel: schnelle Kombination durchs Zentrum zum Torabschluss.',
+ org:['Tor mit Torfrau','Hütchen für Sechserin (30 m vor dem Tor), zwei Achterinnen (links und rechts, 22 m) und Stürmerin (18 m)','Bälle bei der Sechserin','Für Stufe 2 und 3: Verteidigerinnen hinter der Stürmerin'],
+ rot:'Sechserin → Stürmerin → Achterin links → Achterin rechts → Sechserin. Seiten nach 5 Minuten wechseln.',
+ ablauf:['Die Sechserin spielt flach auf die Stürmerin.','Die Stürmerin legt direkt auf die linke Achterin ab.','Die linke Achterin spielt steil in den Lauf der rechten Achterin.','Abschluss, die Stürmerin geht auf den Abpraller.'],
+ stufen:[['Stufe 1 · Ohne Gegnerin','Fester Ablauf, Fokus auf Timing und Passqualität.'],['Stufe 2 · Gegnerin im Rücken','Eine halbaktive Verteidigerin hinter der Stürmerin. Steht sie eng, Ablage. Bleibt sie weg, dreht die Stürmerin auf.'],['Stufe 3 · 3 gegen 2','Zwei aktive Verteidigerinnen, die drei Angreiferinnen wählen die Lösung frei. Nach Ballgewinn kontern die Verteidigerinnen auf ein Minitor.']],
+ coach:[['Vertikalpass','Scharf und flach auf den vorderen Fuß der Stürmerin. Erkennbar: Die Stürmerin kann direkt ablegen.'],['Ablage','Mit der Innenseite weich in den Lauf. Fehlerbild: Die Stürmerin legt zurück zur Sechserin statt zur Achterin.'],['Laufweg','Die rechte Achterin startet, wenn die Stürmerin ablegt.'],['Abschluss','Flach und ins lange Eck.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Stationen auf zwei Tore','Pro Spielerin: ca. 8–10 Aktionen pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Gegnerin (Stufe 1)','Ablage mit zwei Kontakten','Kürzere Abstände'],
+ steig:['Gegnerin im Rücken (Stufe 2)','Abschluss nur direkt','3 gegen 2 (Stufe 3)']},
+{id:'pzonenwechsel',title:'Verlagerungsspiel auf vier Minitore',legend:['spielerin','gegner','ball','minitor'],
+ chips:[['Schwerpunkt','Spielverlagerung · Breite'],['','8–12 Spielerinnen, 4 gegen 4 (bis 6 gegen 6)'],['Feld','35 × 30 m, 4 Minitore'],['Dauer','12–16 min'],['Material','4 Minitore, Bälle, Leibchen']],
+ ziel:'Die Mannschaft lockt die Gegnerinnen auf eine Seite und verlagert dann schnell auf die andere, um dort aufs freie Minitor zu kommen. Im Spiel: ballnahe Überzahl der Gegnerinnen erkennen und den freien Raum auf der anderen Seite nutzen.',
+ org:['Feld 35 × 30 m, an jeder Grundlinie zwei Minitore an den Seiten','Zwei Teams zu 4, Mittellinie längs als Orientierung'],
+ rot:'Nach 4 Minuten neue Teams oder Wechsel mit wartenden Spielerinnen.',
+ ablauf:['4 gegen 4, jedes Team greift die zwei Minitore an einer Grundlinie an.','Das Team mit Ball versucht die Gegnerinnen auf eine Seite zu ziehen.','Dann schnell verlagern und aufs freie Minitor spielen.','Tor nach Verlagerung über die Mittellinie (längs) zählt doppelt.'],
+ stufen:[['Stufe 1 · Mit Joker','Ein Joker spielt immer mit dem Ballbesitz, 5 gegen 4.'],['Stufe 2 · 4 gegen 4','Normale Form mit Doppelpunkt nach Verlagerung.'],['Stufe 3 · Kontaktlimit','Höchstens zwei Kontakte, Tor nur nach Verlagerung.']],
+ coach:[['Locken','Erst auf einer Seite kombinieren, bis die Gegnerinnen herüberschieben. Erkennbar: Mindestens drei Gegnerinnen stehen auf der Ballseite, bevor verlagert wird.'],['Breite halten','Eine Spielerin bleibt auf der ballfernen Seite. Fehlerbild: Alle laufen zum Ball, die Verlagerung ist unmöglich.'],['Tempo der Verlagerung','Zwei schnelle Pässe, kein Stoppen dazwischen.'],['Gegen den Ball','Schnell herüberschieben und das ballnahe Tor schließen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 20–25 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Mit Joker (Stufe 1)','Größeres Feld','Größere Minitore'],
+ steig:['4 gegen 4 (Stufe 2)','Kontaktlimit (Stufe 3)','Tor nur nach mindestens 5 Pässen']},
+{id:'pflachduell',title:'Flachpass-Duell durch die Tore',legend:['spielerin','gegner','ball','cone'],
+ chips:[['Schwerpunkt','Passgenauigkeit · schwacher Fuß'],['','12–18 Spielerinnen in Paaren'],['Feld','Abstand 20–25 m, Hütchentore 1 m'],['Dauer','10–12 min'],['Material','1 Ball pro Paar, Hütchen']],
+ ziel:'Die Spielerin spielt einen flachen, genauen Pass über 20 m durch ein schmales Tor und nimmt den zurückkommenden Ball in die Bewegung zur Seite mit. Im Spiel: genaue lange Flachpässe, auch mit dem schwachen Fuß.',
+ org:['Zwei Reihen gegenüber, Abstand 20–25 m','In der Mitte eine Reihe von Hütchentoren (1 m breit)','Paare stehen sich gegenüber, ein Ball pro Paar'],
+ rot:'Nach jeder Runde rücken die Spielerinnen einer Reihe ein Paar weiter, damit neue Paare entstehen.',
+ ablauf:['Pass flach durch das Tor zur Partnerin.','Die Partnerin nimmt mit dem ersten Kontakt zur Seite mit, vor das nächste Tor.','Zurückpassen durch das nächste Tor.','Jeder Pass durchs Tor zählt 1 Punkt, mit dem schwachen Fuß 2 Punkte.'],
+ stufen:[['Stufe 1 · Mit Annahme vor','Ball stoppen, dann passen, Tore 1,5 m breit.'],['Stufe 2 · Annahme zur Seite','Annahme mit dem ersten Kontakt zur Seite vor das nächste Tor, Tore 1 m.'],['Stufe 3 · Mit Störerin','Eine Störerin läuft zwischen den Reihen und versucht Pässe abzufangen. Wer einen Pass verliert, wird Störerin.']],
+ coach:[['Standbein','Neben den Ball, Fußspitze zum Ziel. Erkennbar: Der Ball geht gerade durch das Tor.'],['Passfuß','Innenseite fest, Fußgelenk gespannt, durch den Ball schwingen. Fehlerbild: Der Ball hoppelt oder geht über das Tor, weil die Spielerin unter den Ball trifft.'],['Annahme','In die Richtung des nächsten Passes mitnehmen.'],['Schwacher Fuß','Bewusst nutzen, auch wenn es am Anfang danebengeht.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, alle Paare gleichzeitig','Pro Spielerin: ca. 30–40 Pässe pro Durchgang','Intensität: niedrig bis mittel'],
+ leicht:['Annahme vor (Stufe 1)','Breitere Tore','Kürzerer Abstand'],
+ steig:['Annahme zur Seite (Stufe 2)','Nur direkt','Mit Störerin (Stufe 3)']},
+{id:'pdoppelpasslauf',title:'Doppelpass-Parcours',legend:['spielerin','wandsp','stange','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Doppelpass · Passen im Lauf'],['','12–18 Spielerinnen, 3 Wandspielerinnen + Torfrau'],['Feld','30 × 35 m vor dem Tor'],['Dauer','12 min'],['Material','3 Stangen, 1 Tor, Bälle']],
+ ziel:'Die Spielerin spielt im Lauf drei Doppelpässe mit wechselnden Wandspielerinnen an Stangen vorbei und schließt mit dem letzten Kontakt ab. Im Spiel: eine Gegnerin mit dem Doppelpass überspielen statt sie auszudribbeln.',
+ org:['Drei Stangen versetzt in der Mitte, je eine Wandspielerin seitlich daneben','Tor mit Torfrau am Ende','Spielerinnen mit Ball am Start ca. 35 m vor dem Tor'],
+ rot:'Nach 2 Minuten wechseln die Wandspielerinnen. Die Torfrau wechselt nach jedem Durchgang.',
+ ablauf:['Dribbling zur ersten Stange.','Pass zur Wand, an der Stange vorbei laufen, Ball zurück in den Lauf.','Gleiches Spiel an der zweiten und dritten Stange.','Abschluss nach dem letzten Doppelpass.'],
+ stufen:[['Stufe 1 · Mit Annahme','Die Wandspielerin nimmt an und spielt dann zurück.'],['Stufe 2 · Direkt','Die Wandspielerin spielt direkt, Abschluss mit höchstens zwei Kontakten.'],['Stufe 3 · Gegnerin statt Stange','An der letzten Stange steht eine aktive Verteidigerin. Die Läuferin entscheidet: Doppelpass oder Dribbling.']],
+ coach:[['Pass vor der Stange','Pass, bevor die Stange erreicht ist, dann sofort Tempo. Erkennbar: Die Läuferin bekommt den Ball hinter der Stange im vollen Lauf.'],['Wandspielerin','Mit der Innenseite in den Lauf, nicht zurück auf die Füße. Fehlerbild: Die Läuferin muss abbremsen oder zurücklaufen.'],['Tempowechsel','Nach dem Pass explosiv beschleunigen.'],['Abschluss','Mit dem letzten Kontakt aufs Tor, Kopf über dem Ball.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Parcours auf zwei Tore','Pro Spielerin: ca. 8–10 Durchgänge pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Mit Annahme (Stufe 1)','Weniger Stangen','Ohne Torfrau'],
+ steig:['Direkt (Stufe 2)','Nur schwacher Fuß','Gegnerin statt Stange (Stufe 3)']},
+{id:'pdreiecke',title:'Dreiecke bilden: 3 gegen 1 nach vorne',legend:['spielerin','gegner','ball','cone'],
+ chips:[['Schwerpunkt','Passwinkel · Freilaufen'],['','12–18 Spielerinnen in Vierergruppen'],['Feld','Bahnen 15 × 30 m'],['Dauer','10–12 min'],['Material','Hütchen, 1 Ball pro Gruppe']],
+ ziel:'Drei Spielerinnen bilden um die Gegnerin herum ein Dreieck, spielen sie mit Pässen aus und kommen über die Linie. Im Spiel: Anspielstationen im Winkel anbieten, statt hintereinander zu stehen.',
+ org:['Bahnen 15 × 30 m, Linie an jeder Stirnseite','Pro Bahn 3 Angreiferinnen und 1 Verteidigerin','Für Stufe 3: Mittellinie und zweite Verteidigerin'],
+ rot:'Nach jedem Durchgang wird eine andere Spielerin Verteidigerin.',
+ ablauf:['Die Angreiferinnen starten an einer Linie, die Verteidigerin in der Mitte.','Mit Pässen im Dreieck nach vorne spielen.','Dribbling über die gegenüberliegende Linie = Punkt.','Ballgewinn der Verteidigerin = Punkt für sie.'],
+ stufen:[['Stufe 1 · Passive Verteidigerin','Die Verteidigerin läuft nur mit, ohne zu tacklen.'],['Stufe 2 · Aktiv','Aktive Verteidigerin, höchstens zwei Kontakte.'],['Stufe 3 · 3 gegen 2','Ab der Mittellinie kommt eine zweite Verteidigerin dazu.']],
+ coach:[['Dreieck','Immer zwei Anspielstationen im Winkel zur Ballführenden. Erkennbar: Die Ballführende hat links und rechts eine freie Passlinie.'],['Abstand','Nicht zu eng, sonst deckt die Verteidigerin zwei. Fehlerbild: Zwei Angreiferinnen stehen auf einer Linie hinter der Verteidigerin.'],['Pass auf die freie Seite','Weg von der Verteidigerin spielen.'],['Nach vorne','Jeder Pass soll Raum gewinnen.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: keine, alle Gruppen gleichzeitig','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Passive Verteidigerin (Stufe 1)','Breitere Bahn','Kürzere Bahn'],
+ steig:['Aktiv (Stufe 2)','Nur direkt','3 gegen 2 (Stufe 3)']},
+{id:'pzielzone',title:'Pass in die Zielzone 4 gegen 2',legend:['spielerin','gegner','endzone','ball'],
+ chips:[['Schwerpunkt','Steilpass in den Lauf'],['','12–18 Spielerinnen in Sechsergruppen'],['Feld','20 × 25 m + Zielzone 6 m'],['Dauer','12 min'],['Material','Hütchen, Bälle, Leibchen']],
+ ziel:'Vier Spielerinnen halten den Ball gegen zwei und spielen den Pass in die Zielzone erst, wenn eine Mitspielerin dorthin startet. Im Spiel: der Pass in den Lauf hinter die Kette, nicht auf die stehende Spielerin.',
+ org:['Feld 20 × 25 m, davor eine Zielzone (6 m tief)','4 Angreiferinnen gegen 2 Verteidigerinnen','In der Zielzone darf niemand warten'],
+ rot:'Nach 2 Minuten wechseln die Verteidigerinnen.',
+ ablauf:['4 gegen 2 im Feld.','Eine Angreiferin startet in die Zielzone.','Pass in den Lauf, Annahme in der Zone = Punkt.','Die Zone wieder verlassen, der Ball wird ins Feld zurückgespielt.'],
+ stufen:[['Stufe 1 · 4 gegen 1','Nur eine Verteidigerin.'],['Stufe 2 · 4 gegen 2','Normale Form.'],['Stufe 3 · Verteidigerin in der Zone','Eine Verteidigerin darf in die Zone nachlaufen. Nach Ballgewinn kontern die Verteidigerinnen über die andere Grundlinie.']],
+ coach:[['Startzeitpunkt','Starten, wenn die Ballführende den Kopf hebt und frei ist. Erkennbar: Die Läuferin bekommt den Ball im Lauf, ohne zu warten.'],['Pass in den Raum','Vor die Läuferin spielen, nicht in die Füße. Fehlerbild: Die Läuferin steht schon in der Zone und wartet.'],['Ballbesitz sichern','Ohne Start in die Zone weiter kombinieren, nicht blind nach vorne.'],['Verteidigerinnen','Eine presst, eine schließt den Weg in die Zone.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: keine, Gruppen spielen parallel','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['4 gegen 1 (Stufe 1)','Größeres Feld','Tiefere Zone'],
+ steig:['4 gegen 2 (Stufe 2)','Höchstens zwei Kontakte','Verteidigerin in der Zone (Stufe 3)']}
+].map(e=>Object.assign({},KJP,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -8050,6 +8272,13 @@ tempowechsel:{ziel:'Die Spielerin wechselt mit Ball zwischen Tempodribbling auf 
  steig:['Auf Signal (Stufe 2)','Größeres Viereck','Verfolgerin (Stufe 3)']}
 };
 EX.forEach(e=>{const u=UPG_U12[e.id];if(!u)return;Object.assign(e,u,{saeulen:true});});
+/* ---------- 5-Säulen-Überarbeitung: U13 – U18 und KM ---------- */
+const UPG_JKM={
+dritte:{coach:[['Timing IV/6er','Andribbeln gibt der 6er Zeit für ihren Laufweg. Erkennbar: Die 6er ist frei, wenn die IV den Kopf hebt.'],['6er','Passlinie freiziehen und diagonal anbieten, dann abrollen und hinter den Ball kommen. Fehlerbild: Die 6er steht im Deckungsschatten der Gegnerin und ist nicht anspielbar.'],['Passrhythmus','Steilpass mit Druck, Ablage weich in den Lauf.'],['10er','Schulterblick vor der Annahme entscheidet über Klatsch oder Dreh.'],['Stürmerin','Seitlich stehen, Pass auf den vorderen Fuß fordern, nach jedem Pass sofort zur nächsten Position.']],
+ steig:['Alle Pässe direkt (außer Stürmerin)','Halbaktive Gegnerin hinter der 10er (Stufe 2)','Abschluss aufs Tor mit Torfrau (Stufe 3)','Station gegen Station: mehr saubere Durchgänge in 2 Minuten']},
+schiene:{coach:[['Schiene','Kurz entgegenkommen, Ablage mit der Innenseite, dann sofort Tempo- und Richtungswechsel in die Tiefe. Fehlerbild: Die Schiene startet erst nach dem Steilpass.'],['8er','Offen im Halbraum anbieten, Steilpass in den Lauf, nicht auf den Körper. Erkennbar: Die Schiene nimmt den Ball im vollen Lauf mit.'],['HV','Pass auf den Außenfuß der Schiene, damit sie offen prallen lassen kann.'],['Timing','Die Schiene startet, wenn die 8er den Ball hat, nicht früher (Abseits) und nicht später.']]},
+};
+EX.forEach(e=>{const u=UPG_JKM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 
 
 const WARM=['raute','dreieck','quadrat','endlos'];
