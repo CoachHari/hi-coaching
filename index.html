@@ -294,6 +294,35 @@ dialog.picker::backdrop{background:rgba(10,15,25,.55)}
 .tein.empty-ein span,.tein.missing span{font-size:14px;color:var(--muted)}
 .tactions{display:flex;flex-wrap:wrap;gap:6px}
 dialog.tdlg{width:min(600px,calc(100vw - 24px))}
+/* Einheit ansehen (nur lesen, für den Platz) */
+dialog.svdlg{width:min(760px,calc(100vw - 24px))}
+@media (max-width:640px){dialog.svdlg{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}}
+.sv-meta{margin:0;font-size:14px;color:var(--muted)}
+.sv-act{display:flex;flex-wrap:wrap;gap:8px}
+.sv-body{padding:14px 16px 28px;display:grid;gap:20px}
+.sv-part{display:grid;gap:8px}
+.sv-part h4{font-family:var(--display);font-weight:700;font-size:20px;text-transform:uppercase;margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:var(--club-ink);line-height:1.1}
+.sv-part h4 span{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
+.sv-note{margin:0;font-size:14px;color:var(--muted)}
+.sv-item{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sv-row{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px}
+.sv-th svg{width:92px;height:auto;display:block;border-radius:4px}
+.sv-th.free{width:92px;height:56px;display:grid;place-items:center;border-radius:4px;background:var(--club-soft);color:var(--club-ink)}
+.sv-th.free svg{width:22px;height:22px}
+.sv-row b{display:block;font-family:var(--display);font-size:18px;text-transform:uppercase;line-height:1.15;overflow-wrap:anywhere}
+.sv-row small{display:block;color:var(--muted);font-size:13px}
+.sv-min{font:700 16px var(--body);color:var(--club);white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.sv-min i{display:block;font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.sv-item details{border-top:1px solid var(--line)}
+.sv-item summary{cursor:pointer;padding:10px 12px;font-weight:600;font-size:14px;color:var(--club-ink)}
+.sv-det{padding:0 12px 12px;display:grid;gap:12px;font-size:14px;line-height:1.5}
+.sv-det h5{margin:0 0 2px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--club)}
+.sv-det ul,.sv-det ol{margin:0;padding-left:20px}
+.sv-det p{margin:0}
+.sv-empty{color:var(--muted);text-align:center;padding:24px 8px}
+.sv-back{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;font:600 15px var(--body);background:var(--club);color:#fff;border:0;border-radius:999px;padding:12px 20px;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;max-width:calc(100vw - 32px)}
+.sv-back:focus-visible,.sv-item summary:focus-visible{outline:2px solid var(--club);outline-offset:2px}
+@media (max-width:520px){.sv-row{grid-template-columns:72px minmax(0,1fr) auto;gap:10px}.sv-th svg,.sv-th.free{width:72px}.sv-th.free svg{width:22px}}
 .tform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px}
 .tform .fld.wide{grid-column:1/-1}
 .fld textarea{font:400 15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;width:100%;min-width:0;resize:vertical}
@@ -1281,7 +1310,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     <p id="plan-msg" role="status" aria-live="polite"></p>
   </section>
   <section id="list" hidden aria-labelledby="list-h">
-    <div class="plan-head" data-bg="Archiv"><div><p class="step-lbl">Archiv</p><h2 id="list-h">Trainingseinheiten</h2><p class="lead">Alle gespeicherten Einheiten. Öffne eine Einheit zum Bearbeiten, lade sie als PDF oder nutze sie als Vorlage.</p><p class="store-note" id="store-note"></p></div></div>
+    <div class="plan-head" data-bg="Archiv"><div><p class="step-lbl">Archiv</p><h2 id="list-h">Trainingseinheiten</h2><p class="lead">Alle gespeicherten Einheiten. Tippe auf „Ansehen“, um eine Einheit auf dem Platz durchzugehen. Bearbeiten, PDF und Duplizieren findest du daneben.</p><p class="store-note" id="store-note"></p></div></div>
     <div class="list-tools"><input type="search" id="list-q" placeholder="Suchen nach Thema, Übung, Ort …" aria-label="Einheiten durchsuchen"><select id="list-lv" aria-label="Altersbereich filtern"></select></div>
     <div id="list-body"></div>
   </section>
@@ -1445,6 +1474,15 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     <div class="tfoot"><button type="submit" class="btn primary" id="t-save">Speichern</button><button type="button" class="btn ghost" id="t-del">Löschen</button><button type="button" class="btn ghost" id="t-del-series">Serie ab hier löschen</button><p id="t-msg" role="status" aria-live="polite"></p></div>
   </form>
 </dialog>
+<dialog class="picker svdlg" id="svdlg" aria-labelledby="sv-title">
+  <div class="pk-head">
+    <div class="pk-top"><h3 id="sv-title">Trainingseinheit</h3><button type="button" class="btn ghost" id="sv-close">Schließen</button></div>
+    <p class="sv-meta" id="sv-meta"></p>
+    <div class="sv-act" id="sv-act"></div>
+  </div>
+  <div class="sv-body" id="sv-body"></div>
+</dialog>
+<button type="button" class="sv-back" id="sv-back" hidden>← Zurück zur Einheit</button>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="config.js"></script>
@@ -9578,7 +9616,7 @@ const viewsEl=document.getElementById('views'),planEl=document.getElementById('p
 const planCnt=document.getElementById('plan-cnt'),planMsg=document.getElementById('plan-msg');
 document.getElementById('plan-lv').innerHTML=LV.map(l=>'<option value="'+l.id+'">'+esc(l.name)+'</option>').join('');
 let view='mappe';const kaderEl=document.getElementById('kader');
-function setView(v){if(document.documentElement.classList.contains('testmode')&&(v==='cal'||v==='kader'))v='home';view=v;viewsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===v)));
+function setView(v){if(document.documentElement.classList.contains('testmode')&&(v==='cal'||v==='kader'))v='home';view=v;if(v!=='mappe'){const sb=document.getElementById('sv-back');if(sb)sb.hidden=true;}viewsEl.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===v)));
   planEl.hidden=v!=='plan';listEl.hidden=v!=='list';calEl.hidden=v!=='cal';kaderEl.hidden=v!=='kader';lvlBox.hidden=v!=='mappe';homeEl.hidden=v!=='home';
   if(v!=='home'){document.body.classList.remove('is-home');if(window.__heroAnim)window.__heroAnim(false);}
   if(v==='home'){stage2.hidden=true;homeEnter();}
@@ -9934,7 +9972,7 @@ function sessHtml(s,past){const m=s.meta||{},d=(m.datum||'').split('-');const dt
   const canDel=s.src==='local'||(dbWritable&&dbCol);
   return '<article class="sess'+(past?' past':'')+'"><div class="sess-date">'+date+'</div><div class="sess-main"><h3>'+esc(m.thema||'Trainingseinheit')+(s.src==='local'&&dbCol?'<span class="tag">Nur dieses Gerät</span>':'')+'</h3>'+
     '<p class="sess-meta">'+facts+'</p>'+(()=>{const tt=terminFor(s);return tt?'<span class="sess-cal">Im Kalender: '+esc(shortDate(tt.datum)+(tt.zeit?' · '+tt.zeit:''))+'</span>':'';})()+'<ul class="sess-parts">'+parts+'</ul>'+(thumbs?'<div class="sess-thumbs" aria-hidden="true">'+thumbs+'</div>':'')+'</div>'+
-    '<div class="sess-act"><button type="button" class="btn primary sm" data-open-s="'+key+'">Öffnen</button><button type="button" class="btn" data-pdf-s="'+key+'">PDF</button>'+
+    '<div class="sess-act"><button type="button" class="btn primary sm" data-view-s="'+key+'">Ansehen</button><button type="button" class="btn" data-open-s="'+key+'">Bearbeiten</button><button type="button" class="btn" data-pdf-s="'+key+'">PDF</button>'+
     '<button type="button" class="btn" data-dup-s="'+key+'">Duplizieren</button>'+(canDel?'<button type="button" class="btn ghost" data-del-s="'+key+'">Löschen</button>':'')+'</div></article>';}
 function renderList(){renderStoreNote();updateListCnt();const q=listQ.value.trim().toLowerCase(),lv=listLv.value,t=today();
   const all=allSessions().filter(s=>{const m=s.meta||{};if(lv&&m.lv!==lv)return false;if(!q)return true;
@@ -9950,9 +9988,10 @@ const findS=k=>{const i=k.indexOf(':'),src=k.slice(0,i),id=k.slice(i+1);return a
 const toPlan=s=>{const p=normPlan({meta:clone(s.meta||{}),parts:clone(s.parts||{})});p.sid=s.id;p.src=s.src;p.createdAt=s.createdAt;p.dirty=false;return p;};
 let delArm=null,openArm=null;
 listBody.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.viewS){openSv(b.dataset.viewS);return;}
   if(b.dataset.openS){const s=findS(b.dataset.openS);if(!s)return;
-    if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&openArm!==b){openArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(openArm===b){openArm=null;b.textContent='Öffnen';}},4000);return;}
-    openArm=null;plan=toPlan(s);savePlan(false);setView('plan');toast('Einheit geöffnet');return;}
+    if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&openArm!==b){openArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(openArm===b){openArm=null;b.textContent='Bearbeiten';}},4000);return;}
+    openArm=null;plan=toPlan(s);savePlan(false);setView('plan');toast('Einheit zum Bearbeiten geöffnet');return;}
   if(b.dataset.dupS){const s=findS(b.dataset.dupS);if(!s)return;
     if(plan.dirty&&itemCount()&&openArm!==b){openArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(openArm===b){openArm=null;b.textContent='Duplizieren';}},4000);return;}
     openArm=null;const p=toPlan(s);delete p.sid;delete p.src;delete p.createdAt;p.meta.datum=today();p.dirty=true;plan=p;savePlan();setView('plan');toast('Kopie geöffnet: Datum prüfen und speichern');return;}
@@ -9964,6 +10003,46 @@ listBody.addEventListener('click',async e=>{const b=e.target.closest('button');i
     else{try{await dbCol.doc(s.id).delete();}catch(_){toast('Löschen hat nicht geklappt. Bitte später noch einmal versuchen.');return;}}
     if(plan.sid===s.id&&plan.src===s.src){delete plan.sid;delete plan.src;plan.dirty=true;savePlan();}
     toast('Einheit gelöscht');}});
+/* ---------- Einheit ansehen: nur lesen, ohne Planer ---------- */
+const svDlg=document.getElementById('svdlg'),svBody=document.getElementById('sv-body'),svMeta=document.getElementById('sv-meta'),svAct=document.getElementById('sv-act'),svBack=document.getElementById('sv-back');
+let svKey=null,svArm=null;
+const svClock=(hm,add)=>{const m=/^(\d{1,2}):(\d{2})/.exec(hm||'');if(!m)return '';const t=(+m[1])*60+(+m[2])+add;return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');};
+function svExHtml(e){const chipsV=['Feld','Material'].map(k=>chipOf(e,k)).filter(Boolean);
+  const st=(e.stufen||[]).map(x=>'<b>'+x[0]+'</b>: '+x[1]);const co=(e.coach||[]).map(x=>'<b>'+x[0]+'</b>: '+x[1]);
+  return '<details><summary>Ablauf und Coaching</summary><div class="sv-det">'+
+    (e.ziel?'<div><h5>Ziel</h5><p>'+e.ziel+'</p></div>':'')+
+    (e.org&&e.org.length?'<div><h5>Organisation</h5>'+li(e.org)+'</div>':'')+
+    (e.ablauf&&e.ablauf.length?'<div><h5>Ablauf</h5><ol>'+e.ablauf.map(x=>'<li>'+x+'</li>').join('')+'</ol></div>':'')+
+    (st.length?'<div><h5>Stufen</h5>'+li(st)+'</div>':'')+
+    (co.length?'<div><h5>Coaching</h5>'+li(co)+'</div>':'')+
+    (chipsV.length?'<div><h5>Material und Feld</h5><p>'+chipsV.map(esc).join(' · ')+'</p></div>':'')+
+    '<div><button type="button" class="btn sm" data-sv-ex="'+e.id+'">Skizze und alle Details</button></div></div></details>';}
+function openSv(k){const s=findS(k);if(!s){toast('Diese Einheit gibt es nicht mehr.');return;}svKey=k;svArm=null;const m=s.meta||{};
+  const p=normPlan({meta:clone(m),parts:clone(s.parts||{})});const total=totalMin(p);
+  document.getElementById('sv-title').textContent=m.thema||'Trainingseinheit';
+  const d=(m.datum||'').split('-');const dt=d.length===3?new Date(+d[0],+d[1]-1,+d[2]):null;
+  svMeta.textContent=[dt?WD[dt.getDay()]+', '+(+d[2])+'. '+MON[dt.getMonth()]+' '+d[0]:'',m.zeit?(m.zeit+(total?'–'+svClock(m.zeit,total):'')+' Uhr'):'',m.ort,lvName(m.lv),m.anzahl?m.anzahl+' Spielerinnen':'',total+' min'].filter(Boolean).join(' · ');
+  svAct.innerHTML='<button type="button" class="btn primary sm" data-sv-edit>Bearbeiten</button><button type="button" class="btn sm" data-pdf-s="'+esc(k)+'" data-sv-pdf>PDF</button>';
+  let off=0;
+  const html=PARTS.map(([pk,pn])=>{const P=p.parts[pk];if(!P.items.length&&!P.note)return '';const pm=partMin(pk,p);
+    const from=m.zeit?svClock(m.zeit,off):'';
+    const items=P.items.map(it=>{const at=m.zeit?svClock(m.zeit,off):'';off+=(+it.min||0);
+      const mins='<span class="sv-min">'+(+it.min||0)+' min'+(at?'<i>ab '+at+'</i>':'')+'</span>';
+      if(it.t==='free')return '<div class="sv-item"><div class="sv-row"><span class="sv-th free" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><div><b>'+esc(it.title||'Eigener Punkt')+'</b></div>'+mins+'</div></div>';
+      const e=EXM[it.id],sp=chipOf(e,'');
+      return '<div class="sv-item"><div class="sv-row"><span class="sv-th" aria-hidden="true">'+thumbSvg(e.id)+'</span><div><b>'+esc(e.title)+'</b><small>'+esc(catName(e.cat))+(sp?' · '+esc(sp):'')+'</small></div>'+mins+'</div>'+svExHtml(e)+'</div>';}).join('');
+    return '<section class="sv-part"><h4>'+pn+'<span>'+pm+' min'+(from?' · ab '+from:'')+'</span></h4>'+(P.note?'<p class="sv-note">'+esc(P.note)+'</p>':'')+items+'</section>';}).join('');
+  svBody.innerHTML=html||'<p class="sv-empty">In dieser Einheit sind noch keine Übungen.</p>';
+  svBack.hidden=true;if(!svDlg.open){if(svDlg.showModal)svDlg.showModal();else svDlg.setAttribute('open','');}svBody.scrollTop=0;svDlg.scrollTop=0;}
+document.getElementById('sv-close').addEventListener('click',()=>{svDlg.close();svKey=null;});
+svDlg.addEventListener('click',async e=>{if(e.target===svDlg){svDlg.close();svKey=null;return;}
+  const b=e.target.closest('button');if(!b||!svKey)return;
+  if(b.dataset.svEx!==undefined&&b.dataset.svEx){svDlg.close();openEx(b.dataset.svEx);svBack.hidden=false;return;}
+  if(b.dataset.svEdit!==undefined){const s=findS(svKey);if(!s)return;
+    if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&svArm!==b){svArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(svArm===b){svArm=null;b.textContent='Bearbeiten';}},4000);return;}
+    svArm=null;svDlg.close();svKey=null;plan=toPlan(s);savePlan(false);setView('plan');toast('Einheit zum Bearbeiten geöffnet');return;}
+  if(b.dataset.svPdf!==undefined){const s=findS(svKey);if(!s)return;b.disabled=true;const o=b.textContent;b.textContent='Wird erstellt …';const r=await exportPdf(toPlan(s),false);b.disabled=false;b.textContent=o;toast(r);}});
+svBack.addEventListener('click',()=>{svBack.hidden=true;const k=svKey;if(k)openSv(k);});
 function renderPlanState(){renderPlanLink();const el=document.getElementById('plan-state'),h=document.getElementById('plan-h');
   h.textContent=plan.sid?'Einheit bearbeiten':'Einheit zusammenstellen';
   el.textContent=plan.sid?(plan.dirty?'Ungespeicherte Änderungen':'Gespeichert'):(itemCount()?'Noch nicht gespeichert':'');
@@ -10012,7 +10091,7 @@ function treffHtml(t,cls){const x=treffStr(t);return x?'<span class="'+cls+'">Tr
 function tcardHtml(t,showDate){const s=sessByLink(t.einheit),k=tKey(t),ed=termStore.canEdit(t);
   let ein;
   if(s){const m=s.meta||{};ein='<div class="tein"><div><span class="tlbl">Einheit</span><b>'+esc(m.thema||'Trainingseinheit')+'</b><small>'+esc([lvName(m.lv),(s.total||0)+' min',(s.count||0)+(s.count===1?' Übung':' Übungen')].filter(Boolean).join(' · '))+'</small></div>'+
-    '<div class="tactions"><button type="button" class="btn sm" data-t-open="'+k+'">Öffnen</button><button type="button" class="btn sm" data-t-pdf="'+k+'">PDF</button></div></div>';}
+    '<div class="tactions"><button type="button" class="btn primary sm" data-t-view="'+k+'">Ansehen</button><button type="button" class="btn sm" data-t-open="'+k+'">Bearbeiten</button><button type="button" class="btn sm" data-t-pdf="'+k+'">PDF</button></div></div>';}
   else if(t.einheit)ein='<div class="tein missing"><span>Die verknüpfte Einheit gibt es nicht mehr.</span>'+(ed?'<button type="button" class="btn sm" data-t-edit="'+k+'">Andere wählen</button>':'')+'</div>';
   else ein=(t.art||'training')==='training'&&ed?'<div class="tein empty-ein"><span>Noch keine Einheit hinterlegt.</span><div class="tactions"><button type="button" class="btn sm primary" data-t-plan="'+k+'">Einheit planen</button><button type="button" class="btn sm" data-t-edit="'+k+'" data-focus="einheit">Gespeicherte wählen</button></div></div>':'';
   return '<article class="tcard"><span class="tbar '+(t.art||'training')+'" aria-hidden="true"></span><div class="tbody"><div class="thead"><div><span class="ttime">'+esc((showDate?shortDate(t.datum)+' · ':'')+(timeStr(t)||'ganztägig'))+'</span>'+
@@ -10059,8 +10138,9 @@ let tArm=null;
 calEl.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.tNew){openTdlg(null,b.dataset.tNew);return;}
   if(b.dataset.tEdit){const t=findT(b.dataset.tEdit);if(t)openTdlg(t,null,b.dataset.focus);return;}
+  if(b.dataset.tView){const t=findT(b.dataset.tView),s=t&&sessByLink(t.einheit);if(!s)return;openSv(s.src+':'+s.id);return;}
   if(b.dataset.tOpen){const t=findT(b.dataset.tOpen),s=t&&sessByLink(t.einheit);if(!s)return;
-    if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&tArm!==b){tArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(tArm===b){tArm=null;b.textContent='Öffnen';}},4000);return;}
+    if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&tArm!==b){tArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(tArm===b){tArm=null;b.textContent='Bearbeiten';}},4000);return;}
     tArm=null;plan=toPlan(s);plan.termin={src:t.src,id:t.id};savePlan(false);setView('plan');toast('Einheit geöffnet');return;}
   if(b.dataset.tPdf){const t=findT(b.dataset.tPdf),s=t&&sessByLink(t.einheit);if(!s)return;b.disabled=true;const o=b.textContent;b.textContent='…';const r=await exportPdf(toPlan(s),false);b.disabled=false;b.textContent=o;toast(r);return;}
   if(b.dataset.tPlan){const t=findT(b.dataset.tPlan);if(!t)return;
