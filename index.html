@@ -3229,6 +3229,22 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
   A.ajpendel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);cone(s,180,186);},ents:[{id:'s'},{id:'l',fill:WAIT},{id:'r',fill:WAIT},{id:'k',fill:NEU}],sc:{a:S}};
 })();
 
+/* ---------- Passen U13 – KM: Doppelsechs-Passform ---------- */
+(function(){const C=10.6;
+  const S={L:[[2.2,'Unten links auf die tiefe Sechserin, weiter nach rechts, diagonal auf die hohe Sechserin'],[3.4,'Klatschen lassen, Pass in den Lauf der Außenspielerin in ihrer Spur'],[4.5,'Verlagerung nach oben rechts'],[99,'Gleiches Muster in die Gegenrichtung']],
+    l1:[[0,100,330],[0.7,100,330],[2.9,104,98],[3.7,104,98],[4.5,74,84],[7.0,74,84],[7.8,100,30],[C,100,30]],
+    r1:[[0,260,330],[2.2,260,330],[3.6,260,74],[4.2,286,62],[6.0,286,62],[6.7,260,30],[C,260,30]],
+    l2:[[0,100,30],[6.6,100,30],[8.4,100,316],[C,100,316]],
+    r2:[[0,260,30],[5.1,260,30],[7.6,256,262],[9.4,256,262],[10.2,260,330],[C,260,330]],
+    a:[[0,180,232]],b:[[0,180,120]]};
+  S.BALLS=[jrSeq(S,[['p','l1','a',0.2,0.65],['p','a','r1',0.9,1.3],['p','r1','b',1.5,2.15],['p','b','a',2.35,2.65],['p','a','l1',2.85,3.35],['p','l1','r2',3.6,4.35],
+    ['p','r2','b',4.6,5.05],['p','b','l2',5.25,5.65],['p','l2','a',5.9,6.55],['p','a','b',6.75,7.05],['p','b','r2',7.25,7.75],['p','r2','l2',8.6,9.3]],C)];
+  A.pdoppelsechs={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('rect',{x:100,y:30,width:160,height:300,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.55'},s);
+      [[100,30],[260,30],[100,330],[260,330]].forEach(([x,y])=>cone(s,x+(x<180?-16:16),y));[100,260].forEach(x=>line(s,x,40,x,320,'4 6','.35'));
+      txt(s,180,354,'middle','12').textContent='15 m';const t=txt(s,300,184,'middle','12');t.textContent='30 m';},
+    ents:[{id:'l1'},{id:'r1'},{id:'l2'},{id:'r2'},{id:'a',label:'6'},{id:'b',label:'6'}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -6327,6 +6343,18 @@ EX.push(...[
  leicht:['Mit Annahme (Stufe 1)','Pass langsamer','Ohne Torfrau'],
  steig:['Direkt (Stufe 2)','Halbhohe Pässe','Mit Störerin (Stufe 3)']}
 ].map(e=>Object.assign({},KJA,e)));
+/* ---------- Passen U13 – KM: Doppelsechs-Passform ---------- */
+EX.push(Object.assign({},KJP,{id:'pdoppelsechs',title:'Doppelsechs-Passform',legend:['spielerin','ball','cone'],
+ chips:[['Schwerpunkt','Spiel über die Doppelsechs · Klatschen und Verlagern'],['','8–10 Spielerinnen pro Station'],['Feld','15 × 30 m'],['Dauer','12–16 min'],['Material','4 Hütchen, Bälle']],
+ ziel:'Die zwei Sechserinnen bieten sich versetzt zwischen den Außenspielerinnen an, spielen sich mit Klatschpässen gegenseitig frei und bringen den Ball über eine Außenspielerin auf die andere Seite. Im Spiel: als Doppelsechs den Ball durchs Zentrum verlagern, statt ihn nur außen herum laufen zu lassen.',
+ org:['Feld 15 × 30 m, an jeder Ecke ein Hütchen','Zwei Sechserinnen in der Mitte, versetzt: eine tiefer, eine höher','Außenspielerinnen in der linken und rechten Spur, unten und oben je 1–2','Bälle unten links und oben rechts'],
+ rot:'Die Sechserinnen arbeiten 2 Minuten unter voller Belastung, dann tauschen sie mit zwei Außenspielerinnen. Die Außenspielerinnen bleiben in ihrer Spur und laufen nach ihrer Aktion auf die andere Seite der Spur.',
+ ablauf:['Unten links passt zur tieferen Sechserin, diese spielt zu unten rechts.','Unten rechts spielt diagonal auf die höhere Sechserin.','Die höhere Sechserin lässt auf die tiefere klatschen.','Die tiefere Sechserin spielt in den Lauf von unten links, die nach ihrem ersten Pass in ihrer Spur nach vorne gestartet ist.','Sie verlagert mit einem langen Pass nach oben rechts.','Von oben rechts läuft dasselbe Muster in die Gegenrichtung.'],
+ stufen:[['Stufe 1 · Zwei Kontakte','Fester Ablauf, alle mit zwei Kontakten. Fokus auf Laufwege und Passschärfe.'],['Stufe 2 · Direkt','Die Sechserinnen spielen direkt, Schulterblick vor jeder Annahme.'],['Stufe 3 · Gegnerin im Zentrum','Eine halbaktive Gegnerin zwischen den Sechserinnen. Steht sie bei der höheren Sechserin, lässt diese klatschen. Steht sie weg, dreht die höhere Sechserin auf und spielt selbst in die Spur.']],
+ coach:[['Offene Stellung','Die Sechserinnen stehen seitlich zur Passgeberin, Blick schon zur nächsten Station. Erkennbar: Der Ball geht mit dem ersten Kontakt in die neue Richtung weiter.'],['Versetzt stehen','Eine Sechserin tiefer, eine höher, nie auf einer Linie. Fehlerbild: Beide stehen auf gleicher Höhe, der Klatschpass ist nicht möglich.'],['Klatschpass','Weich und in den Fuß der anderen Sechserin, die sich vorher kurz abgesetzt hat.'],['Timing in der Spur','Die Außenspielerin startet direkt nach ihrem ersten Pass und bekommt den Ball im Lauf.'],['Verlagerung','Flach und scharf auf die andere Seite, nicht halbhoch.']],
+ last:['Dauer: pro Sechserpaar 2 Minuten volle Belastung, dann Wechsel, 4–6 Durchgänge','Wartezeit: keine für die Sechserinnen, kurz für die Außenspielerinnen','Pro Spielerin: Sechserinnen ca. 30–40 Ballkontakte in 2 Minuten, Außen ca. 10–15 pro Durchgang','Intensität: hoch für die Sechserinnen, mittel für die Außen'],
+ leicht:['Zwei Kontakte (Stufe 1)','Kleineres Feld (12 × 25 m)','Nur eine Richtung, dann neu starten'],
+ steig:['Direkt (Stufe 2)','Zwei Bälle gleichzeitig: unten links und oben rechts starten zusammen','Gegnerin im Zentrum (Stufe 3)','Nur schwacher Fuß bei der Verlagerung']}));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
