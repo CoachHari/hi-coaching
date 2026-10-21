@@ -3030,6 +3030,31 @@ const jtQuad=(p0,p1,p2,t0,t1,n)=>{const r=[];for(let i=0;i<=n;i++){const u=i/n,a
     ents:[{id:'a'},{id:'d',fill:RED}],sc:{a:S}};
 })();
 
+/* ---------- Rondo U13 – KM: zwei neue Formen (5 Säulen) ---------- */
+const jrBall=(S,P,C)=>{const k=[];P.forEach(([a,b,t0,t1])=>{const pa=at(S[a],t0),pb=at(S[b],t1);k.push([t0,...toward(pa,pb,14)],[t1,...toward(pb,pa,14)]);});const f=k[0],l=k[k.length-1];return [[0,f[1],f[2]]].concat(k,[[C,l[1],l[2]]]);};
+
+/* Wanderndes Rondo 4 gegen 2 */
+(function(){const C=5.6,H=55,Y0=262,Y1=118,T0=2.0,T1=3.8;
+  const S={L:[[1.9,'Rondo 4 gegen 2 im Quadrat'],[3.8,'Auf Zuruf wandert das ganze Rondo nach vorne, der Ball läuft weiter'],[99,'Form halten: Abstände und Ecken bleiben gleich']]};
+  [['a',-1,1],['b',1,1],['c',1,-1],['d',-1,-1]].forEach(([id,sx,sy])=>{S[id]=[[0,180+sx*H,Y0+sy*H],[T0,180+sx*H,Y0+sy*H],[T1,180+sx*H,Y1+sy*H],[C,180+sx*H,Y1+sy*H]];});
+  S.g1=[[0,168,250],[1.0,200,280],[2.2,214,236],[3.2,150,160],[4.4,160,122],[C,160,122]];
+  S.g2=[[0,200,236],[1.0,160,236],[2.2,150,212],[3.2,206,128],[4.4,208,100],[C,208,100]];
+  S.BALLS=[jrBall(S,[['a','b',0.2,0.7],['b','c',1.0,1.5],['c','d',1.8,2.4],['d','a',2.8,3.4],['a','c',3.8,4.4],['c','b',4.8,5.2]],C)];
+  A.rjwander={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);const r=el('rect',{x:125,y:207,width:110,height:110,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'6 5',opacity:'.6'},s);this._r=r;this._t=usTxt(s,40);this._t.textContent='VOR!';},
+    tick(t){const u=t<T0?0:t>T1?1:ease((t-T0)/(T1-T0));this._r.setAttribute('y',207-(Y0-Y1)*u);this._t.setAttribute('opacity',t>=1.7&&t<2.6?'1':'0');},
+    ents:[{id:'a'},{id:'b'},{id:'c'},{id:'d'},{id:'g1',fill:RED},{id:'g2',fill:RED}],sc:{a:S}};
+})();
+
+/* Zwei-Ball-Rondo 6 gegen 3 */
+(function(){const C=5.0,R=128;const S={L:[[1.6,'Sechs außen, drei Jägerinnen innen, zwei Bälle gleichzeitig'],[3.2,'Vor jedem Pass schauen: Wo ist der zweite Ball?'],[99,'Erobern die Jägerinnen einen Ball, tauscht die Spielerin mit dem Fehler']]};
+  for(let i=0;i<6;i++){const a=Math.PI/2+i*Math.PI/3;S['p'+i]=[[0,180+R*Math.cos(a),180+R*Math.sin(a)]];}
+  S.g1=[[0,150,172],[1.2,154,200],[2.4,146,168],[3.6,160,146],[C,160,146]];S.g2=[[0,210,168],[1.2,212,146],[2.4,214,196],[3.6,204,212],[C,204,212]];S.g3=[[0,180,214],[1.4,182,166],[2.8,178,220],[4.0,166,190],[C,166,190]];
+  S.BALLS=[jrBall(S,[['p0','p2',0.2,0.8],['p2','p4',1.2,1.8],['p4','p0',2.2,2.8],['p0','p2',3.2,3.8],['p2','p4',4.2,4.7]],C),
+    jrBall(S,[['p3','p5',0.4,1.0],['p5','p1',1.4,2.0],['p1','p3',2.4,3.0],['p3','p5',3.4,4.0],['p5','p1',4.3,4.8]],C)];
+  A.rjzwei={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('circle',{cx:180,cy:180,r:R+14,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'6 5',opacity:'.5'},s);},
+    ents:[0,1,2,3,4,5].map(i=>({id:'p'+i})).concat([{id:'g1',fill:RED},{id:'g2',fill:RED},{id:'g3',fill:RED}]),sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -5903,6 +5928,32 @@ EX.push(...[
  leicht:['Langsame Angreiferin (Stufe 1)','Schmalere Bahn','Kürzere Bahn'],
  steig:['Halbes Tempo (Stufe 2)','Breitere Bahn','Wettkampf (Stufe 3)']}
 ].map(e=>Object.assign({},KJT,e)));
+/* ---------- Rondo U13 – KM: Inhalte ---------- */
+const KJR={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'rondo',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'rjwander',title:'Wanderndes Rondo 4 gegen 2',legend:['spielerin','jaegerin','ball','cone'],
+ chips:[['Schwerpunkt','Ballbesitz · Verschieben als Gruppe'],['','12–18 Spielerinnen in Sechsergruppen'],['Feld','Quadrat 12 × 12 m in einer Bahn 15 × 40 m'],['Dauer','10–12 min'],['Material','Bälle, Hütchen, Leibchen']],
+ ziel:'Die Spielerinnen halten im 4 gegen 2 den Ball und verschieben auf Zuruf das ganze Quadrat nach vorne, ohne den Ball zu verlieren oder die Abstände aufzugeben. Im Spiel: Ballbesitz, während die Mannschaft gemeinsam aufrückt.',
+ org:['Bahn 15 × 40 m, darin ein Quadrat 12 × 12 m (nur gedacht oder mit Hütchen markiert)','4 Spielerinnen an den Ecken, 2 Jägerinnen innen','Trainerin an der Seite'],
+ rot:'Wer den Ball verliert, wird Jägerin. Nach 90 Sekunden wechseln die Jägerinnen auf jeden Fall.',
+ ablauf:['Rondo 4 gegen 2 im Quadrat.','Zuruf „Vor!“: Alle Eckspielerinnen gehen 5–10 m nach vorne, der Ball läuft weiter.','Zuruf „Zurück!“: das Quadrat wandert zurück.','8 Pässe in Folge = Punkt, Ballgewinn = Punkt für die Jägerinnen.'],
+ stufen:[['Stufe 1 · Langsam wandern','Beim Wandern dürfen die Eckspielerinnen den Ball zwei Sekunden halten.'],['Stufe 2 · Wandern im Spiel','Zwei Kontakte, das Quadrat wandert, während gespielt wird.'],['Stufe 3 · Seitlich und diagonal','Zurufe auch „Links!“ und „Rechts!“. Nach Ballgewinn dribbeln die Jägerinnen über eine Linie der Bahn.']],
+ coach:[['Abstände halten','Beim Wandern bleiben die Ecken gleich weit auseinander. Erkennbar: Nach dem Wandern ist das Quadrat genauso groß wie vorher.'],['Ball sichern','Beim Verschieben kurze, sichere Pässe. Fehlerbild: Die Spielerinnen laufen und vergessen den Ball, er wird abgefangen.'],['Offene Stellung','Auch in der Bewegung zum Ball geöffnet bleiben.'],['Jägerinnen','Den Moment des Wanderns nutzen und dann pressen.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Langsam wandern (Stufe 1)','Größeres Quadrat','Eine Jägerin'],
+ steig:['Wandern im Spiel (Stufe 2)','Nur direkt','Seitlich und diagonal (Stufe 3)']},
+{id:'rjzwei',title:'Zwei-Ball-Rondo 6 gegen 3',legend:['spielerin','jaegerin','ball'],
+ chips:[['Schwerpunkt','Wahrnehmung · Passen unter Druck'],['','9 Spielerinnen pro Rondo'],['Feld','Kreis Ø 20 m oder Sechseck'],['Dauer','10–12 min'],['Material','2 Bälle pro Rondo, Leibchen']],
+ ziel:'Sechs Spielerinnen spielen zwei Bälle gleichzeitig gegen drei Jägerinnen und schauen vor jedem Pass, wo der zweite Ball ist. Im Spiel: viel wahrnehmen, bevor der Ball kommt.',
+ org:['Sechs Spielerinnen auf einem Kreis (Ø ca. 20 m)','Drei Jägerinnen innen','Zwei Bälle im Spiel'],
+ rot:'Wer einen Ball verliert, tauscht mit der Jägerin, die ihn erobert hat. Nach 2 Minuten wechseln alle Jägerinnen.',
+ ablauf:['Beide Bälle laufen gleichzeitig.','Nie zwei Bälle zur selben Spielerin.','Jägerinnen erobern einen Ball = Wechsel.','Gezählt werden die Pässe in 2 Minuten.'],
+ stufen:[['Stufe 1 · Zwei Jägerinnen','6 gegen 2, freie Kontakte.'],['Stufe 2 · Drei Jägerinnen','6 gegen 3, höchstens zwei Kontakte.'],['Stufe 3 · Nicht zur Nachbarin','Pass nicht zur direkten Nachbarin, höchstens zwei Kontakte, ein Ball nur direkt.']],
+ coach:[['Schulterblick','Vor jeder Annahme schauen, wo der zweite Ball und die Jägerinnen sind. Erkennbar: Kein Pass geht zu einer Spielerin, die gerade den anderen Ball hat.'],['Kommunikation','Ansagen „Ball!“ oder Name. Fehlerbild: Zwei Bälle kommen gleichzeitig bei einer Spielerin an.'],['Passschärfe','Scharf und flach, sonst fangen die Jägerinnen ab.'],['Jägerinnen','Zu zweit einen Ball jagen, die dritte stellt den anderen zu.']],
+ last:['Dauer: 4 × 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 25–30 Ballkontakte pro Durchgang','Intensität: mittel'],
+ leicht:['Zwei Jägerinnen (Stufe 1)','Größerer Kreis','Freie Kontakte'],
+ steig:['Drei Jägerinnen (Stufe 2)','Nicht zur Nachbarin (Stufe 3)','Kleinerer Kreis']}
+].map(e=>Object.assign({},KJR,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -8410,6 +8461,78 @@ const UPG_JKM={
 dritte:{coach:[['Timing IV/6er','Andribbeln gibt der 6er Zeit für ihren Laufweg. Erkennbar: Die 6er ist frei, wenn die IV den Kopf hebt.'],['6er','Passlinie freiziehen und diagonal anbieten, dann abrollen und hinter den Ball kommen. Fehlerbild: Die 6er steht im Deckungsschatten der Gegnerin und ist nicht anspielbar.'],['Passrhythmus','Steilpass mit Druck, Ablage weich in den Lauf.'],['10er','Schulterblick vor der Annahme entscheidet über Klatsch oder Dreh.'],['Stürmerin','Seitlich stehen, Pass auf den vorderen Fuß fordern, nach jedem Pass sofort zur nächsten Position.']],
  steig:['Alle Pässe direkt (außer Stürmerin)','Halbaktive Gegnerin hinter der 10er (Stufe 2)','Abschluss aufs Tor mit Torfrau (Stufe 3)','Station gegen Station: mehr saubere Durchgänge in 2 Minuten']},
 schiene:{coach:[['Schiene','Kurz entgegenkommen, Ablage mit der Innenseite, dann sofort Tempo- und Richtungswechsel in die Tiefe. Fehlerbild: Die Schiene startet erst nach dem Steilpass.'],['8er','Offen im Halbraum anbieten, Steilpass in den Lauf, nicht auf den Körper. Erkennbar: Die Schiene nimmt den Ball im vollen Lauf mit.'],['HV','Pass auf den Außenfuß der Schiene, damit sie offen prallen lassen kann.'],['Timing','Die Schiene startet, wenn die 8er den Ball hat, nicht früher (Abseits) und nicht später.']]},
+positionsspiel:{ziel:'Die Spielerin besetzt im Positionsspiel Breite und Tiefe, sucht immer wieder den zentralen Joker zwischen den Linien und spielt das Team von Ende zu Ende. Im Spiel: geduldiger Ballbesitz mit dem Ziel, die Linien der Gegnerinnen zu überspielen.',
+ stufen:[['Stufe 1 · Freie Kontakte','4 gegen 4 + 3 Joker, freie Kontakte, 10 Pässe = Punkt.'],['Stufe 2 · Ende zu Ende','Höchstens zwei Kontakte, Pass von Endjoker zu Endjoker über den zentralen Joker = Bonuspunkt.'],['Stufe 3 · Joker direkt und Konter','Joker nur direkt, nur noch zwei Joker. Nach Ballgewinn hat das neue Team 6 Sekunden für einen Ende-zu-Ende-Pass.']],
+ coach:[['Breite und Tiefe','Das Feld groß machen, zwei Spielerinnen breit, eine tief. Erkennbar: Die Ballführende hat immer mindestens drei Passoptionen.'],['Zentraler Joker','Zwischen den Linien anbieten, Schulterblick vor der Annahme. Fehlerbild: Der Joker steht hinter einer Gegnerin und ist nicht anspielbar.'],['Dritte Frau','Kommt der Pass zum zentralen Joker nicht durch, über eine dritte Spielerin hinkommen.'],['Umschalten','Nach Ballverlust sofort pressen, die Nächste zum Ball attackiert.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 20–25 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Freie Kontakte (Stufe 1)','Größeres Feld','Vier Joker'],
+ steig:['Zwei Kontakte, Ende zu Ende (Stufe 2)','Joker nur direkt (Stufe 3)','Nur noch zwei Joker']},
+doppelrondo:{ziel:'Die Spielerin hält im 4 gegen 2 den Ball und verlagert nach der Passvorgabe mit einem flachen, scharfen Pass ins zweite Feld. Die Jägerinnen schieben mit. Im Spiel: Ballbesitz auf einer Seite, dann schnelle Verlagerung auf die freie Seite.',
+ stufen:[['Stufe 1 · Verlagerung nach 6 Pässen','4 gegen 2, freie Kontakte, nach 6 Pässen verlagern.'],['Stufe 2 · Zwei Kontakte','Verlagerung nach 4 Pässen, höchstens zwei Kontakte.'],['Stufe 3 · Blockerin','Eine Blockerin zwischen den Feldern fängt Verlagerungen ab. Abgefangener Ball = Konter auf ein Minitor.']],
+ coach:[['Verlagerung','Flach und scharf, Kopf hoch vor dem Pass. Erkennbar: Der Ball kommt ohne Aufspringen im anderen Feld an.'],['Annahme des langen Balls','Offen stehen, erster Kontakt in den freien Raum. Fehlerbild: Die Annahme springt weg und die nachschiebenden Jägerinnen erobern den Ball.'],['Jägerinnen','Sofort mitsprinten und im richtigen Winkel anlaufen.'],['Vorbereiten','Vor der Verlagerung mit kurzen Pässen die Jägerinnen auf eine Seite locken.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 20–25 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Verlagerung nach 6 Pässen (Stufe 1)','Felder näher zusammen','Nur eine Jägerin schiebt mit'],
+ steig:['Zwei Kontakte (Stufe 2)','Zwei Bälle','Blockerin zwischen den Feldern (Stufe 3)']},
+rondo42v3:{ziel:'Die Innenspielerin bietet sich zwischen den Jägerinnen an, nimmt offen an und spielt auf die andere Seite weiter. Die Außenspielerinnen erkennen den Passweg nach innen. Im Spiel: Spiel zwischen den Linien im Mittelfeld.',
+ stufen:[['Stufe 1 · Zwei Jägerinnen','4 + 2 gegen 2, Pass auf einen Joker und Weiterspiel = Punkt.'],['Stufe 2 · Drei Jägerinnen','Normale Form 4 + 2 gegen 3.'],['Stufe 3 · Joker direkt und Konter','Joker nur direkt. Nach Ballgewinn dribbeln die Jägerinnen über eine Außenlinie.']],
+ coach:[['Joker','Schulterblick, offene Stellung, Ball mit dem hinteren Fuß annehmen. Erkennbar: Der Joker spielt nach der Annahme auf die Seite, die von der Annahme abgewandt ist.'],['Außen','Passweg in die Mitte suchen, nicht nur außen herum. Fehlerbild: Der Ball läuft nur um das Quadrat, die Joker bekommen ihn nie.'],['Jägerinnen','Zentral kompakt stehen, den Pass in die Mitte zustellen.'],['Tempo','Pass nach innen mit Tempo, damit der Joker Zeit hat.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, Jägerinnen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Zwei Jägerinnen (Stufe 1)','Größeres Feld','Joker mit freien Kontakten'],
+ steig:['Drei Jägerinnen (Stufe 2)','Außen zwei Kontakte','Joker direkt und Konter (Stufe 3)']},
+dreiteam:{ziel:'Die Spielerin hält mit ihrem Team und den Außenspielerinnen den Ball gegen das Jägerteam und schaltet nach Ballverlust sofort in die Jägerrolle um. Im Spiel: Ballbesitz und Umschalten ohne Pause.',
+ stufen:[['Stufe 1 · Freie Kontakte','Blau innen und Gelb außen halten den Ball, Punkt nach 8 Pässen.'],['Stufe 2 · Wechsel bei Ballverlust','Wer den Ball verliert, wird sofort Jägerteam.'],['Stufe 3 · Kontaktlimit','Außen nur direkt, innen zwei Kontakte, Punkt nach 6 Pässen.']],
+ coach:[['Umschalten','Sofort reagieren, wer den Ball verliert, jagt. Erkennbar: Das neue Jägerteam presst innerhalb von 2 Sekunden.'],['Positionen','Außen die Linien besetzen, innen zwischen den Jägerinnen anbieten. Fehlerbild: Innen stehen alle auf einer Seite.'],['Pressing','Zusammen jagen, eine presst, zwei stellen Passwege zu.'],['Ballbesitz','Dreiecke bilden, flach und schnell spielen.']],
+ last:['Dauer: 5 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Freie Kontakte (Stufe 1)','Größeres Feld','Punkt nach 6 Pässen'],
+ steig:['Wechsel bei Ballverlust (Stufe 2)','Kleineres Feld','Kontaktlimit (Stufe 3)']},
+umschaltrondo:{ziel:'Die Spielerin hält mit ihrem Team im 5 gegen 3 den Ball und presst nach Ballverlust sofort, damit die Gegnerinnen keine drei Pässe schaffen. Im Spiel: Gegenpressing direkt nach Ballverlust.',
+ stufen:[['Stufe 1 · Rot braucht 4 Pässe','Nach Ballgewinn braucht Rot 4 Pässe, Blau presst.'],['Stufe 2 · Rot braucht 3 Pässe','Normale Form.'],['Stufe 3 · Zeitlimit','Blau höchstens zwei Kontakte. Erobert Blau den Ball in 5 Sekunden zurück, zählt das doppelt.']],
+ coach:[['Gegenpressing','Sofort Druck auf den Ball, die Nächste attackiert. Erkennbar: Rot hat nach Ballgewinn keine Zeit, den Kopf zu heben.'],['Ballbesitz','Dreiecke, immer zwei Passwege für die Ballführende. Fehlerbild: Blau spielt in die Mitte von drei Gegnerinnen.'],['Rot nach Ballgewinn','Ruhig bleiben, erster Pass weg vom Druck.'],['Kompakt pressen','Die anderen Blauen schließen die kurzen Passwege.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Rot braucht 4 Pässe (Stufe 1)','Größeres Feld','6 gegen 3'],
+ steig:['Rot braucht 3 Pässe (Stufe 2)','Rot braucht nur 2 Pässe','Zeitlimit (Stufe 3)']},
+tieferondo:{ziel:'Die Spielerin hält im Rondo den Ball und schaut immer zuerst nach vorne: Ist der Weg zur Tiefenspielerin frei, spielt sie den Pass dorthin. Im Spiel: Ballbesitz mit dem Blick nach vorne statt nur quer.',
+ stufen:[['Stufe 1 · Stehende Tiefenspielerin','Die Tiefenspielerin steht fest, 4 gegen 2.'],['Stufe 2 · Bewegliche Tiefenspielerin','Die Tiefenspielerin bewegt sich in ihrer Zone, nur zwei Kontakte.'],['Stufe 3 · Drei Jägerinnen','Eine dritte Jägerin darf den Passweg in die Tiefe zustellen. Nach dem Pass in die Tiefe rückt eine Rondospielerin nach und bekommt die Ablage.']],
+ coach:[['Blick nach vorne','Vor jeder Annahme zuerst zur Tiefenspielerin schauen. Erkennbar: Ist der Weg frei, geht der Pass ohne Zögern nach vorne.'],['Passweg','Den Ball so verschieben, dass sich die Lücke öffnet. Fehlerbild: Pass in die Tiefe durch die Beine einer Jägerin.'],['Tiefenspielerin','Weg von der Jägerin bewegen, Ablage mit dem ersten Kontakt.'],['Jägerinnen','Den Weg nach vorne zustellen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, Rollen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Stehende Tiefenspielerin (Stufe 1)','Größeres Feld','Nur eine Jägerin'],
+ steig:['Bewegliche Tiefenspielerin (Stufe 2)','Nur zwei Kontakte','Drei Jägerinnen (Stufe 3)']},
+wandrondo:{ziel:'Die Spielerin nutzt im 2 gegen 2 die Wandspielerinnen, läuft sich nach dem Pass sofort frei und spielt Doppelpässe. Im Spiel: kleine Räume mit Doppelpass und Freilaufen lösen.',
+ stufen:[['Stufe 1 · Wände frei','Wände mit zwei Kontakten, Wand-zu-Wand = Punkt.'],['Stufe 2 · Wände direkt','Wände nur direkt.'],['Stufe 3 · Punkt nur nach Doppelpass','Ein Punkt zählt nur nach Doppelpass mit einer Wand. Nach Ballverlust 5 Sekunden Gegenpressing.']],
+ coach:[['Freilaufen','In die Lücke bewegen, weg von der Gegnerin. Erkennbar: Die Ballführende hat immer eine Mitspielerin oder eine Wand frei.'],['Doppelpass','Nach dem Pass sofort starten. Fehlerbild: Die Spielerin bleibt nach dem Pass stehen und schaut.'],['Wände','Den Ball in den Lauf der Mitspielerin spielen, nicht zurück auf die Füße.'],['Umschalten','Nach Ballverlust sofort Druck.']],
+ last:['Dauer: 6 × 90 Sekunden, 90 Sekunden Pause','Wartezeit: kurz, Wände wechseln mit dem Feld','Pro Spielerin: ca. 12–15 Ballkontakte pro Durchgang','Intensität: sehr hoch'],
+ leicht:['Wände frei (Stufe 1)','Größeres Feld','Zusätzlicher Joker im Feld'],
+ steig:['Wände direkt (Stufe 2)','Feld kleiner','Punkt nur nach Doppelpass (Stufe 3)']},
+zonenrondo:{ziel:'Die Spielerin hält im 5 gegen 2 den Ball, erkennt die Lücke in der Mittelzone und verlagert ins andere Feld. Erobert ihr Team den Ball, schließt es sofort auf die Minitore ab. Im Spiel: Ballbesitz unter Druck, Passwege zustellen und Umschalten in beide Richtungen.',
+ stufen:[['Stufe 1 · Verlagerung nach 8 Pässen','Freie Kontakte, Verlagerung nach 8 Pässen, Mittelzone nur passiv.'],['Stufe 2 · Normale Form','Verlagerung nach 5 Pässen, Mittelzone aktiv, Abschluss nach Ballgewinn.'],['Stufe 3 · Kontaktlimit und Zeit','Höchstens zwei Kontakte im Ballbesitz, Abschluss nach Ballgewinn innerhalb von 6 Sekunden.']],
+ coach:[['Ballbesitz','Körper offen, Ball auf den freien Fuß, Lücke schon vor dem Pass erkennen. Erkennbar: Die Verlagerung geht durch die Lücke, ohne dass die Mittelzone den Ball berührt.'],['Mittelzone','Als Kette zum Ball verschieben, Abstände klein halten. Fehlerbild: Die drei stehen starr, die Lücken bleiben offen.'],['Jägerinnen','Zu zweit anlaufen: eine presst, eine stellt den kurzen Passweg zu.'],['Nach Ballgewinn','Sofort und mit wenigen Kontakten aufs Minitor.'],['Umschalten','Nach Ballverlust sofort in die Eroberer-Rolle, ohne Diskussion.']],
+ last:['Dauer: 4 × 4 Minuten, 90 Sekunden Pause','Wartezeit: keine, alle drei Teams im Spiel','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Verlagerung nach 8 Pässen (Stufe 1)','Mittelzone breiter','Nur eine Jägerin'],
+ steig:['Normale Form (Stufe 2)','Passanzahl auf 3 senken','Kontaktlimit und Zeit (Stufe 3)']},
+zonen42:{ziel:'Die Spielerin hält im 4 gegen 2 den Ball und verlagert nach vier Pässen durch die Mittelzone. Die Jägerinnen sprinten hinterher und pressen sofort. Im Spiel: Verlagerung unter Druck und schnelles Nachschieben.',
+ stufen:[['Stufe 1 · Ohne Blockerin','Keine Blockerin in der Mittelzone, Verlagerung nach 4 Pässen.'],['Stufe 2 · Mit Blockerin','Normale Form mit einer Blockerin.'],['Stufe 3 · Zwei Blockerinnen','Zwei Blockerinnen, Verlagerung erst nach 6 Pässen, Abschluss nach Ballgewinn in 5 Sekunden.']],
+ coach:[['Verlagerung','Flach, scharf und erst, wenn die Lücke offen ist. Erkennbar: Der Pass kommt an, ohne dass die Blockerin ihn berührt.'],['Annahme','Offene Stellung, erster Kontakt weg vom Druck. Fehlerbild: Die Annahme geht in Richtung der heransprintenden Jägerinnen.'],['Jägerinnen','Den Sprint ins neue Feld nutzen, um im richtigen Winkel anzulaufen.'],['Blockerin','Mit dem Ball verschieben, Körper zwischen Ball und Lücke.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['Ohne Blockerin (Stufe 1)','Mittelzone schmaler','Größere Felder'],
+ steig:['Mit Blockerin (Stufe 2)','Höchstens zwei Kontakte','Zwei Blockerinnen (Stufe 3)']},
+kontertor:{ziel:'Die Spielerin hält im 5 gegen 2 den Ball. Erobern die Jägerinnen den Ball, kontern sie sofort aufs Großtor, die Rondospielerinnen jagen hinterher. Im Spiel: Ballbesitz, Umschalten in beide Richtungen und Abschluss.',
+ stufen:[['Stufe 1 · Konter ohne Verfolgerin','Nach Ballgewinn kontern die Jägerinnen 2 gegen Torfrau.'],['Stufe 2 · Zwei Verfolgerinnen','Die zwei Rondospielerinnen am nächsten zum Ballverlust jagen hinterher.'],['Stufe 3 · Zeitlimit und 5 gegen 3','Rondo 5 gegen 3, Abschluss innerhalb von 8 Sekunden, Direktabschluss zählt doppelt.']],
+ coach:[['Ballbesitz','Sichere Pässe, kein Querpass in Unterzahl Richtung eigenes Tor. Fehlerbild: Ballverlust auf der Torseite des Quadrats, der Konter ist sofort durch.'],['Nach Ballgewinn','Erster Kontakt oder erster Pass nach vorne. Erkennbar: Der Abschluss kommt innerhalb von 8 Sekunden.'],['Konter','Breite herstellen und das 2 gegen Torfrau ausspielen.'],['Gegenpressing','Die nächsten zwei sprinten sofort, der Rest sichert ab.']],
+ last:['Dauer: 4 × 3 Minuten, 90 Sekunden Pause','Wartezeit: keine, Jägerinnen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte und 3–5 Sprints pro Durchgang','Intensität: hoch'],
+ leicht:['Konter ohne Verfolgerin (Stufe 1)','Quadrat weiter vom Tor weg','6 gegen 2 im Rondo'],
+ steig:['Zwei Verfolgerinnen (Stufe 2)','Rondospielerinnen zwei Kontakte','Zeitlimit und 5 gegen 3 (Stufe 3)']},
+ausbruchrondo:{ziel:'Die Spielerin hält mit ihrem Team den Ball über die Innenspielerinnen und presst nach Ballverlust 5 Sekunden lang, damit die Jägerinnen nicht durch ein Hütchentor ausbrechen. Im Spiel: Spiel durch die Mitte und Verhalten direkt nach Ballverlust.',
+ stufen:[['Stufe 1 · 10 Pässe','4 + 2 gegen 3, freie Kontakte, 10 Pässe = Punkt.'],['Stufe 2 · Ausbruch','Nach Ballgewinn dribbeln die Jägerinnen durch ein Hütchentor, 5 Sekunden Gegenpressing.'],['Stufe 3 · Kontaktlimit','Außen höchstens zwei Kontakte, Innenspielerinnen nur direkt, nur zwei Tore aktiv.']],
+ coach:[['Innenspielerinnen','Zwischen den Jägerinnen anbieten, offen zum Spiel stehen. Erkennbar: Mindestens jeder dritte Pass geht über eine Innenspielerin.'],['Außen','Den Pass in die Mitte suchen, nicht nur außen herum. Fehlerbild: Der Ball läuft nur außen, die Jägerinnen müssen nur verschieben.'],['Gegenpressing','Die Nächste attackiert, die anderen schließen die Wege zu den Toren.'],['Jägerinnen','Nach Ballgewinn Kopf hoch und das freie Tor wählen.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, Jägerinnen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: hoch'],
+ leicht:['10 Pässe ohne Ausbruch (Stufe 1)','Größeres Quadrat','Gegenpressing 7 Sekunden'],
+ steig:['Ausbruch (Stufe 2)','Gegenpressing nur 3 Sekunden','Kontaktlimit (Stufe 3)']},
+zielrondo:{ziel:'Die Spielerin spielt die Zielspielerin an, rückt für die Ablage nach und verlagert dann auf die andere Seite zur zweiten Zielspielerin. Im Spiel: Ballbesitz mit Spielrichtung, Ablagen und Verlagerung.',
+ stufen:[['Stufe 1 · Zwei Jägerinnen','4 gegen 2, Zielspielerinnen mit zwei Kontakten.'],['Stufe 2 · Drei Jägerinnen','Normale Form 4 gegen 3.'],['Stufe 3 · Zielspielerin direkt','Zielspielerinnen nur direkt, Punkt nur, wenn alle vier den Ball berührt haben.']],
+ coach:[['Ablage','Die Zielspielerin legt mit dem ersten Kontakt in den Lauf ab. Erkennbar: Die nachrückende Spielerin nimmt die Ablage ohne Abbremsen mit.'],['Nachrücken','Eine Spielerin bietet sich für die Ablage an, bevor der Pass kommt. Fehlerbild: Niemand rückt nach, die Zielspielerin muss zurückspielen ins Gedränge.'],['Verlagerung','Über die Lücke, nicht durch die Jägerinnen.'],['Jägerinnen','Den Pass zur Zielspielerin zustellen, nach der Ablage sofort Druck.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, Zielspielerinnen wechseln','Pro Spielerin: ca. 15–20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Zwei Jägerinnen (Stufe 1)','Größeres Feld','Zielspielerin darf andribbeln (5 gegen 3)'],
+ steig:['Drei Jägerinnen (Stufe 2)','Zielspielerin direkt (Stufe 3)','4 gegen 4 ohne Überzahl']},
 };
 EX.forEach(e=>{const u=UPG_JKM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 
@@ -8530,6 +8653,10 @@ function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e
   J('fintehalb','Für U13–KM: Verteidigerin von Beginn an halbaktiv, Finte im vollen Tempo, Abschluss aufs große Tor mit Torfrau statt Minitor.');
   J('ballmanip','Für U13–KM als Technik-Aufwärmen: höheres Tempo, jede Aufgabe auch mit dem schwachen Fuß, zum Schluss Wettkampf gegen die Uhr.');
   J('jongliertandem','Für U13–KM: nur Fuß und Kopf, Ball muss immer über Kopfhöhe, zum Schluss Fußballtennis über eine Linie.');
+  /* Rondo */
+  J('rondo4p1','Für U13–KM: Quadrat 10 × 10 m, Außen höchstens zwei Kontakte, Joker nur direkt. Pass durch die Mitte zum Joker und weiter auf die andere Seite = Doppelpunkt.');
+  J('ballhalten','Für U13–KM: Feld 20 × 20 m, höchstens zwei Kontakte, Joker nur direkt. Nach Ballverlust 5 Sekunden Gegenpressing, Rückeroberung = Punkt.');
+  J('rondokonter','Für U13–KM: Quadrat 12 × 12 m, 5 gegen 2. Nach Ballgewinn Konter in 6 Sekunden, zwei Rondospielerinnen jagen sofort hinterher.',['umschalten']);
 })();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
