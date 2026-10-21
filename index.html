@@ -3178,6 +3178,57 @@ const jrSeq=(S,Q,C)=>{let k=[];const U=(a,b)=>{const d=Math.hypot(b[0]-a[0],b[1]
     ents:[{id:'a1'},{id:'a2'},{id:'d',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
 })();
 
+/* ---------- Torabschluss U13 – KM: sechs neue Formen (5 Säulen) ---------- */
+const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.5'},s);el('rect',{x:130,y:6,width:100,height:36,fill:'none',stroke:'#FFFFFF','stroke-width':'1.2',opacity:'.4'},s);};
+
+/* Kopfballtor nach Flanke */
+(function(){const C=4.0;
+  const S={L:[[0.9,'Flanke an den Fünfmeterraum'],[1.6,'Anlauf diagonal, einbeinig abspringen'],[99,'Kopfball nach unten ins Eck']],
+    w:[[0,322,150]],s:[[0,236,190],[0.7,240,170],[1.5,200,72],[C,200,72]],d:[[0,160,120],[1.5,170,70],[C,170,70]],k:[[0,180,26],[1.7,196,28],[C,196,28]]};
+  S.BALLS=[[[0,308,150],[0.4,308,150]].concat(jtQuad([308,150],[280,40],[204,60],0.5,1.5,7),[[1.85,140,14],[C,140,14]])];
+  A.ajkopfball={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);},ents:[{id:'w'},{id:'s'},{id:'d',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Allein vor der Torfrau */
+(function(){const C=4.4;
+  const S={L:[[1.0,'Steilpass, allein auf die Torfrau'],[1.9,'Die Torfrau kommt raus: kurz antäuschen'],[99,'Vorbeilegen und ins leere Tor schieben']],
+    p:[[0,180,330]],s:[[0,236,250],[1.0,196,160],[1.8,180,104],[2.3,140,72],[C,140,72]],k:[[0,180,28],[1.6,180,74],[2.1,192,82],[C,192,82]]};
+  S.BALLS=[jrSeq(S,[['p','p','s',0.1,0.95],['d','s',1.0,2.3],['s','s',2.4,2.7,156,14]],C)];
+  A.ajtorfrau={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);},ents:[{id:'p',fill:WAIT},{id:'s'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Schnellschuss 1 gegen 1 im Strafraum */
+(function(){const C=4.0;
+  const S={L:[[0.7,'Die Trainerin spielt einen Ball in den Strafraum'],[1.3,'Beide starten: wer zuerst dran ist, schließt ab'],[99,'Die andere verteidigt und blockt']],
+    tr:[[0,180,230]],a:[[0,150,150],[0.6,150,150],[1.2,170,92],[C,170,92]],d:[[0,212,150],[0.6,212,150],[1.4,198,100],[C,198,100]],k:[[0,180,26],[1.4,166,30],[C,166,30]]};
+  S.BALLS=[[[0,180,216],[0.3,180,216],[1.1,178,104],[1.25,176,98],[1.6,214,14],[C,214,14]]];
+  A.ajschnell={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);},ents:[{id:'tr',fill:'#2C2C2A',label:'T'},{id:'a'},{id:'d',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Zweite Bälle aus dem Rückraum */
+(function(){const C=4.4;
+  const S={L:[[1.0,'Flanke, die Verteidigerin klärt'],[1.6,'Der Ball kommt in den Rückraum'],[99,'Direkt abschließen, bevor jemand blockt']],
+    w:[[0,322,150]],a1:[[0,200,120],[1.0,206,74],[C,206,74]],d1:[[0,170,80],[1.0,184,52],[C,184,52]],r:[[0,220,214],[1.3,214,192],[C,214,192]],d2:[[0,150,160],[1.6,176,150],[C,176,150]],k:[[0,180,26],[1.7,198,30],[C,198,30]]};
+  S.BALLS=[[[0,308,150],[0.3,308,150]].concat(jtQuad([308,150],[280,40],[192,42],0.4,1.0,6),[[1.45,210,180],[1.55,210,180],[1.9,232,14],[C,232,14]])];
+  A.ajzweite={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);},ents:[{id:'w'},{id:'a1'},{id:'d1',fill:RED},{id:'r'},{id:'d2',fill:RED},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Elfmeter unter Druck */
+(function(){const C=3.6;
+  const S={L:[[0.6,'Ecke vorher festlegen, ruhiger Anlauf'],[1.2,'Nicht auf die Torfrau reagieren'],[99,'Platziert und fest in die gewählte Ecke']],
+    s:[[0,150,170],[0.9,170,134],[C,170,134]],k:[[0,180,22],[1.0,180,22],[1.3,146,26],[C,146,26]]};
+  S.BALLS=[[[0,180,120],[0.95,180,120],[1.3,226,12],[C,226,12]]];
+  A.ajelfmeter={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);el('circle',{cx:180,cy:120,r:2.5,fill:'#FFFFFF'},s);},ents:[{id:'s'},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
+/* Abschluss-Pendel */
+(function(){const C=4.4;
+  const S={L:[[1.0,'Pass von links, Abschluss mit dem ersten Kontakt'],[2.2,'Zurück zur Mitte, sofort der Pass von rechts'],[99,'Viele Abschlüsse in kurzer Zeit, beide Füße']],
+    s:[[0,180,170],[0.5,168,140],[1.2,180,170],[1.7,194,140],[2.4,180,170],[C,180,170]],l:[[0,52,190]],r:[[0,308,190]],k:[[0,180,26],[0.9,160,28],[1.4,180,26],[2.1,200,28],[C,180,26]]};
+  S.BALLS=[[[0,66,188],[0.1,66,188],[0.5,156,146],[0.8,140,14],[C,140,14]],[[0,294,188],[1.3,294,188],[1.7,206,146],[2.0,222,14],[C,222,14]]];
+  A.ajpendel={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);jaBox(s);cone(s,180,186);},ents:[{id:'s'},{id:'l',fill:WAIT},{id:'r',fill:WAIT},{id:'k',fill:NEU}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -6206,6 +6257,76 @@ EX.push(...[
  leicht:['Langsamer Angriff (Stufe 1)','Schmaleres Feld','Größerer Abstand zum Tor'],
  steig:['Normale Form (Stufe 2)','Breiteres Feld','Zeitlimit und Hilfe (Stufe 3)']}
 ].map(e=>Object.assign({},KJG,e)));
+/* ---------- Torabschluss U13 – KM: Inhalte ---------- */
+const KJA={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'abschluss',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'ajkopfball',title:'Kopfballtor nach Flanke',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Kopfball aufs Tor'],['','10–14 Spielerinnen + Torfrau'],['Feld','Strafraum und Flügel'],['Dauer','12 min'],['Material','1 Tor, Bälle']],
+ ziel:'Die Stürmerin läuft diagonal in die Flanke, springt einbeinig ab und köpft den Ball nach unten ins Eck. Im Spiel: Tore per Kopf nach Flanken.',
+ org:['Tor mit Torfrau, Strafraum','Flankengeberinnen an beiden Seiten','Stürmerinnen am Strafraumrand','Für Stufe 2 und 3: eine Verteidigerin'],
+ rot:'Flankengeberin wird Stürmerin, Stürmerin holt den Ball und wird Flankengeberin.',
+ ablauf:['Flanke an den Fünfmeterraum.','Die Stürmerin startet diagonal.','Einbeiniger Absprung, Kopfball nach unten.','Abwechselnd von beiden Seiten.'],
+ stufen:[['Stufe 1 · Zugeworfen','Die Flanke wird aus 8 m zugeworfen.'],['Stufe 2 · Geschlagen mit Verteidigerin','Geschlagene Flanke, eine halbaktive Verteidigerin.'],['Stufe 3 · Zwei Stürmerinnen','Zwei Stürmerinnen gegen eine aktive Verteidigerin, Ansage erster oder zweiter Pfosten.']],
+ coach:[['Anlauf','Diagonal in den Ball laufen, nicht stehen. Erkennbar: Die Stürmerin trifft den Ball im Vorwärtslauf.'],['Technik','Stirn, Hals fest, Augen offen, Ball nach unten drücken. Fehlerbild: Ball mit dem Oberkopf getroffen, er fliegt über das Tor.'],['Absprung','Einbeinig, Arme zur Balance.'],['Ziel','Nach unten ins Eck, gegen die Laufrichtung der Torfrau.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, Flanken abwechselnd','Pro Spielerin: ca. 8–10 Kopfbälle pro Durchgang','Intensität: mittel'],
+ leicht:['Zugeworfen (Stufe 1)','Weicher Ball','Ohne Torfrau'],
+ steig:['Geschlagen mit Verteidigerin (Stufe 2)','Flanken scharf','Zwei Stürmerinnen (Stufe 3)']},
+{id:'ajtorfrau',title:'Allein vor der Torfrau',legend:['spielerin','passgeberin','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','1 gegen Torfrau · Ruhe vor dem Tor'],['','10–14 Spielerinnen + Torfrau'],['Feld','30 m vor dem Tor'],['Dauer','10–12 min'],['Material','1 Tor, Bälle']],
+ ziel:'Die Spielerin läuft nach einem Steilpass allein auf die Torfrau zu, entscheidet ruhig zwischen Schuss und Umspielen und trifft. Im Spiel: freie Chancen sicher verwerten.',
+ org:['Tor mit Torfrau','Passgeberin 30 m vor dem Tor','Schützinnen seitlich versetzt'],
+ rot:'Passgeberin wechselt nach 3 Minuten. Torfrauen nach jedem Durchgang.',
+ ablauf:['Steilpass in den Lauf.','Mitnahme Richtung Tor.','Torfrau bleibt drin: Schuss ins Eck. Torfrau kommt: umspielen.','Ins Tor schieben.'],
+ stufen:[['Stufe 1 · Torfrau bleibt drin','Die Torfrau bleibt auf der Linie.'],['Stufe 2 · Torfrau kommt','Die Torfrau darf herauskommen.'],['Stufe 3 · Verfolgerin','Eine Verfolgerin startet 3 m dahinter, Abschluss in 5 Sekunden.']],
+ coach:[['Kopf hoch','Vor der Entscheidung zur Torfrau schauen. Erkennbar: Die Schützin entscheidet passend zur Torfrau.'],['Umspielen','Ball seitlich vorbei vorlegen, mit Abstand zur Torfrau. Fehlerbild: Die Schützin läuft in die Torfrau hinein.'],['Schuss','Flach und platziert, nicht mit voller Kraft.'],['Ruhe','Nicht zu früh entscheiden.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, zwei Seiten','Pro Spielerin: ca. 6–8 Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Torfrau bleibt drin (Stufe 1)','Kürzere Strecke','Größeres Tor'],
+ steig:['Torfrau kommt (Stufe 2)','Nur schwacher Fuß','Verfolgerin (Stufe 3)']},
+{id:'ajschnell',title:'Schnellschuss 1 gegen 1 im Strafraum',legend:['spielerin','gegner','trainer','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Reaktion · Abschluss unter Druck'],['','10–14 Spielerinnen + Torfrau'],['Feld','Strafraum'],['Dauer','10 min'],['Material','1 Tor, viele Bälle']],
+ ziel:'Zwei Spielerinnen starten auf einen Ball, den die Trainerin in den Strafraum spielt. Wer zuerst dran ist, schließt sofort ab, die andere verteidigt. Im Spiel: Schnelligkeit und Abschluss im Gedränge.',
+ org:['Strafraum mit Tor und Torfrau','Trainerin mit Bällen an der Strafraumgrenze','Zwei Spielerinnen nebeneinander am Elfmeterpunkt'],
+ rot:'Nach jedem Duell stellen sich beide hinten an. Siegerin bekommt einen Punkt.',
+ ablauf:['Die Trainerin spielt einen Ball in den Strafraum.','Beide starten.','Die Erste am Ball schließt sofort ab.','Die andere blockt oder erobert und schließt selbst ab.'],
+ stufen:[['Stufe 1 · Mit Ansage','Die Trainerin ruft die Farbe, die angreift.'],['Stufe 2 · Freies Duell','Beide dürfen angreifen.'],['Stufe 3 · Aus der Bauchlage','Start aus der Bauch- oder Rückenlage, Ball auch hoch oder in den Rücken.']],
+ coach:[['Erster Schritt','Explosiv starten. Erkennbar: Die schnellere Spielerin schließt mit höchstens zwei Kontakten ab.'],['Körper','Körper zwischen Ball und Gegnerin. Fehlerbild: Die Spielerin läuft zum Ball, die Gegnerin schiebt sich dazwischen.'],['Abschluss','Sofort, auch mit der Spitze oder dem schwachen Fuß.'],['Blocken','Die Verteidigerin wirft sich nicht weg, sondern stellt den Schussweg zu.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, Duelle im Takt von 10 Sekunden','Pro Spielerin: ca. 8–10 Duelle pro Durchgang','Intensität: hoch'],
+ leicht:['Mit Ansage (Stufe 1)','Ball langsamer','Ohne Torfrau'],
+ steig:['Freies Duell (Stufe 2)','Abschluss nur direkt','Aus der Bauchlage (Stufe 3)']},
+{id:'ajzweite',title:'Zweite Bälle aus dem Rückraum',legend:['spielerin','gegner','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Rückraum · Direktabschluss'],['','12–16 Spielerinnen + Torfrau'],['Feld','Strafraum + 15 m'],['Dauer','12 min'],['Material','1 Tor, Bälle']],
+ ziel:'Nach einer geklärten Flanke ist die Spielerin im Rückraum bereit, nimmt den zweiten Ball direkt und schließt ab. Im Spiel: Tore nach Abprallern und Kopfballabwehr.',
+ org:['Tor mit Torfrau, Strafraum','Flankengeberin außen','Eine Stürmerin und eine Verteidigerin im Strafraum, Rückraumspielerin am Strafraumrand','Für Stufe 3: zweite Verteidigerin vor dem Strafraum'],
+ rot:'Positionen nach jedem Durchgang im Uhrzeigersinn wechseln.',
+ ablauf:['Flanke in den Strafraum.','Die Verteidigerin klärt (Stufe 1: Trainerin wirft den zweiten Ball).','Die Rückraumspielerin nimmt den Ball direkt.','Abschluss.'],
+ stufen:[['Stufe 1 · Zugeworfen','Die Trainerin wirft den zweiten Ball in den Rückraum.'],['Stufe 2 · Echte Klärung','Die Verteidigerin klärt wirklich, der Ball kommt unberechenbar.'],['Stufe 3 · Blockerin','Eine zweite Verteidigerin startet aus dem Strafraum heraus und blockt.']],
+ coach:[['Position','Am Strafraumrand, leicht versetzt zur Mitte. Erkennbar: Die Rückraumspielerin ist vor jeder Gegnerin am zweiten Ball.'],['Technik','Oberkörper über den Ball, Volley oder Dropkick flach halten. Fehlerbild: Rücklage, der Ball fliegt in den Himmel.'],['Bereit sein','Leicht auf den Fußballen, nicht stehen.'],['Direkt','Kein Annehmen, sofort schießen.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel','Pro Spielerin: ca. 6–8 Abschlüsse pro Durchgang','Intensität: mittel'],
+ leicht:['Zugeworfen (Stufe 1)','Ball springt einmal auf','Ohne Torfrau'],
+ steig:['Echte Klärung (Stufe 2)','Nur schwacher Fuß','Blockerin (Stufe 3)']},
+{id:'ajelfmeter',title:'Elfmeter unter Druck',legend:['spielerin','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Elfmeter · Nervenstärke'],['','Ganze Mannschaft + Torfrauen'],['Feld','Strafraum'],['Dauer','10 min'],['Material','1 Tor, Bälle']],
+ ziel:'Die Spielerin legt ihre Ecke vorher fest, läuft ruhig an und schießt platziert und fest, auch wenn die Mannschaft zuschaut und Druck macht. Im Spiel: Elfmeter und Elfmeterschießen.',
+ org:['Tor mit Torfrau','Mannschaft am Mittelkreis oder Strafraumrand','Jede Spielerin mit einem Ball'],
+ rot:'Torfrauen wechseln nach 5 Schüssen.',
+ ablauf:['Die Schützin geht allein vom Mittelkreis zum Punkt.','Ecke festlegen, Ball hinlegen.','Ruhiger Anlauf, Schuss.','Zurück zur Mannschaft.'],
+ stufen:[['Stufe 1 · Ohne Druck','Schuss ohne Zuschauer, Ecke vorher der Trainerin sagen.'],['Stufe 2 · Mit Zuschauerinnen','Die Mannschaft schaut zu und darf laut sein.'],['Stufe 3 · Nach Belastung','Elfmeter direkt nach einem Sprint, mit Elfmeterschießen-Modus (Team gegen Team).']],
+ coach:[['Ecke festlegen','Vor dem Anlauf entscheiden und nicht mehr ändern. Erkennbar: Die Schützin schaut nicht mehr zur Torfrau, wenn sie anläuft.'],['Ruhiger Anlauf','Gleichmäßig, nicht zu lang. Fehlerbild: Schneller, unruhiger Anlauf, der Schuss geht neben das Tor.'],['Technik','Innenspann, Standbein neben den Ball, Oberkörper über dem Ball.'],['Routine','Immer der gleiche Ablauf: Ball hinlegen, Schritte zurück, Atmen, Anlauf.']],
+ last:['Dauer: 2 Runden, je 1 Elfmeter pro Spielerin','Wartezeit: lang, aber bewusst (Druck aufbauen)','Pro Spielerin: 2–4 Elfmeter','Intensität: niedrig (mental hoch)'],
+ leicht:['Ohne Druck (Stufe 1)','Ohne Torfrau auf Ziel-Ecken','Kürzere Distanz'],
+ steig:['Mit Zuschauerinnen (Stufe 2)','Torfrau darf vorher eine Ecke zeigen','Nach Belastung (Stufe 3)']},
+{id:'ajpendel',title:'Abschluss-Pendel',legend:['spielerin','passgeberin','torfrau','ball','grosstor'],
+ chips:[['Schwerpunkt','Direktabschluss · beide Füße'],['','8–12 Spielerinnen + Torfrau'],['Feld','Strafraum'],['Dauer','10–12 min'],['Material','1 Tor, viele Bälle, 1 Hütchen']],
+ ziel:'Die Schützin bekommt abwechselnd von links und rechts einen Pass und schließt jeweils mit dem ersten Kontakt ab. Im Spiel: schnelle Abschlüsse mit beiden Füßen.',
+ org:['Tor mit Torfrau','Hütchen am Elfmeterpunkt','Zwei Passgeberinnen mit Bällen links und rechts am Strafraumrand','Schützinnen hinter dem Hütchen'],
+ rot:'Nach 6 Abschlüssen wechselt die Schützin, nach 3 Minuten die Passgeberinnen.',
+ ablauf:['Pass von links, Abschluss direkt.','Zurück um das Hütchen.','Pass von rechts, Abschluss direkt.','6 Abschlüsse, dann Wechsel.'],
+ stufen:[['Stufe 1 · Mit Annahme','Annahme, dann Schuss.'],['Stufe 2 · Direkt','Abschluss mit dem ersten Kontakt.'],['Stufe 3 · Mit Störerin','Eine Störerin läuft der Schützin hinterher. Pass auch halbhoch (Volley).']],
+ coach:[['Körper zum Ball','Hüfte zur Passgeberin öffnen, dann ins Tor drehen. Erkennbar: Der Schuss geht flach ins lange Eck.'],['Fuß wählen','Pass von links: rechter Fuß, Pass von rechts: linker Fuß. Fehlerbild: Die Schützin weicht immer auf den starken Fuß aus.'],['Tempo','Sofort zurück zum Hütchen, nicht auslaufen.'],['Passgeberinnen','Flach und genau vor den Elfmeterpunkt.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: kurz, kleine Gruppen','Pro Spielerin: ca. 10–12 Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Mit Annahme (Stufe 1)','Pass langsamer','Ohne Torfrau'],
+ steig:['Direkt (Stufe 2)','Halbhohe Pässe','Mit Störerin (Stufe 3)']}
+].map(e=>Object.assign({},KJA,e)));
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
@@ -8917,6 +9038,60 @@ konter:{ziel:'Die Spielerin schaltet nach dem Zuspiel der Trainerin sofort um, k
  last:['Umfang: 6 Konter pro Gruppe, maximal 8–10 Sekunden pro Aktion','Pause: 2 Minuten zwischen den Kontern (vollständige Erholung)','Wartezeit: in Dreiergruppen kurz','Intensität: maximal'],
  leicht:['Großer Vorsprung (Stufe 1)','Kürzere Strecke','Ohne Torfrau'],
  steig:['5 m Vorsprung (Stufe 2)','Abschluss nur nach Pass','3 gegen 2 mit Gegenkonter (Stufe 3)']},
+slalomschuss:{ziel:'Die Spielerin dribbelt mit hohem Tempo durch den Stangenslalom, legt sich den Ball nach der letzten Stange in den Schussraum vor und schließt aus der Bewegung platziert ab. Im Spiel: nach einem Dribbling sauber abschließen.',
+ stufen:[['Stufe 1 · Ohne Zeitdruck','Slalom und Abschluss im eigenen Tempo.'],['Stufe 2 · Gegen die Uhr','Abschluss in 5 Sekunden nach Start.'],['Stufe 3 · Nachlaufende Verteidigerin','Eine Verteidigerin startet 3 m dahinter, wenn die Schützin die erste Stange erreicht.']],
+ coach:[['Ball eng führen','Im Slalom viele kleine Kontakte, danach vorlegen. Erkennbar: Die Schützin muss nach der letzten Stange nicht abbremsen.'],['Schusstechnik','Standbein neben den Ball, Oberkörper über den Ball. Fehlerbild: Oberkörper zurück, der Ball fliegt über das Tor.'],['Ziel','Flach in die lange Ecke.'],['Nachsetzen','Nach dem Schuss auf den Abpraller gehen.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, zwei Parcours','Pro Spielerin: ca. 6–8 Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Zeitdruck (Stufe 1)','Weniger Stangen','Ohne Torfrau'],
+ steig:['Gegen die Uhr (Stufe 2)','Abschluss mit dem schwachen Fuß','Nachlaufende Verteidigerin (Stufe 3)']},
+drehschuss:{ziel:'Die Stürmerin bekommt den Ball mit dem Rücken zum Tor, schaut vor der Annahme über die Schulter, dreht mit dem ersten Kontakt an der Gegnerin vorbei auf und schließt mit dem zweiten Kontakt ab. Im Spiel: als Mittelstürmerin aus der Drehung treffen.',
+ stufen:[['Stufe 1 · Passive Gegnerin','Die Gegnerin steht hinter der Stürmerin und bewegt sich nicht.'],['Stufe 2 · Halbaktiv','Die Gegnerin folgt der Drehung, ohne zu tacklen.'],['Stufe 3 · Aktiv mit Entscheidung','Aktive Gegnerin. Die Stürmerin entscheidet: aufdrehen oder auf eine nachrückende Spielerin klatschen lassen.']],
+ coach:[['Schulterblick','Vor der Annahme: Wo steht die Gegnerin? Erkennbar: Die Stürmerin dreht immer zur freien Seite.'],['Annahme','Offen, weg von der Gegnerin. Fehlerbild: Annahme frontal, danach braucht sie zwei weitere Kontakte zum Drehen.'],['Abschluss','Schnell, bevor die Gegnerin wieder dran ist.'],['Körper','Gegnerin mit dem Körper auf Abstand halten.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, zwei Stationen','Pro Spielerin: ca. 6–8 Abschlüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Passive Gegnerin (Stufe 1)','Pass langsamer','Größere Distanz zur Gegnerin'],
+ steig:['Halbaktiv (Stufe 2)','Abschluss direkt nach der Drehung','Aktiv mit Entscheidung (Stufe 3)']},
+kombischuss:{ziel:'Drei Spielerinnen kombinieren über die dritte: Pass auf die Wand, Ablage, Steilpass in den Lauf und Abschluss mit dem ersten Kontakt. Im Spiel: über die dritte Spielerin hinter die Abwehr kommen und treffen.',
+ stufen:[['Stufe 1 · Mit Annahme','Die Schützin darf den Steilpass annehmen und dann schießen.'],['Stufe 2 · Direkt','Abschluss mit dem ersten Kontakt.'],['Stufe 3 · Gegnerin hinter der Wand','Eine halbaktive Gegnerin hinter der Wand. Steht sie eng, Ablage. Bleibt sie weg, dreht die Wand auf.']],
+ coach:[['Timing','A startet, wenn B den Ball ablegt. Erkennbar: A bekommt den Steilpass im vollen Lauf.'],['Steilpass','Vor die Füße in den Lauf. Fehlerbild: Der Pass kommt auf die Füße, A muss abbremsen.'],['Ablage','Weich und mit der Innenseite.'],['Abschluss','Mit dem ersten Kontakt, flach.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, zwei Seiten','Pro Spielerin: ca. 6–8 Abschlüsse pro Durchgang','Intensität: mittel'],
+ leicht:['Mit Annahme (Stufe 1)','Kürzere Abstände','Ohne Torfrau'],
+ steig:['Direkt (Stufe 2)','Spiegelverkehrt','Gegnerin hinter der Wand (Stufe 3)']},
+flankenwelle:{ziel:'Die Außenspielerin flankt, im Strafraum werden erster Pfosten, zweiter Pfosten und Rückraum besetzt, die Spielerin im richtigen Raum schließt ab. Im Spiel: Strafraumbesetzung bei Flanken.',
+ stufen:[['Stufe 1 · Ohne Verteidigerin','Flanke aus dem Lauf, drei Läufe ohne Gegnerin.'],['Stufe 2 · Eine Verteidigerin','Eine Verteidigerin im Strafraum.'],['Stufe 3 · Zwei Verteidigerinnen und Halbfeld','Zwei Verteidigerinnen, Flanke aus dem Halbfeld oder direkt nach Doppelpass.']],
+ coach:[['Läufe','Nicht zu früh, gegenläufig starten. Erkennbar: Erster Pfosten, zweiter Pfosten und Rückraum sind besetzt, wenn die Flanke kommt.'],['Flanke','Auf den Raum, nicht auf die Spielerin. Fehlerbild: Die Flanke geht in die Mitte zur Torfrau.'],['Rückraum','Auf den Abpraller vorbereitet sein.'],['Abschluss','Kopf oder Fuß, aufs Tor drücken.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Flanken abwechselnd','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Verteidigerin (Stufe 1)','Flanke aus dem Stand','Zwei Läufe'],
+ steig:['Eine Verteidigerin (Stufe 2)','Flanke aus dem Halbfeld','Zwei Verteidigerinnen (Stufe 3)']},
+dreizweischuss:{ziel:'Drei Angreiferinnen spielen gegen zwei Verteidigerinnen schnell in den Strafraum, finden die freie Spielerin und schließen ab. Im Spiel: Überzahl vor dem Tor in einen Treffer verwandeln.',
+ stufen:[['Stufe 1 · 3 gegen 1','Nur eine Verteidigerin.'],['Stufe 2 · 3 gegen 2','Normale Form, Abschluss in 8 Sekunden.'],['Stufe 3 · Nachlaufende','Eine dritte Verteidigerin startet 2 Sekunden später. Direktabschluss zählt doppelt.']],
+ coach:[['Breite','Abstand halten, nicht zusammenlaufen. Erkennbar: Die zwei Verteidigerinnen können nicht alle drei decken.'],['Tempo','In 8 Sekunden zum Abschluss. Fehlerbild: Querpässe vor dem Strafraum, die Verteidigerinnen sortieren sich.'],['Freie Spielerin','Den Pass spielen, wenn eine Verteidigerin sich festlegt.'],['Abschluss','Die erste freie Chance nutzen.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Dreiergruppen','Pro Spielerin: ca. 6–8 Angriffe pro Durchgang','Intensität: hoch'],
+ leicht:['3 gegen 1 (Stufe 1)','Mehr Zeit','Breiteres Feld'],
+ steig:['3 gegen 2 (Stufe 2)','Kontaktbegrenzung','Nachlaufende (Stufe 3)']},
+strafraumspiel:{ziel:'Die Spielerin schließt im 2 gegen 2 im doppelten Strafraum bei jeder Gelegenheit ab und setzt bei Abprallern nach. Im Spiel: Mut zum Abschluss unter Druck.',
+ stufen:[['Stufe 1 · Mit Anspielerinnen frei','Anspielerinnen mit zwei Kontakten.'],['Stufe 2 · Anspielerinnen direkt','Anspielerinnen nur direkt.'],['Stufe 3 · 3 gegen 3','3 gegen 3, Tor nach Kopfball oder Direktabschluss zählt doppelt.']],
+ coach:[['Mut','Schießen, wann immer es geht. Erkennbar: Jede Spielerin schließt mehrmals pro Durchgang ab.'],['Abpraller','Nachsetzen, nicht stehen bleiben. Fehlerbild: Alle schauen dem Schuss hinterher.'],['Torfrau','Schnell wieder anspielen.'],['Platz schaffen','Kurze Täuschung, dann schießen.']],
+ last:['Dauer: 6 × 90 Sekunden, 90 Sekunden Pause','Wartezeit: kurz, Paare wechseln','Pro Spielerin: ca. 6–10 Abschlüsse pro Durchgang','Intensität: sehr hoch'],
+ leicht:['Anspielerinnen frei (Stufe 1)','Größeres Feld','Joker'],
+ steig:['Anspielerinnen direkt (Stufe 2)','Tor nach Kopfball doppelt','3 gegen 3 (Stufe 3)']},
+nachschuss:{ziel:'Die erste Spielerin schießt, die zweite startet mit dem Schuss und verwertet den Abpraller. Im Spiel: viele Tore fallen im Nachschuss.',
+ stufen:[['Stufe 1 · Abpraller zugeworfen','Die Trainerin wirft den Abpraller zu.'],['Stufe 2 · Echter Abpraller','Normale Form mit Torfrau.'],['Stufe 3 · Verteidigerin setzt nach','Eine Verteidigerin startet ebenfalls mit dem Schuss und will den Abpraller klären.']],
+ coach:[['Start','Mit dem Schuss starten, nicht abwarten. Erkennbar: Die Nachsetzende ist vor der Torfrau am Abpraller.'],['Laufweg','Richtung zweiter Pfosten. Fehlerbild: Die Nachsetzende läuft zum Ball statt in den Raum, in den er abprallt.'],['Abschluss','Direkt, flach.'],['Schützin','Flach und aufs Tor, damit es Abpraller gibt.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, zwei Schlangen','Pro Spielerin: ca. 8–10 Schüsse oder Nachschüsse pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Abpraller zugeworfen (Stufe 1)','Kürzere Distanz','Ohne Torfrau'],
+ steig:['Echter Abpraller (Stufe 2)','Schuss nach Dribbling','Verteidigerin setzt nach (Stufe 3)']},
+cutback:{ziel:'Die Flügelspielerin bricht bis zur Grundlinie durch und legt flach in den Rückraum zurück. Eine Spielerin zieht zum ersten Pfosten, die andere schließt aus dem Rückraum ab. Im Spiel: der Pass in den Rückraum ist die gefährlichste Flanke.',
+ stufen:[['Stufe 1 · Ohne Verteidigerin','Durchbruch und Zurücklegen ohne Gegnerin.'],['Stufe 2 · Mit Verteidigerin','Eine Verteidigerin im Strafraum folgt der Spielerin zum ersten Pfosten.'],['Stufe 3 · Entscheidung','Zwei Verteidigerinnen, die Flügelspielerin entscheidet: erster Pfosten oder Rückraum.']],
+ coach:[['Timing Rückraum','Die Rückraum-Spielerin kommt spät. Erkennbar: Sie ist frei, wenn der Ball kommt.'],['Pass','Flach, hinter die Verteidigerinnen. Fehlerbild: Der Ball geht hoch oder direkt auf die Torfrau.'],['Erster Pfosten','Zieht Verteidigerin und Torfrau mit.'],['Abschluss','Innenseite, platziert.']],
+ last:['Dauer: 3 × 4 Minuten, 90 Sekunden Pause','Wartezeit: mittel, Seiten abwechselnd','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Ohne Verteidigerin (Stufe 1)','Flügelspielerin startet näher an der Grundlinie','Ohne Torfrau'],
+ steig:['Mit Verteidigerin (Stufe 2)','Abschluss nur direkt','Entscheidung (Stufe 3)']},
+distanzschuss:{ziel:'Die Spielerin nimmt den Pass aus der Tiefe in den Raum mit und schießt aus 18–22 m flach ins Eck. Im Spiel: aus der zweiten Reihe gefährlich werden.',
+ stufen:[['Stufe 1 · Passive Verteidigerin','Die Verteidigerin steht nur im Raum.'],['Stufe 2 · Halbaktiv','Die Verteidigerin läuft an, ohne zu blocken.'],['Stufe 3 · Direkt und schwacher Fuß','Schuss direkt ohne Mitnahme oder mit dem schwachen Fuß, Verteidigerin aktiv.']],
+ coach:[['Mitnahme','Nach vorne in den Schussraum. Erkennbar: Der zweite Kontakt ist schon der Schuss.'],['Technik','Vollspann, Fußspitze runter, Oberkörper über den Ball. Fehlerbild: Rücklage, der Ball fliegt weit über das Tor.'],['Ziel','Flach ins Eck ist schwerer zu halten.'],['Nachsetzen','Nach dem Schuss auf den Abpraller.']],
+ last:['Dauer: 3 × 3 Minuten, 1 Minute Pause','Wartezeit: mittel, zwei Schlangen','Pro Spielerin: ca. 8–10 Schüsse pro Durchgang','Intensität: mittel'],
+ leicht:['Passive Verteidigerin (Stufe 1)','Kürzere Distanz','Ohne Torfrau'],
+ steig:['Halbaktiv (Stufe 2)','Schuss direkt','Schwacher Fuß (Stufe 3)']},
 };
 EX.forEach(e=>{const u=UPG_JKM[e.id];if(!u)return;const {orgAdd,...rest}=u;Object.assign(e,rest,{saeulen:true});if(orgAdd&&Array.isArray(e.org))e.org=e.org.concat(orgAdd);});
 
@@ -9059,6 +9234,11 @@ function catsOf(e,lv){const h=HIDECAT[lv]||[];return (e.catsLv&&e.catsLv[lv])||e
   J('usrueckzug','Für U13–KM: Blau mit 4, Rot mit 3 Konterspielerinnen, alle Blauen müssen in 5 Sekunden hinter dem Ball sein.');
   J('uszone','Für U13–KM: 4 gegen 4 + 2 Zielspielerinnen, 4 Sekunden nach Ballgewinn, Punkt nur mit Nachrücken (Stufe 3 als Grundform).');
   J('usendlos','Für U13–KM: 3 gegen 2 auf 40 m, Abschluss in 8 Sekunden, Nachlaufende ab Beginn (Stufe 3 als Grundform).');
+  /* Torabschluss */
+  J('prallschuss','Für U13–KM: Prallpass scharf, Abschluss nur direkt, ab Stufe 2 eine Verteidigerin hinter der Wand.');
+  J('flanke','Für U13–KM: Flanke aus dem vollen Lauf, zwei Stürmerinnen gegen eine Verteidigerin, Flanke auf Ansage erster Pfosten, zweiter Pfosten oder Rückraum.');
+  J('schusswettkampf','Für U13–KM: 3 gegen 3 auf 30 × 25 m mit zwei Torfrauen, Abschluss in 6 Sekunden nach Ballgewinn, Tor von außerhalb einer Zone doppelt.');
+  J('direktschuss','Für U13–KM: Pass scharf in den Lauf, Abschluss nur direkt, abwechselnd links und rechts, ab Stufe 3 mit Verfolgerin.');
 })();
 const LKEY='uebungsmappe-altersbereich';
 let level=null;try{level=localStorage.getItem(LKEY);}catch(_){}
