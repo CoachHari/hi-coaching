@@ -8583,14 +8583,17 @@ function fix(s){
   if(!Array.isArray(s.games))s.games=[];
   return s;
 }
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.players)&&s.lineup)return fix(s);}catch(e){}return demoState();}
+function emptyState(){return {demo:false,v:0,players:[],lineup:{formation:'1-3-5-2',gegner:'',datum:'',slots:Array(11).fill(null),bank:[]},mp:mpDefault(),games:[]};}
+/* Angemeldet (Sync): nie den Beispielkader zeigen, sondern auf den Online-Kader warten */
+function signedIn(){try{return Object.keys(localStorage).some(k=>/^sb-.+-auth-token$/.test(k));}catch(e){return false;}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.players)&&s.lineup){if(s.demo&&signedIn())return emptyState();return fix(s);}}catch(e){}return signedIn()?emptyState():demoState();}
 let S=load();
 let saveT=0;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(sync.col&&(S.ts||0)>sync.pushed)sync.schedule();}
 function saveSoon(){S.ts=Date.now();clearTimeout(saveT);saveT=setTimeout(save,300);}
 function touch(){S.v=(S.v||0)+1;S.ts=Date.now();save();}
 const sync={col:null,pushed:0,timer:0,schedule(){clearTimeout(sync.timer);sync.timer=setTimeout(sync.push,1200);},
-  async push(){sync.timer=0;if(!sync.col)return;const ts=S.ts||Date.now();if(!S.ts)S.ts=ts;try{await sync.col.doc('state').set(JSON.parse(JSON.stringify(S)));sync.pushed=ts;}catch(e){}}};
+  async push(){sync.timer=0;if(!sync.col||S.demo)return;const ts=S.ts||Date.now();if(!S.ts)S.ts=ts;try{await sync.col.doc('state').set(JSON.parse(JSON.stringify(S)));sync.pushed=ts;}catch(e){}}};
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -8785,7 +8788,7 @@ $('kb-demo').addEventListener('click',e=>{
   if(e.target.id==='kb-demo-clear')a.innerHTML='<span class="kb-confirm">Alle Beispiel-Spielerinnen und Beispielspiele löschen? <button type="button" class="kb-btn kb-danger" id="kb-demo-yes">Ja, löschen</button><button type="button" class="kb-btn kb-plain" id="kb-demo-no">Nein</button></span>';
   if(e.target.id==='kb-demo-no')a.innerHTML='<button type="button" class="kb-btn" id="kb-demo-clear">Beispiel löschen</button>';
   if(e.target.id==='kb-demo-yes'){const mp=S.mp;mp.uti=[];mp.capt=null;STD.forEach(([k])=>{mp.std[k].tk=mp.std[k].tk.filter(t=>!t.pid);});
-    S={demo:false,v:(S.v||0)+1,players:[],lineup:{formation:S.lineup.formation,gegner:'',datum:'',slots:Array(11).fill(null),bank:[]},mp,games:[]};save();active=0;renderAll();}
+    S={demo:false,v:(S.v||0)+1,ts:Date.now(),players:[],lineup:{formation:S.lineup.formation,gegner:'',datum:'',slots:Array(11).fill(null),bank:[]},mp,games:[]};save();active=0;renderAll();}
 });
 
 /* ---------- Aufstellung ---------- */
@@ -9310,6 +9313,8 @@ window.__kbShow=function(){showTab(tab);};
     let first=false;try{first=localStorage.getItem('hi-kabine-synced')!=='1';localStorage.setItem('hi-kabine-synced','1');}catch(e){}
     if(!sync.col){sync.col=col;$('kb-store').textContent='Synchronisiert: Kader, Spiele und Matchplan sind auf allen Geräten gleich, auf denen du angemeldet bist.';}
     if(!r||!Array.isArray(r.players)){if(!S.ts)S.ts=Date.now();sync.push();return;}
+    /* Beispielkader auf dem Server nie übernehmen, sondern mit dem echten (oder leeren) Kader dieses Geräts überschreiben */
+    if(r.demo){if(!S.demo){S.ts=Math.max(S.ts||0,(r.ts||0)+1);try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}sync.push();renderAll();}return;}
     if(first){const remoteEmpty=r.demo||!r.players.length,localEmpty=S.demo||!S.players.length;
       if(remoteEmpty&&!localEmpty){S.ts=Date.now();sync.push();}
       else if(!remoteEmpty&&!localEmpty){const m=merge(S,r);adopt(m);S.ts=Date.now();save();sync.push();}
