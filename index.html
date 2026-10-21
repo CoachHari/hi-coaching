@@ -3266,6 +3266,17 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
     ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'b5'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'r5',fill:RED},{id:'tr',fill:'#2C2C2A',label:'T'}],sc:{a:S}};
 })();
 
+/* ---------- Aufwärmen alle Bereiche: Raute Dribbeln und Passen ---------- */
+(function(){const C=4.4,P={A:[96,180],B:[180,96],Cc:[264,180],D:[180,264]};
+  const S={L:[[1.6,'Beide Seiten starten gleichzeitig: Dribbling zum nächsten Hütchen rechts'],[2.4,'Pass zum Starthütchen gegenüber'],[99,'Dem Pass hinterherlaufen und hinten anstellen']],
+    a1:[[0,76,180],[0.5,106,208],[1.0,138,232],[1.6,166,254],[2.4,170,258],[3.8,312,196],[C,316,180]],a2:[[0,52,180],[0.5,52,180],[1.0,76,180],[C,76,180]],
+    c1:[[0,284,180],[0.5,254,152],[1.0,222,128],[1.6,194,106],[2.4,190,102],[3.8,48,164],[C,44,180]],c2:[[0,308,180],[0.5,308,180],[1.0,284,180],[C,284,180]]};
+  S.BALLS=[jrSeq(S,[['d','a1',0,1.6],['p','a1','c2',1.8,2.4]],C),jrSeq(S,[['d','c1',0,1.6],['p','c1','a2',1.8,2.4]],C)];
+  A.wraute={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);Object.values(P).forEach(([x,y])=>cone(s,x,y));
+      el('path',{d:'M96 180 L180 96 L264 180 L180 264 Z',fill:'none',stroke:'#FFFFFF','stroke-width':'1','stroke-dasharray':'4 6',opacity:'.35'},s);txt(s,130,130,'middle','12').textContent='5 m';},
+    ents:[{id:'a1'},{id:'a2'},{id:'c1'},{id:'c2'}],sc:{a:S}};
+})();
+
 /* ---------- Schuss Bambini – U9 ---------- */
 const mtor=(s,x,y,w,h,col)=>el('rect',{x,y,width:w,height:h,rx:2,fill:col?col:'rgba(255,255,255,.25)','fill-opacity':col?'.85':'1',stroke:'#FFFFFF','stroke-width':'2'},s);
 const GS4=[{g:[180,14],in:[180,20],spot:[180,96],r:[156,6,48,14],hor:1},{g:[346,180],in:[340,180],spot:[264,180],r:[340,156,14,48],hor:0},
@@ -6364,6 +6375,19 @@ EX.push(...[
  leicht:['Mit Annahme (Stufe 1)','Pass langsamer','Ohne Torfrau'],
  steig:['Direkt (Stufe 2)','Halbhohe Pässe','Mit Störerin (Stufe 3)']}
 ].map(e=>Object.assign({},KJA,e)));
+/* ---------- Aufwärmen alle Bereiche: Raute Dribbeln und Passen ---------- */
+EX.push({id:'wraute',cat:'aufwaermen',lv:['kinder','u12','jugend','km'],saeulen:true,rotTitle:'Wechsel',lastTitle:'Dauer',title:'Raute: Dribbeln und Passen',legend:['spielerin','ball','cone'],
+ chips:[['Schwerpunkt','Ballführung · Passen · Aktivierung'],['','4 Spielerinnen pro Raute, bei mehr Spielerinnen mehrere Rauten'],['Feld','Raute aus 4 Hütchen, je 5 m Abstand'],['Dauer','8–12 min'],['Material','4 Hütchen und 2 Bälle pro Raute']],
+ ziel:'Die Spielerin dribbelt mit der Technik, die die Trainerin vorgibt, zum nächsten Hütchen, passt genau zum Starthütchen gegenüber und läuft ihrem Pass hinterher. Im Spiel: Ballführung und Passen werden aufgewärmt, das Tempo steigt von Runde zu Runde.',
+ org:['Raute aus 4 Hütchen, Abstand zwischen den Hütchen 5 m','Je 2 Spielerinnen an zwei gegenüberliegenden Hütchen (Start links und rechts), die vordere mit Ball','Ideal 4 Spielerinnen pro Raute, bei mehr Spielerinnen mehrere Rauten nebeneinander'],
+ rot:'Nach dem Pass läuft die Spielerin zu dem Hütchen, zu dem sie gepasst hat, und stellt sich hinten an. Nach 2–3 Minuten die Richtung wechseln (Dribbling nach links).',
+ ablauf:['Beide Seiten starten gleichzeitig.','Dribbling zum nächsten Hütchen rechts, mit der Vorgabe der Trainerin (z. B. Innenseite, Außenseite, Sohle).','Vom Hütchen flacher Pass zum Starthütchen gegenüber.','Dem Pass hinterherlaufen und hinten anstellen, optional mit Laufschule (Kniehebelauf, Anfersen, seitlich, rückwärts).'],
+ stufen:[['Stufe 1 · Einfach und schnell','Dribbling nur mit der Innenseite oder frei, Pass mit Annahme. Einfache Aufgabe, deshalb mehr Tempo.'],['Stufe 2 · Technikvorgaben','Die Trainerin gibt die Technik vor: Sohle, Außenseite, Übersteiger, Richtungswechsel am Hütchen. Schwierigere Aufgabe, deshalb weniger Tempo, dafür sauber.'],['Stufe 3 · Direkt und Laufschule','Pass aus dem Dribbling ohne Stoppen, Annahme mit dem ersten Kontakt in die Dribbelrichtung, auf dem Rückweg Laufschule. Zum Schluss mit hohem Tempo.']],
+ coach:[['Tempo passend zur Aufgabe','Einfache Übung, mehr Tempo. Komplizierte Übung, weniger Tempo. Erkennbar: Die Technik bleibt sauber, der Ball springt nicht weg.'],['Ball eng führen','Kleine Kontakte, Ball nah am Fuß, auch bei der Technikvorgabe.'],['Pass','Flach und genau in den Fuß der Wartenden. Fehlerbild: Der Pass ist zu fest oder ungenau, die Wartende muss dem Ball hinterherlaufen.'],['Kopf hoch','Vor dem Pass kurz schauen, die Gegenseite startet gleichzeitig.'],['Hinterherlaufen','Nach dem Pass sofort los, nicht stehen bleiben.']],
+ last:['Dauer: 3–4 Runden à 2–3 Minuten, Intensität von Runde zu Runde steigern','Wartezeit: kurz, je eine Wartende pro Starthütchen','Pro Spielerin: ca. 40–60 Ballkontakte','Intensität: niedrig beginnend, am Ende mittel bis hoch'],
+ leicht:['Einfach und schnell (Stufe 1)','Abstand 4 m','Dribbling frei, ohne Technikvorgabe'],
+ steig:['Technikvorgaben (Stufe 2)','Nur schwacher Fuß','Direkt und Laufschule (Stufe 3)','Zwei Bälle pro Seite, die nächste startet schon beim Pass'],
+ ad:{kinder:'Für Bambini–U9: Hütchen 4 m, Dribbling frei oder „Ball eng am Fuß“, Pass flach mit der Innenseite, Annahme ruhig mit der Sohle. Auf dem Rückweg statt Laufschule Tiersprünge (Hase, Frosch, Storch). Lieber mehr Rauten, damit höchstens 4 Kinder pro Raute stehen.',u12:'Für U10–U12: Technikvorgaben einfach halten (Innenseite, Außenseite, Sohle), Annahme mit dem ersten Kontakt in die Dribbelrichtung, Laufschule kurz und sauber.'}});
 /* ---------- Rondo U13 – KM: Feldwechsel-Rondo 5 gegen 2 ---------- */
 EX.push(Object.assign({},KJR,{id:'rjfeldwechsel',title:'Feldwechsel-Rondo 5 gegen 2',legend:['teamblau','teamrot','trainer','minitor','ball'],
  catsLv:{jugend:['rondo','umschalten'],km:['rondo','umschalten']},
