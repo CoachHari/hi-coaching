@@ -1074,6 +1074,8 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-tbl .kb-n{min-width:26px;height:24px;font-size:14px}
 .kb-pct{display:inline-block;vertical-align:middle;width:70px;height:6px;border-radius:3px;background:rgba(255,255,255,.12);margin-right:8px;overflow:hidden}
 .kb-pct i{display:block;height:100%;background:var(--kb-gold)}
+.kb-res.o{background:rgba(255,255,255,.08);border:1px dashed rgba(255,255,255,.35);font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.kb-glh{margin:18px 0 8px;font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:15px;color:var(--kb-gold)}
 /* ---------- Ende Kabine ---------- */
 </style>
 
@@ -10684,6 +10686,29 @@ const sync={col:null,pushed:0,timer:0,schedule(){clearTimeout(sync.timer);sync.t
       try{if(op==='del')await sync.col.doc('g_'+id).delete();else if(g)await sync.col.doc('g_'+id).set(JSON.parse(JSON.stringify(g)));delete S.gq[id];}catch(e){break;}}
     }finally{sync.gbusy=false;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}}};
 function queueGame(id,op){if(!S.gq)S.gq={};S.gq[id]=op;}
+/* Spielplan Salzburger Frauenliga 2026/27 laut ÖFB (Stand 23.10.2026, ohne Hallenbewerbe): Datum, Uhrzeit, Gegner, Heim, Wettbewerb, Tore FCB, Tore Gegner */
+const FIXTURES=[
+ ['2026-08-29','10:30','SG Europark Taxham',0,'Liga',3,0],['2026-09-09','19:00','SG Tennengau',1,'Liga',1,0],['2026-09-12','14:30','USK Elsbethen',0,'Liga',11,0],
+ ['2026-09-19','16:30','USK Hof',1,'Liga',8,0],['2026-09-23','19:15','USC Eugendorf',0,'Liga',0,0],['2026-10-04','16:30','FC Pinzgau Saalfelden Campus',0,'Liga',0,0],
+ ['2026-10-10','14:00','FC Schladming',1,'Liga',5,0],['2026-10-17','15:30','SG Europark Taxham',1,'Liga',6,0],
+ ['2026-10-26','14:00','USK Elsbethen',0,'Cup'],['2026-10-31','16:15','SG Tennengau',0,'Liga'],['2026-11-07','12:00','USK Elsbethen',1,'Liga'],
+ ['2026-11-15','14:00','USK Hof',0,'Liga'],['2026-11-18','19:00','USC Eugendorf',1,'Liga'],['2027-03-27','15:00','FC Pinzgau Saalfelden Campus',1,'Liga'],
+ ['2027-04-04','16:00','FC Schladming',0,'Liga'],['2027-04-11','16:00','USK Hof',0,'Liga'],['2027-04-18','16:00','USC Eugendorf',1,'Liga'],
+ ['2027-04-25','16:00','FC Schladming',0,'Liga'],['2027-05-02','17:00','USK Elsbethen',0,'Liga'],['2027-05-08','17:00','SG Europark Taxham',1,'Liga']];
+function seedFixtures(remote){
+  if(S.demo||S.seed2627||(remote&&remote.seed2627))return false;
+  FIXTURES.forEach(([datum,zeit,gegner,heim,wettb,us,them])=>{
+    const id='sfl2627-'+datum.replace(/-/g,''),played=us!=null;
+    const ex=S.games.find(g=>g.id===id)||S.games.find(g=>g.datum===datum);
+    if(ex){
+      let ch=false;const fill=(k,v)=>{if(ex[k]==null||ex[k]===''){ex[k]=v;ch=true;}};
+      fill('zeit',zeit);fill('heim',!!heim);fill('wettb',wettb);if(played){fill('us',String(us));fill('them',String(them));}
+      if(ch){ex.upd=Date.now();queueGame(ex.id,'set');}return;}
+    S.games.push({id,datum,zeit,gegner,heim:!!heim,wettb,offen:!played,formation:S.lineup.formation||'1-3-5-2',dauer:90,us:played?String(us):'',them:played?String(them):'',starters:[],bank:[],subs:[],goals:[],upd:Date.now()});
+    queueGame(id,'set');
+  });
+  S.seed2627=true;touch();sync.flushGames();return true;
+}
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -10709,9 +10734,9 @@ function minutesIn(g,pid){
   return played?Math.max(1,tot):0;
 }
 function statsFor(pid,season){
-  const gs=S.games.filter(g=>seasonOf(g.datum)===season);
+  const gs=S.games.filter(g=>seasonOf(g.datum)===season&&!g.offen);
   let apps=0,min=0,goals=0,ast=0;
-  const total=gs.filter(g=>!g.forfeit).reduce((a,g)=>a+(+g.dauer||90),0);
+  const total=gs.filter(g=>!g.forfeit&&(g.starters||[]).length).reduce((a,g)=>a+(+g.dauer||90),0);
   gs.forEach(g=>{const m=minutesIn(g,pid);if(m>0){apps++;min+=m;}(g.goals||[]).forEach(t=>{if(t.pid===pid)goals++;if(t.ast===pid)ast++;});});
   return{apps,min,total,pct:total?Math.round(min/total*100):0,avg:apps?Math.round(min/apps):0,goals,ast};
 }
@@ -11335,25 +11360,28 @@ $('kb-mp-pdf2').onclick=e=>{$('kb-mp-pdf').scrollIntoView({block:'center'});mpPd
 /* ---------- Spiele ---------- */
 let gEdit=null;
 function seasonBox(){
-  const sea=seasonOf(todayIso()),gs=S.games.filter(g=>seasonOf(g.datum)===sea);
+  const sea=seasonOf(todayIso()),all=S.games.filter(g=>seasonOf(g.datum)===sea),gs=all.filter(g=>!g.offen&&g.us!==''&&g.them!=='');
   const w=gs.filter(g=>+g.us>+g.them).length,d=gs.filter(g=>+g.us===+g.them).length,l=gs.length-w-d;
   const tf=gs.reduce((a,g)=>a+(+g.us||0),0),ta=gs.reduce((a,g)=>a+(+g.them||0),0);
-  $('kb-season').innerHTML='<div><b>'+gs.length+'</b><span>Spiele '+sea+'</span></div><div><b>'+w+'</b><span>Siege</span></div><div><b>'+d+'</b><span>Remis</span></div><div><b>'+l+'</b><span>Niederlagen</span></div><div><b>'+tf+':'+ta+'</b><span>Tore</span></div>';
+  $('kb-season').innerHTML='<div><b>'+gs.length+'</b><span>Spiele '+sea+(all.length>gs.length?' · '+(all.length-gs.length)+' offen':'')+'</span></div><div><b>'+w+'</b><span>Siege</span></div><div><b>'+d+'</b><span>Remis</span></div><div><b>'+l+'</b><span>Niederlagen</span></div><div><b>'+tf+':'+ta+'</b><span>Tore</span></div>';
 }
 function renderStatTable(){
   const sea=seasonOf(todayIso()),el=$('kb-g-stats');
   const rows=sorted().map(p=>({p,st:statsFor(p.id,sea)})).sort((a,b)=>b.st.min-a.st.min||a.p.nr-b.p.nr);
   const total=rows.length?rows[0].st.total:0;
   if(!rows.length||!total){el.innerHTML='<h4>Spielzeit '+sea+'</h4><p class="kb-none">Sobald Spiele mit Aufstellung eingetragen sind, siehst du hier, wie viel Spielzeit jede Spielerin hatte.</p>';return;}
-  el.innerHTML='<h4>Spielzeit '+sea+'</h4><p class="kb-sub">Anteil an allen '+total+' Spielminuten der Saison (ohne nicht angetretene Gegner)</p><div class="kb-tbl"><table><thead><tr><th>Spielerin</th><th>Einsätze</th><th>Minuten</th><th>Ø</th><th>Anteil</th><th>Tore</th><th>Assists</th></tr></thead><tbody>'+
+  el.innerHTML='<h4>Spielzeit '+sea+'</h4><p class="kb-sub">Anteil an allen '+total+' Spielminuten der Saison. Es zählen nur Spiele, bei denen das Aufgebot eingetragen ist.</p><div class="kb-tbl"><table><thead><tr><th>Spielerin</th><th>Einsätze</th><th>Minuten</th><th>Ø</th><th>Anteil</th><th>Tore</th><th>Assists</th></tr></thead><tbody>'+
     rows.map(({p,st})=>'<tr><td><span class="kb-n kb-'+p.pos+'">'+esc(p.nr)+'</span>'+esc(shortName(p))+'</td><td>'+st.apps+'</td><td>'+st.min+'</td><td>'+st.avg+'\'</td><td><span class="kb-pct"><i style="width:'+Math.min(100,st.pct)+'%"></i></span>'+st.pct+' %</td><td>'+st.goals+'</td><td>'+st.ast+'</td></tr>').join('')+'</tbody></table></div>';
 }
 function renderGames(){
   seasonBox();renderStatTable();
-  const list=S.games.slice().sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
-  $('kb-g-list').innerHTML=list.length?list.map(g=>{const r=+g.us>+g.them?'w':+g.us===+g.them?'d':'l';
+  const up=S.games.filter(g=>g.offen).sort((a,b)=>((a.datum||'')+(a.zeit||'')).localeCompare((b.datum||'')+(b.zeit||'')));
+  const list=S.games.filter(g=>!g.offen).sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+  const meta=g=>[g.heim===true?'Heim':g.heim===false?'Auswärts':'',g.wettb==='Cup'?'Cup':g.wettb==='Freundschaftsspiel'?'Freundschaftsspiel':''].filter(Boolean).join(' · ');
+  const upHtml=up.length?'<p class="kb-glh">Kommende Spiele</p>'+up.map(g=>'<button type="button" class="kb-game" data-g="'+g.id+'"><span class="kb-res o">offen</span><span style="min-width:0"><h5>'+(g.heim===false?'@ ':'vs. ')+esc(g.gegner||'Gegner')+'</h5><p>'+esc(meta(g))+'</p></span><small>'+fmtDate(g.datum)+(g.zeit?' · '+esc(g.zeit)+' Uhr':'')+'</small></button>').join(''):'';
+  $('kb-g-list').innerHTML=upHtml+(list.length?'<p class="kb-glh">Gespielt</p>':'')+(list.length?list.map(g=>{const r=g.us===''||g.them===''?'d':+g.us>+g.them?'w':+g.us===+g.them?'d':'l';
     const sc=(g.goals||[]).map(t=>{const p=pById(t.pid);return p?p.name+(t.min?' '+t.min+'\'':''):'';}).filter(Boolean).join(', ');
-    return '<button type="button" class="kb-game" data-g="'+g.id+'"><span class="kb-res '+r+'">'+(g.us??'–')+':'+(g.them??'–')+'</span><span style="min-width:0"><h5>vs. '+esc(g.gegner||'Gegner')+'</h5><p>'+(g.forfeit?'Gegner nicht angetreten':sc?'Tore: '+esc(sc):'Keine Torschützinnen eingetragen')+'</p></span><small>'+fmtDate(g.datum)+' · '+esc(g.formation||'')+'</small></button>';}).join(''):'<p class="kb-none">Noch keine Spiele eingetragen. Nach dem Spiel „Spiel aus Aufstellung eintragen“ antippen.</p>';
+    return '<button type="button" class="kb-game" data-g="'+g.id+'"><span class="kb-res '+r+'">'+(g.us??'–')+':'+(g.them??'–')+'</span><span style="min-width:0"><h5>vs. '+esc(g.gegner||'Gegner')+'</h5><p>'+(g.forfeit?'Gegner nicht angetreten':sc?'Tore: '+esc(sc):!(g.starters||[]).length?'Aufgebot noch nicht eingetragen':'Keine Torschützinnen eingetragen')+(meta(g)?' · '+esc(meta(g)):'')+'</p></span><small>'+fmtDate(g.datum)+' · '+esc(g.formation||'')+'</small></button>';}).join(''):(up.length?'':'<p class="kb-none">Noch keine Spiele eingetragen. Nach dem Spiel „Spiel aus Aufstellung eintragen“ antippen.</p>'));
 }
 function newGame(free){const L=S.lineup;return free?{id:uid(),datum:'',gegner:'',formation:L.formation,dauer:90,us:'',them:'',starters:[],bank:[],subs:[],goals:[]}:{id:uid(),datum:L.datum||todayIso(),gegner:L.gegner||'',formation:L.formation,dauer:90,us:'',them:'',starters:L.slots.filter(Boolean),bank:L.bank.slice(),subs:[],goals:[]};}
 function pOpts(ids,selId,empty){return(empty?'<option value="">'+empty+'</option>':'')+ids.map(pById).filter(Boolean).map(p=>'<option value="'+p.id+'"'+(p.id===selId?' selected':'')+'>'+esc(p.nr+' '+p.name)+'</option>').join('');}
@@ -11365,7 +11393,11 @@ function renderGEdit(){
   box.innerHTML='<h4>'+(isNew?'Spiel eintragen':'Spiel bearbeiten')+'</h4>'+
    '<div class="kb-grid"><label class="kb-g2">Gegner<input data-gf="gegner" value="'+esc(g.gegner)+'"></label><label>Datum<input type="date" data-gf="datum" value="'+esc(g.datum)+'"></label><label>Spieldauer (Min.)<input type="number" min="1" max="130" data-gf="dauer" value="'+esc(g.dauer)+'"></label>'+
    '<label>Formation<select data-gf="formation">'+Object.keys(FORM).map(f=>'<option'+(f===g.formation?' selected':'')+'>'+f+'</option>').join('')+'</select></label>'+
+   '<label>Uhrzeit<input type="time" data-gf="zeit" value="'+esc(g.zeit||'')+'"></label>'+
+   '<label>Heim/Auswärts<select data-gf="heim"><option value="">–</option><option value="1"'+(g.heim===true?' selected':'')+'>Heim</option><option value="0"'+(g.heim===false?' selected':'')+'>Auswärts</option></select></label>'+
+   '<label>Bewerb<select data-gf="wettb">'+['Liga','Cup','Freundschaftsspiel'].map(w=>'<option'+((g.wettb||'Liga')===w?' selected':'')+'>'+w+'</option>').join('')+'</select></label>'+
    '<label class="kb-g2">Ergebnis (FC Bergheim : Gegner)<span class="kb-score"><input type="number" min="0" data-gf="us" value="'+esc(g.us)+'" aria-label="Tore FC Bergheim"'+(g.forfeit?' readonly':'')+'> : <input type="number" min="0" data-gf="them" value="'+esc(g.them)+'" aria-label="Tore Gegner"'+(g.forfeit?' readonly':'')+'></span></label></div>'+
+   '<label class="kb-chk"><input type="checkbox" data-offen'+(g.offen?' checked':'')+'> Spiel ist noch offen (zählt noch nicht zur Bilanz und Statistik)</label>'+
    '<label class="kb-chk"><input type="checkbox" data-ff'+(g.forfeit?' checked':'')+'> Gegner nicht angetreten (zählt als 3:0-Sieg, ohne Aufstellung und ohne Einsätze)</label>'+(g.forfeit?'':
    '<hr class="kb-hr"><h5>Aufgebot</h5><p class="kb-sub">Antippen wechselt: Startelf (blau) → Bank (gold) → nicht dabei. Startelf: '+g.starters.length+', Bank: '+g.bank.length+'</p>'+
    '<div class="kb-tri">'+all.map(p=>'<button type="button" data-tri="'+p.id+'" data-st="'+(g.starters.includes(p.id)?'s':g.bank.includes(p.id)?'b':'')+'">'+esc(p.nr+' '+p.name)+'</button>').join('')+'</div>'+
@@ -11375,7 +11407,7 @@ function renderGEdit(){
    '<button type="button" class="kb-btn" data-goaladd>+ Tor</button>')+
    '<hr class="kb-hr"><div class="kb-foot"><span id="kb-g-delwrap">'+(isNew?'':'<button type="button" class="kb-btn kb-danger" data-gdel>Spiel löschen</button>')+'</span><div class="kb-r"><button type="button" class="kb-btn kb-plain" data-gcancel>Abbrechen</button><button type="button" class="kb-btn kb-gold" data-gsave>Speichern</button></div></div><p class="kb-err" id="kb-g-err" hidden></p>';
 }
-$('kb-g-new').onclick=()=>{gEdit=newGame(false);renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
+$('kb-g-new').onclick=()=>{const L=S.lineup,ex=L.datum&&S.games.find(g=>g.datum===L.datum);gEdit=ex?Object.assign(JSON.parse(JSON.stringify(ex)),{starters:L.slots.filter(Boolean),bank:L.bank.slice(),formation:L.formation}):newGame(false);renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
 $('kb-g-free').onclick=()=>{gEdit=newGame(true);renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
 $('kb-g-ff').onclick=()=>{gEdit=Object.assign(newGame(true),{forfeit:true,us:'3',them:'0'});renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});};
 $('kb-g-list').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const g=S.games.find(x=>x.id===b.dataset.g);if(!g)return;gEdit=JSON.parse(JSON.stringify(g));renderGEdit();$('kb-g-edit').scrollIntoView({block:'start',behavior:reduce()?'auto':'smooth'});});
@@ -11385,6 +11417,8 @@ gBox.addEventListener('input',e=>{if(!gEdit)return;const t=e.target;
   if(t.dataset.sub!=null)gEdit.subs[+t.dataset.sub][t.dataset.k]=t.value;
   if(t.dataset.goal!=null)gEdit.goals[+t.dataset.goal][t.dataset.k]=t.value;});
 gBox.addEventListener('change',e=>{if(!gEdit)return;const t=e.target;
+  if(t.hasAttribute('data-offen')){gEdit.offen=t.checked;renderGEdit();return;}
+  if(t.dataset.gf==='heim'){gEdit.heim=t.value===''?null:t.value==='1';return;}
   if(t.hasAttribute('data-ff')){gEdit.forfeit=t.checked;if(t.checked){gEdit.us='3';gEdit.them='0';gEdit.starters=[];gEdit.bank=[];gEdit.subs=[];gEdit.goals=[];}else{gEdit.us='';gEdit.them='';}renderGEdit();return;}
   if(t.dataset.sub!=null)gEdit.subs[+t.dataset.sub][t.dataset.k]=t.value;
   if(t.dataset.goal!=null){gEdit.goals[+t.dataset.goal][t.dataset.k]=t.value;if(t.dataset.k==='pid'&&gEdit.us===''){}}});
@@ -11402,7 +11436,7 @@ gBox.addEventListener('click',e=>{if(!gEdit)return;const g=gEdit,t=e.target;
   if(t.closest('[data-gsave]')){
     const err=m=>{const el=$('kb-g-err');el.textContent=m;el.hidden=false;};
     if(!g.datum)return err('Bitte das Datum eintragen.');
-    if(!g.forfeit&&!g.starters.length)return err('Bitte die Startelf antippen.');
+    if(g.offen&&g.us!==''&&g.them!=='')g.offen=false;
     g.goals=g.goals.filter(x=>x.pid);g.subs=g.subs.filter(x=>x.out||x.in);
     if(g.us===''&&g.goals.length)g.us=String(g.goals.length);
     g.upd=Date.now();const i=S.games.findIndex(x=>x.id===g.id);if(i>=0)S.games[i]=g;else S.games.push(g);queueGame(g.id,'set');
@@ -11425,6 +11459,7 @@ $('kb-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-kbtab]
 root.addEventListener('click',e=>{const b=e.target.closest('[data-kbgo]');if(b){showTab(b.dataset.kbgo);window.scrollTo({top:root.offsetTop-10,behavior:'auto'});}});
 function renderAll(){$('kb-demo').hidden=!S.demo;renderRail();cardKey='';showTab(tab);}
 renderAll();
+if(!signedIn()&&seedFixtures(null))renderAll();
 window.__kbShow=function(){showTab(tab);};
 /* Zweiter Tab auf demselben Gerät: neueren Stand übernehmen statt ihn später zu überschreiben */
 window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{const n=JSON.parse(e.newValue);if(n&&Array.isArray(n.players)&&(n.ts||0)>=(S.ts||0)){S=fix(n);cardKey='';if(!gEdit)renderAll();}}catch(_){}});
@@ -11469,6 +11504,8 @@ window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{con
     Object.keys(q).forEach(id=>{if(q[id]==='set'){const lg=S.games.find(x=>x.id===id);if(lg){const i=G.findIndex(x=>x.id===id);if(i>=0)G[i]=lg;else G.push(lg);}}});
     if(JSON.stringify(G.map(g=>g.id+(g.upd||'')).sort())!==JSON.stringify(S.games.map(g=>g.id+(g.upd||'')).sort())||JSON.stringify(G)!==JSON.stringify(S.games)){
       S.games=G;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}cardKey='';if(!gEdit&&tab==='spiele')renderGames();else if(tab==='kader')renderCard();}
+    if(!sync.seeded){sync.seeded=true;/* erst nach dem Abgleich des Kaders, damit kein älterer Stand hochgeladen wird */
+      setTimeout(()=>{if(r&&r.seed2627){S.seed2627=true;return;}if(seedFixtures(r)&&tab==='spiele')renderGames();},50);}
     if(Object.keys(S.gq||{}).length)setTimeout(()=>sync.flushGames(),0);
     if(r&&Array.isArray(r.games)&&r.games.length&&!r.gamesSplit&&!S.demo){S.ts=Math.max(S.ts||0,(r.ts||0)+1);sync.push();}
     let first=false;try{first=localStorage.getItem('hi-kabine-synced')!=='1';localStorage.setItem('hi-kabine-synced','1');}catch(e){}
