@@ -322,6 +322,29 @@ dialog.svdlg{width:min(760px,calc(100vw - 24px))}
 .sv-empty{color:var(--muted);text-align:center;padding:24px 8px}
 .sv-back{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;font:600 15px var(--body);background:var(--club);color:#fff;border:0;border-radius:999px;padding:12px 20px;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;max-width:calc(100vw - 32px)}
 .sv-back:focus-visible,.sv-item summary:focus-visible{outline:2px solid var(--club);outline-offset:2px}
+/* Trainingsmodus: Gesamtzeit und Zeit der aktuellen Übung */
+.sv-run{background:var(--club);color:#fff;border-radius:8px;padding:10px 12px;display:grid;gap:8px}
+.sv-run.over{background:#B4410E}
+.sv-run.paused{background:#4B5563}
+.sv-clocks{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.sv-clocks span{display:block;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.sv-clocks b{display:block;font-family:var(--display);font-weight:700;font-size:42px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.sv-clocks small{display:block;font-size:12px;opacity:.9}
+.sv-curname{font-family:var(--display);font-weight:700;font-size:18px;text-transform:uppercase;line-height:1.1;overflow-wrap:anywhere}
+.sv-prog{height:6px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.sv-prog i{display:block;height:100%;width:0;background:#fff}
+.sv-runact{display:flex;flex-wrap:wrap;gap:6px}
+.sv-runact button{font:600 14px var(--body);border-radius:999px;padding:9px 14px;border:1px solid rgba(255,255,255,.55);background:transparent;color:#fff;cursor:pointer}
+.sv-runact button.main{background:#fff;color:var(--club-ink);border-color:#fff;flex:1 1 auto}
+.sv-runact button:disabled{opacity:.45;cursor:default}
+.sv-runact button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sv-item.cur{outline:3px solid var(--club);outline-offset:-2px}
+.sv-item.done{opacity:.62}
+.sv-ist{display:block;font-style:normal;font-size:12px;font-weight:600;color:var(--muted)}
+.sv-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:56;font:600 15px var(--body);background:var(--club);color:#fff;border:0;border-radius:999px;padding:12px 20px;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;max-width:calc(100vw - 32px);font-variant-numeric:tabular-nums}
+.sv-pill.over{background:#B4410E}
+.sv-pill{white-space:nowrap}
+@media (max-width:420px){.sv-clocks b{font-size:36px}}
 @media (max-width:520px){.sv-row{grid-template-columns:72px minmax(0,1fr) auto;gap:10px}.sv-th svg,.sv-th.free{width:72px}.sv-th.free svg{width:22px}}
 .tform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px}
 .tform .fld.wide{grid-column:1/-1}
@@ -1479,10 +1502,17 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
     <div class="pk-top"><h3 id="sv-title">Trainingseinheit</h3><button type="button" class="btn ghost" id="sv-close">Schließen</button></div>
     <p class="sv-meta" id="sv-meta"></p>
     <div class="sv-act" id="sv-act"></div>
+    <div class="sv-run" id="sv-run" hidden aria-live="off">
+      <div class="sv-clocks"><div><span>Gesamt</span><b id="sv-tot">00:00</b><small id="sv-totp"></small></div><div><span id="sv-curlbl">Übung</span><b id="sv-cur">00:00</b><small id="sv-curp"></small></div></div>
+      <div class="sv-curname" id="sv-curname"></div>
+      <div class="sv-prog" aria-hidden="true"><i id="sv-bar"></i></div>
+      <div class="sv-runact"><button type="button" data-run="prev">Zurück</button><button type="button" data-run="pause">Pause</button><button type="button" class="main" data-run="next">Nächste Übung</button><button type="button" data-run="sound" aria-pressed="true">Signal an</button><button type="button" data-run="end">Beenden</button></div>
+    </div>
   </div>
   <div class="sv-body" id="sv-body"></div>
 </dialog>
 <button type="button" class="sv-back" id="sv-back" hidden>← Zurück zur Einheit</button>
+<button type="button" class="sv-pill" id="sv-pill" hidden></button>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="config.js"></script>
@@ -10005,7 +10035,7 @@ listBody.addEventListener('click',async e=>{const b=e.target.closest('button');i
     toast('Einheit gelöscht');}});
 /* ---------- Einheit ansehen: nur lesen, ohne Planer ---------- */
 const svDlg=document.getElementById('svdlg'),svBody=document.getElementById('sv-body'),svMeta=document.getElementById('sv-meta'),svAct=document.getElementById('sv-act'),svBack=document.getElementById('sv-back');
-let svKey=null,svArm=null;
+let svKey=null,svArm=null,svFlat=[];
 const svClock=(hm,add)=>{const m=/^(\d{1,2}):(\d{2})/.exec(hm||'');if(!m)return '';const t=(+m[1])*60+(+m[2])+add;return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');};
 function svExHtml(e){const chipsV=['Feld','Material'].map(k=>chipOf(e,k)).filter(Boolean);
   const st=(e.stufen||[]).map(x=>'<b>'+x[0]+'</b>: '+x[1]);const co=(e.coach||[]).map(x=>'<b>'+x[0]+'</b>: '+x[1]);
@@ -10022,27 +10052,89 @@ function openSv(k){const s=findS(k);if(!s){toast('Diese Einheit gibt es nicht me
   document.getElementById('sv-title').textContent=m.thema||'Trainingseinheit';
   const d=(m.datum||'').split('-');const dt=d.length===3?new Date(+d[0],+d[1]-1,+d[2]):null;
   svMeta.textContent=[dt?WD[dt.getDay()]+', '+(+d[2])+'. '+MON[dt.getMonth()]+' '+d[0]:'',m.zeit?(m.zeit+(total?'–'+svClock(m.zeit,total):'')+' Uhr'):'',m.ort,lvName(m.lv),m.anzahl?m.anzahl+' Spielerinnen':'',total+' min'].filter(Boolean).join(' · ');
-  svAct.innerHTML='<button type="button" class="btn primary sm" data-sv-edit>Bearbeiten</button><button type="button" class="btn sm" data-pdf-s="'+esc(k)+'" data-sv-pdf>PDF</button>';
-  let off=0;
+  svAct.innerHTML='<button type="button" class="btn primary sm" data-sv-start>Training starten</button><button type="button" class="btn sm" data-sv-edit>Bearbeiten</button><button type="button" class="btn sm" data-pdf-s="'+esc(k)+'" data-sv-pdf>PDF</button>';
+  let off=0;svFlat=[];
   const html=PARTS.map(([pk,pn])=>{const P=p.parts[pk];if(!P.items.length&&!P.note)return '';const pm=partMin(pk,p);
     const from=m.zeit?svClock(m.zeit,off):'';
-    const items=P.items.map(it=>{const at=m.zeit?svClock(m.zeit,off):'';off+=(+it.min||0);
+    const items=P.items.map(it=>{const at=m.zeit?svClock(m.zeit,off):'';off+=(+it.min||0);const ri=svFlat.length;svFlat.push({min:+it.min||0,name:it.t==='free'?(it.title||'Eigener Punkt'):EXM[it.id].title,part:pn});
       const mins='<span class="sv-min">'+(+it.min||0)+' min'+(at?'<i>ab '+at+'</i>':'')+'</span>';
-      if(it.t==='free')return '<div class="sv-item"><div class="sv-row"><span class="sv-th free" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><div><b>'+esc(it.title||'Eigener Punkt')+'</b></div>'+mins+'</div></div>';
+      if(it.t==='free')return '<div class="sv-item" data-run-i="'+ri+'"><div class="sv-row"><span class="sv-th free" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span><div><b>'+esc(it.title||'Eigener Punkt')+'</b></div>'+mins+'</div></div>';
       const e=EXM[it.id],sp=chipOf(e,'');
-      return '<div class="sv-item"><div class="sv-row"><span class="sv-th" aria-hidden="true">'+thumbSvg(e.id)+'</span><div><b>'+esc(e.title)+'</b><small>'+esc(catName(e.cat))+(sp?' · '+esc(sp):'')+'</small></div>'+mins+'</div>'+svExHtml(e)+'</div>';}).join('');
+      return '<div class="sv-item" data-run-i="'+ri+'"><div class="sv-row"><span class="sv-th" aria-hidden="true">'+thumbSvg(e.id)+'</span><div><b>'+esc(e.title)+'</b><small>'+esc(catName(e.cat))+(sp?' · '+esc(sp):'')+'</small></div>'+mins+'</div>'+svExHtml(e)+'</div>';}).join('');
     return '<section class="sv-part"><h4>'+pn+'<span>'+pm+' min'+(from?' · ab '+from:'')+'</span></h4>'+(P.note?'<p class="sv-note">'+esc(P.note)+'</p>':'')+items+'</section>';}).join('');
   svBody.innerHTML=html||'<p class="sv-empty">In dieser Einheit sind noch keine Übungen.</p>';
-  svBack.hidden=true;if(!svDlg.open){if(svDlg.showModal)svDlg.showModal();else svDlg.setAttribute('open','');}svBody.scrollTop=0;svDlg.scrollTop=0;}
-document.getElementById('sv-close').addEventListener('click',()=>{svDlg.close();svKey=null;});
-svDlg.addEventListener('click',async e=>{if(e.target===svDlg){svDlg.close();svKey=null;return;}
+  svBack.hidden=true;if(!svDlg.open){if(svDlg.showModal)svDlg.showModal();else svDlg.setAttribute('open','');}svBody.scrollTop=0;svDlg.scrollTop=0;runPaint(true);}
+document.getElementById('sv-close').addEventListener('click',()=>{svDlg.close();});
+svDlg.addEventListener('close',()=>{runPaint();});
+svDlg.addEventListener('click',async e=>{if(e.target===svDlg){svDlg.close();return;}
   const b=e.target.closest('button');if(!b||!svKey)return;
-  if(b.dataset.svEx!==undefined&&b.dataset.svEx){svDlg.close();openEx(b.dataset.svEx);svBack.hidden=false;return;}
+  if(b.dataset.svEx!==undefined&&b.dataset.svEx){svDlg.close();openEx(b.dataset.svEx);if(!run)svBack.hidden=false;return;}
+  if(b.dataset.svStart!==undefined){runStart(b);return;}
+  if(b.dataset.run){runAct(b.dataset.run,b);return;}
   if(b.dataset.svEdit!==undefined){const s=findS(svKey);if(!s)return;
     if(plan.dirty&&itemCount()&&!(plan.sid===s.id&&plan.src===s.src)&&svArm!==b){svArm=b;b.textContent='Entwurf ersetzen?';setTimeout(()=>{if(svArm===b){svArm=null;b.textContent='Bearbeiten';}},4000);return;}
     svArm=null;svDlg.close();svKey=null;plan=toPlan(s);savePlan(false);setView('plan');toast('Einheit zum Bearbeiten geöffnet');return;}
   if(b.dataset.svPdf!==undefined){const s=findS(svKey);if(!s)return;b.disabled=true;const o=b.textContent;b.textContent='Wird erstellt …';const r=await exportPdf(toPlan(s),false);b.disabled=false;b.textContent=o;toast(r);}});
 svBack.addEventListener('click',()=>{svBack.hidden=true;const k=svKey;if(k)openSv(k);});
+/* ---------- Trainingsmodus: Uhr für das ganze Training und die aktuelle Übung ---------- */
+const RUNKEY='hi-training-lauf',SNDKEY='hi-training-signal';
+let run=null;try{run=JSON.parse(localStorage.getItem(RUNKEY));}catch(_){run=null;}if(!run||!run.k||typeof run.t0!=='number')run=null;
+let sound=true;try{sound=localStorage.getItem(SNDKEY)!=='aus';}catch(_){}
+let actx=null,wl=null,endArm=null,startArm=null;
+const runSave=()=>{try{if(run)localStorage.setItem(RUNKEY,JSON.stringify(run));else localStorage.removeItem(RUNKEY);}catch(_){}};
+const runGe=now=>{if(!run)return 0;return Math.max(0,(now||Date.now())-run.t0-run.pa-(run.ps?(now||Date.now())-run.ps:0));};
+const mmss=ms=>{const t=Math.floor(Math.max(0,ms)/1000),h=Math.floor(t/3600),m=Math.floor(t/60)%60,x=t%60;return (h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0');};
+async function wakeOn(){try{if(run&&!run.ps&&'wakeLock' in navigator&&document.visibilityState==='visible'&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}}catch(_){wl=null;}}
+function wakeOff(){try{if(wl)wl.release();}catch(_){}wl=null;}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wakeOn();});
+function beep(){try{navigator.vibrate&&navigator.vibrate([250,120,250]);}catch(_){}
+  if(!sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+    [0,0.28].forEach(d=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);const t=actx.currentTime+d;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.35,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);o.start(t);o.stop(t+0.22);});}catch(_){}}
+function runStart(b){const k=svKey;if(!k||!svFlat.length){toast('In dieser Einheit sind noch keine Übungen.');return;}
+  if(run&&run.k!==k&&startArm!==b){startArm=b;b.textContent='Anderes Training beenden?';setTimeout(()=>{if(startArm===b){startArm=null;b.textContent='Training starten';}},4000);return;}
+  startArm=null;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();}catch(_){}
+  run={k,t0:Date.now(),pa:0,ps:null,i:0,is:0,log:[],beep:false,n:svFlat.length};runSave();wakeOn();runPaint(true);toast('Training gestartet');}
+function runAct(a,b){if(!run)return;const now=Date.now(),ge=runGe(now);
+  if(a==='next'){run.log[run.i]=ge-run.is;if(run.i>=run.n-1){runFinish();return;}run.i++;run.is=ge;run.beep=false;}
+  else if(a==='prev'){if(run.i===0){run.is=ge;run.beep=false;}else{run.i--;run.is=ge-(run.log[run.i]||0);run.log[run.i]=undefined;run.beep=false;}}
+  else if(a==='pause'){if(run.ps){run.pa+=now-run.ps;run.ps=null;wakeOn();}else{run.ps=now;wakeOff();}}
+  else if(a==='sound'){sound=!sound;try{localStorage.setItem(SNDKEY,sound?'an':'aus');}catch(_){}}
+  else if(a==='end'){if(endArm!==b){endArm=b;b.textContent='Wirklich beenden?';setTimeout(()=>{if(endArm===b){endArm=null;b.textContent='Beenden';}},4000);return;}endArm=null;run.log[run.i]=ge-run.is;runFinish();return;}
+  runSave();runPaint(true);}
+function runFinish(){const ge=runGe();const plan=(svFlat.reduce((x,y)=>x+y.min,0));run=null;runSave();wakeOff();runPaint(true);
+  toast('Training beendet: '+mmss(ge)+' (geplant '+plan+' min)');}
+function runPaint(scroll){const pill=document.getElementById('sv-pill'),box=document.getElementById('sv-run');
+  const startBtn=svAct.querySelector('[data-sv-start]');
+  const mine=run&&svDlg.open&&run.k===svKey;
+  box.hidden=!mine;if(startBtn)startBtn.hidden=!!mine;svMeta.hidden=!!mine;svAct.hidden=!!mine;
+  pill.hidden=!run||svDlg.open;
+  if(!run){svBody.querySelectorAll('.sv-item').forEach(x=>{x.classList.remove('cur','done');const s=x.querySelector('.sv-ist');if(s)s.remove();});return;}
+  runTick();
+  if(mine){const total=svFlat.reduce((x,y)=>x+y.min,0);document.getElementById('sv-totp').textContent='geplant '+total+' min';
+    svBody.querySelectorAll('.sv-item').forEach(x=>{const i=+x.dataset.runI;x.classList.toggle('cur',i===run.i);x.classList.toggle('done',i<run.i);
+      let s=x.querySelector('.sv-ist');const v=run.log[i];
+      if(i<run.i&&v!=null){if(!s){s=document.createElement('i');s.className='sv-ist';const mn=x.querySelector('.sv-min');if(mn)mn.appendChild(s);}s.textContent='gebraucht '+mmss(v);}else if(s)s.remove();});
+    const n=run.n,bt=box.querySelectorAll('[data-run]');bt.forEach(x=>{if(x.dataset.run==='prev')x.disabled=run.i===0&&runGe()-run.is<1000;
+      if(x.dataset.run==='next')x.textContent=run.i>=n-1?'Training beenden':'Nächste Übung';
+      if(x.dataset.run==='pause')x.textContent=run.ps?'Weiter':'Pause';
+      if(x.dataset.run==='sound'){x.textContent=sound?'Signal an':'Signal aus';x.setAttribute('aria-pressed',String(sound));}});
+    if(scroll){const cur=svBody.querySelector('.sv-item.cur');if(cur)cur.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});}}}
+function runTick(){if(!run)return;const ge=runGe(),cur=ge-run.is,it=svFlat[run.i]&&run.k===svKey?svFlat[run.i]:null;
+  const planMs=it?it.min*60000:0,over=!!(it&&planMs&&cur>=planMs);
+  if(over&&!run.beep&&!run.ps){run.beep=true;runSave();beep();}
+  const pill=document.getElementById('sv-pill');
+  if(!pill.hidden){pill.textContent='Training '+mmss(ge)+(run.ps?' · Pause':'')+' · öffnen';pill.classList.toggle('over',over);}
+  if(!(svDlg.open&&run.k===svKey&&it))return;
+  const box=document.getElementById('sv-run');box.classList.toggle('over',over&&!run.ps);box.classList.toggle('paused',!!run.ps);
+  document.getElementById('sv-tot').textContent=mmss(ge);
+  document.getElementById('sv-cur').textContent=mmss(cur);
+  document.getElementById('sv-curlbl').textContent=(run.ps?'Pause · ':'')+'Übung '+(run.i+1)+' von '+run.n;
+  document.getElementById('sv-curname').textContent=it.part+': '+it.name;
+  document.getElementById('sv-curp').textContent=!planMs?'ohne geplante Zeit':over?('+'+mmss(cur-planMs)+' über Plan ('+it.min+' min)'):('noch '+mmss(planMs-cur)+' von '+it.min+' min');
+  document.getElementById('sv-bar').style.width=(planMs?Math.min(100,cur/planMs*100):0)+'%';}
+setInterval(runTick,250);
+document.getElementById('sv-pill').addEventListener('click',()=>{if(!run)return;if(findS(run.k))openSv(run.k);else toast('Die Einheit wird noch geladen. Bitte gleich noch einmal tippen.');});
+if(run){wakeOn();setTimeout(()=>runPaint(),0);}
 function renderPlanState(){renderPlanLink();const el=document.getElementById('plan-state'),h=document.getElementById('plan-h');
   h.textContent=plan.sid?'Einheit bearbeiten':'Einheit zusammenstellen';
   el.textContent=plan.sid?(plan.dirty?'Ungespeicherte Änderungen':'Gespeichert'):(itemCount()?'Noch nicht gespeichert':'');
