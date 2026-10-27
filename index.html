@@ -873,10 +873,13 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-chip:hover{color:#fff}
 .kb-room-tools{display:flex;gap:6px}
 .kb-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--kb-line);background:rgba(6,12,32,.6);color:#fff;display:grid;place-items:center;font-size:18px;cursor:pointer;padding:0}
+.kb-arrow:disabled{opacity:.35;cursor:default}
+.kb-chip[aria-pressed="true"]{border-color:var(--kb-gold);color:#fff;background:rgba(242,194,48,.12)}
+.kb-hint b{color:var(--kb-muted);font-weight:600;font-variant-numeric:tabular-nums}
 .kb-rail{--slot:60px;--shirt:200px;position:relative;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
 .kb-rail::-webkit-scrollbar{display:none}
 .kb-rail.kb-dragging{cursor:grabbing;scroll-snap-type:none}
-.kb-track{position:relative;display:flex;width:max-content;min-width:100%;padding-inline:calc(50% - var(--slot)/2);height:calc(var(--shirt)*1.25 + 70px);perspective:900px;perspective-origin:50% 30%}
+.kb-track{position:relative;display:flex;box-sizing:content-box;width:max-content;min-width:var(--slot);padding-inline:calc(50% - var(--slot)/2);height:calc(var(--shirt)*1.25 + 70px);perspective:900px;perspective-origin:50% 30%}
 .kb-bar{position:absolute;left:0;right:0;top:44px;height:7px;border-radius:4px;background:linear-gradient(180deg,#E6E9F0,#8C93A3 60%,#5D6372);box-shadow:0 3px 8px rgba(0,0,0,.5)}
 .kb-gap{position:relative;flex:0 0 calc(var(--slot)*1.9)}
 .kb-gap::before{content:"";position:absolute;left:50%;top:30px;width:12px;margin-left:-6px;height:26px;border-radius:2px;background:linear-gradient(90deg,#5D6372,#C9CED8 50%,#5D6372);box-shadow:0 3px 6px rgba(0,0,0,.5)}
@@ -1486,7 +1489,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
         <div class="kb-rail" id="kb-rail" tabindex="0" aria-label="Trikots an der Stange. Wischen oder Pfeiltasten zum Durchblättern.">
           <div class="kb-track" id="kb-track"><div class="kb-bar"></div></div>
         </div>
-        <p class="kb-hint">Wischen, ziehen oder ein Trikot antippen</p>
+        <p class="kb-hint" id="kb-hint">Wischen, ziehen oder ein Trikot antippen<b id="kb-pos"></b></p>
       </div>
       <article class="kb-card" id="kb-card" aria-live="polite"></article>
     </div>
@@ -11375,9 +11378,13 @@ function renderRail(){
   $('kb-groups').innerHTML=ORDER.map(k=>{const c=list.filter(p=>p.pos===k).length;return c?'<button type="button" class="kb-chip" data-g="'+k+'">'+POS[k]+'<b>'+c+'</b></button>':'';}).join('');
   if(active<0){const i=items.findIndex(it=>(pById(it.dataset.id)||{}).nr===10);active=i>=0?i:0;}
   active=Math.min(active,Math.max(0,items.length-1));
+  sizeTrack(true);
 }
+let railW=0;
+function sizeTrack(force){const w=rail.clientWidth;if(!w||(!force&&w===railW))return;railW=w;const slot=items[0]?items[0].offsetWidth:60;const pad=Math.max(0,Math.round(w/2-slot/2))+'px';track.style.paddingLeft=pad;track.style.paddingRight=pad;}
 function layout(){
   if(root.hidden||$('kb-v-kader').hidden)return;
+  sizeTrack();
   const cx=rail.scrollLeft+rail.clientWidth/2;
   const slotW=items[0]?items[0].offsetWidth:60;
   const sh=items[0]?items[0].querySelector('.kb-sw').offsetWidth:200;
@@ -11393,18 +11400,21 @@ function layout(){
   });
   if(items.length)active=best;
   items.forEach((it,i)=>it.classList.toggle('kb-on',i===active));
+  $('kb-prev').disabled=active<=0;$('kb-next').disabled=active>=items.length-1;
+  $('kb-pos').textContent=items.length?' · '+(active+1)+' / '+items.length:'';
+  const ap=items[active]&&pById(items[active].dataset.id);$('kb-groups').querySelectorAll('[data-g]').forEach(b=>b.setAttribute('aria-pressed',String(!!ap&&b.dataset.g===ap.pos)));
   renderCard();
 }
 let raf=0;
 rail.addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;layout();});},{passive:true});
-window.addEventListener('resize',()=>layout());
+window.addEventListener('resize',()=>{sizeTrack(true);layout();});
 function goTo(i,smooth){
   const it=items[i];if(!it)return;
   rail.scrollTo({left:it.offsetLeft+it.offsetWidth/2-rail.clientWidth/2,behavior:smooth!==false&&!reduce()?'smooth':'auto'});
 }
 $('kb-prev').onclick=()=>goTo(Math.max(0,active-1));
 $('kb-next').onclick=()=>goTo(Math.min(items.length-1,active+1));
-rail.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();goTo(Math.min(items.length-1,active+1));}if(e.key==='ArrowLeft'){e.preventDefault();goTo(Math.max(0,active-1));}});
+rail.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();goTo(Math.min(items.length-1,active+1));}if(e.key==='ArrowLeft'){e.preventDefault();goTo(Math.max(0,active-1));}if(e.key==='Home'){e.preventDefault();goTo(0);}if(e.key==='End'){e.preventDefault();goTo(items.length-1);}});
 $('kb-groups').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;goTo(items.findIndex(it=>pById(it.dataset.id).pos===b.dataset.g));});
 let md=null,moved=false;
 rail.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;md={x:e.clientX,s:rail.scrollLeft};moved=false;});
@@ -12024,7 +12034,7 @@ function showTab(t){
   if(!PANES[t])t='kader';tab=t;
   $('kb-tabs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.kbtab===t)));
   Object.keys(PANES).forEach(k=>{$(PANES[k]).hidden=k!==t;});
-  if(t==='kader'){cardKey='';requestAnimationFrame(()=>{goTo(active,false);layout();});}
+  if(t==='kader'){cardKey='';requestAnimationFrame(()=>{sizeTrack(true);goTo(active,false);layout();});}
   else if(t==='auf'){$('kb-warn').hidden=true;renderLineup();}
   else if(t==='mp')renderMp();
   else renderGames();
