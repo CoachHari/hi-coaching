@@ -3360,19 +3360,43 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
 const POPF={TW:[180,344],IV:[180,302],HL:[104,292],HR:[256,292],S6:[180,246],AL:[124,196],AR:[236,196],SL:[40,206],SR:[320,206],TL:[150,110],TR:[210,110]};
 const POPLAB={TW:'TW',IV:'IV',HL:'HV',HR:'HV',S6:'6',AL:'8',AR:'8',SL:'S',SR:'S',TL:'ST',TR:'ST'};
 /* Aufstellung: alle elf Positionen, bewegte Spielerinnen überschreiben ihre Wege, Gegnerinnen kommen dazu */
-const popMake=(id,C,L,moves,reds,seq,opt)=>{opt=opt||{};const S={L},ents=[];
-  Object.keys(POPF).forEach(k=>{const p=POPF[k];S[k]=moves[k]||[[0,p[0],p[1]]];ents.push({id:k,label:POPLAB[k],fill:moves[k]||(opt.keep||[]).includes(k)?undefined:WAIT});});
-  Object.keys(reds||{}).forEach(k=>{S[k]=reds[k];ents.push({id:k,fill:RED});});
-  if(opt.gk!==false){S.K=opt.gk||[[0,180,26]];ents.push({id:'K',fill:NEU});}
-  S.BALLS=[jrSeq(S,seq,C)];
-  A[id]={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);taGoal(s);el('rect',{x:70,y:6,width:220,height:84,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.45'},s);
-      if(opt.draw)opt.draw(s);},ents,sc:{a:S}};};
+let popMk=0;
+const popMake=(id,C0,L0,moves,reds,seq,opt)=>{opt=opt||{};const F=1.6;
+  /* langsamer: alle Zeiten strecken, am Ende 2,4 s stehen lassen, damit das ganze Muster sichtbar bleibt */
+  const tmax=Math.max(...seq.map(q=>q[0]==='p'?q[4]:q[3]));
+  let kmax=0;const scan=kf=>kf.forEach(r=>{if(r[0]!==C0)kmax=Math.max(kmax,r[0]);});Object.values(moves).forEach(scan);Object.values(reds||{}).forEach(scan);if(opt.gk)scan(opt.gk);
+  const C=Math.max(tmax*F+2.4,kmax*F+0.6);
+  const tf=kf=>kf.map(r=>[r[0]===C0?C:r[0]*F,r[1],r[2]]);
+  const sq=seq.map(q=>q[0]==='p'?[q[0],q[1],q[2],q[3]*F,q[4]*F]:[q[0],q[1],q[2]*F,q[3]*F].concat(q.slice(4)));
+  const caps=opt.caps||[],t0of=q=>q[0]==='p'?q[3]:q[2],L=[];
+  const capOk=j=>caps[j]&&!(sq[j][0]==='d'&&sq[j][3]-sq[j][2]<0.6);
+  sq.forEach((q,i)=>{if(!capOk(i))return;let nx=null;for(let j=i+1;j<sq.length;j++)if(capOk(j)){nx=sq[j];break;}L.push([nx?t0of(nx):99,caps[i]]);});
+  const S={L:L.length?L:L0},ents=[];
+  Object.keys(POPF).forEach(k=>{const p=POPF[k];S[k]=moves[k]?tf(moves[k]):[[0,p[0],p[1]]];ents.push({id:k,label:POPLAB[k],fill:moves[k]||(opt.keep||[]).includes(k)?undefined:WAIT});});
+  Object.keys(reds||{}).forEach(k=>{S[k]=tf(reds[k]);ents.push({id:k,fill:RED});});
+  if(opt.gk!==false){S.K=opt.gk?tf(opt.gk):[[0,180,26]];ents.push({id:'K',fill:NEU});}
+  S.BALLS=[jrSeq(S,sq,C)];const B=S.BALLS[0];
+  /* Passlinien mit Nummer und Laufwege der bewegten Spielerinnen */
+  let n=0;const PS=sq.filter(q=>q[0]!=='d').map(q=>{const t0=t0of(q),t1=q[0]==='p'?q[4]:q[3];n++;return{t0,t1,a:at(B,t0+0.02),b:at(B,t1),n};});
+  const RW=Object.keys(moves).filter(k=>moves[k].length>1).map(k=>{const pts=[];for(let t=0;t<=C+1e-9;t+=0.1)pts.push([t,...at(S[k],t)]);return pts;});
+  A[id]={vb:'0 0 360 360',cycle:C,thumbT:C-0.5,draw(s){field(s,0,0,360,360);taGoal(s);el('rect',{x:70,y:6,width:220,height:84,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.45'},s);
+      if(opt.draw)opt.draw(s);
+      const mid='pa'+(popMk++);const df=el('defs',{},s),mk=el('marker',{id:mid,viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'5',markerHeight:'5',orient:'auto-start-reverse'},df);el('path',{d:'M0 0 L10 5 L0 10 Z',fill:'#FFFFFF'},mk);
+      this._rw=RW.map(()=>el('polyline',{fill:'none',stroke:'#F2C230','stroke-width':'2','stroke-dasharray':'5 5','stroke-linecap':'round',opacity:'.9',points:''},s));
+      this._ps=PS.map(o=>{const g=el('g',{opacity:'0'},s);const l=el('line',{stroke:'#FFFFFF','stroke-width':'2.2','marker-end':'url(#'+mid+')',opacity:'.95'},g);
+        const dx=o.b[0]-o.a[0],dy=o.b[1]-o.a[1],d=Math.hypot(dx,dy)||1,mx=(o.a[0]+o.b[0])/2-dy/d*11,my=(o.a[1]+o.b[1])/2+dx/d*11;
+        const bg=el('g',{opacity:'0'},g);el('circle',{cx:mx,cy:my,r:'8',fill:'#123672',stroke:'#FFFFFF','stroke-width':'1.2'},bg);const tx=el('text',{x:mx,y:my+4,'text-anchor':'middle','font-size':'11','font-weight':'700','font-family':'Barlow, Arial, sans-serif',fill:'#FFFFFF'},bg);tx.textContent=o.n;return{g,l,bg};});},
+    tick(t){if(!this._ps)return;
+      RW.forEach((pts,i)=>{let str='';for(const p of pts){if(p[0]>t)break;str+=p[1].toFixed(1)+','+p[2].toFixed(1)+' ';}this._rw[i].setAttribute('points',str);});
+      PS.forEach((o,i)=>{const e=this._ps[i];if(t<o.t0){e.g.setAttribute('opacity','0');return;}e.g.setAttribute('opacity','1');const c=t>=o.t1?o.b:at(B,t);
+        e.l.setAttribute('x1',o.a[0]);e.l.setAttribute('y1',o.a[1]);e.l.setAttribute('x2',c[0]);e.l.setAttribute('y2',c[1]);e.bg.setAttribute('opacity',t>=(o.t0+o.t1)/2?'1':'0');});},
+    ents,sc:{a:S}};};
 
 /* 1 · Aufbau über die Halbverteidigerin */
 (function(){const C=4.8;
 popMake('pop1',C,[[1.3,'Torfrau auf die Innenverteidigerin'],[2.3,'Pass auf die breite Halbverteidigerin, sie dribbelt an'],[99,'Pass in den Lauf der Schiene, die bis zur Grundlinie geht']],
   {TW:[[0,180,344]],IV:[[0,180,302]],HR:[[0,256,292],[1.2,276,284],[2.2,282,230],[C,282,230]],SR:[[0,320,206],[2.2,320,206],[2.9,324,150],[3.8,326,80],[C,326,80]]},null,
-  [['p','TW','IV',0.2,0.65],['p','IV','HR',0.85,1.35],['d','HR',1.4,2.2],['s','HR',2.3,2.85,325,140],['d','SR',2.95,3.8]],{gk:false});
+  [['p','TW','IV',0.2,0.65],['p','IV','HR',0.85,1.35],['d','HR',1.4,2.2],['s','HR',2.3,2.85,325,140],['d','SR',2.95,3.8]],{gk:false,caps:["Torfrau flach auf die Innenverteidigerin", "Pass auf die breite Halbverteidigerin", "Die Halbverteidigerin dribbelt in den freien Raum", "Steilpass in den Lauf der Schiene", "Die Schiene nimmt mit und geht bis zur Grundlinie"]});
 
 /* 2 · Klatsch über die Sechserin */
 })();
@@ -3381,16 +3405,16 @@ popMake('pop1',C,[[1.3,'Torfrau auf die Innenverteidigerin'],[2.3,'Pass auf die 
 popMake('pop2',C,[[1.4,'Die Sechserin kommt entgegen und lässt klatschen'],[2.2,'Die Halbverteidigerin spielt steil'],[99,'Die Schiene nimmt im Lauf mit']],
   {IV:[[0,180,302]],S6:[[0,180,236],[0.5,170,256],[C,170,256]],HL:[[0,104,292],[1.0,96,280],[C,96,280]],SL:[[0,40,206],[1.6,40,206],[2.3,42,150],[3.2,44,86],[C,44,86]]},
   {r1:[[0,196,212],[1.0,186,232],[C,186,232]]},
-  [['p','IV','S6',0.2,0.6],['p','S6','HL',0.8,1.15],['s','HL',1.4,2.05,42,160],['d','SL',2.15,3.2]],{gk:false});
+  [['p','IV','S6',0.2,0.6],['p','S6','HL',0.8,1.15],['s','HL',1.4,2.05,42,160],['d','SL',2.15,3.2]],{gk:false,caps:["Innenverteidigerin auf die entgegenkommende Sechserin", "Die Sechserin lässt auf die Halbverteidigerin klatschen", "Steilpass in den Lauf der Schiene", "Die Schiene nimmt im Lauf mit"]});
 
 /* 3 · Dritte Frau zur Stürmerin */
 })();
 
 (function(){const C=4.6;
 popMake('pop3',C,[[1.0,'Die Stürmerin kommt entgegen'],[1.6,'Klatsch auf die Achterin'],[99,'Steil in den Lauf der zweiten Stürmerin und Abschluss']],
-  {S6:[[0,180,246]],TR:[[0,210,110],[0.7,214,150],[1.6,214,150],[2.6,226,100],[C,226,100]],AR:[[0,236,196],[1.0,228,178],[C,228,178]],TL:[[0,150,110],[1.3,150,110],[2.2,184,60],[C,184,60]]},
+  {S6:[[0,180,246]],TR:[[0,210,110],[0.7,214,150],[1.3,214,150],[1.8,246,128],[2.6,240,104],[C,240,104]],AR:[[0,236,196],[1.0,228,178],[C,228,178]],TL:[[0,150,110],[1.3,150,110],[2.2,184,60],[C,184,60]]},
   {r1:[[0,186,128],[C,190,124]],r2:[[0,252,130],[C,248,128]]},
-  [['p','S6','TR',0.2,0.7],['p','TR','AR',0.95,1.3],['s','AR',1.55,2.15,186,72],['d','TL',2.2,2.3],['s','TL',2.4,2.75,150,14]]);
+  [['p','S6','TR',0.2,0.7],['p','TR','AR',0.95,1.3],['s','AR',1.55,2.15,186,72],['d','TL',2.2,2.3],['s','TL',2.4,2.75,150,14]],{caps:["Sechserin auf die entgegenkommende Stürmerin", "Klatsch auf die Achterin", "Steilpass in den Lauf der zweiten Stürmerin", "Mitnahme in den Lauf", "Abschluss"]});
 
 /* 4 · Doppelpass auf dem Flügel und Flanke */
 })();
@@ -3398,8 +3422,8 @@ popMake('pop3',C,[[1.0,'Die Stürmerin kommt entgegen'],[1.6,'Klatsch auf die Ac
 (function(){const C=5.0;
 popMake('pop4',C,[[1.4,'Schiene und Achterin spielen Doppelpass'],[2.4,'Die Schiene geht bis zur Grundlinie'],[99,'Flanke, die Stürmerinnen kreuzen']],
   {SR:[[0,320,206],[0.6,320,206],[1.4,326,120],[2.2,326,64],[C,326,64]],AR:[[0,236,196],[0.5,248,186],[C,248,186]],TL:[[0,150,110],[1.9,150,110],[2.8,206,60],[C,206,60]],TR:[[0,210,110],[1.2,210,110],[2.2,146,66],[C,146,66]]},
-  {r1:[[0,300,150],[1.2,304,140],[2.0,300,112],[C,300,112]]},
-  [['p','SR','AR',0.2,0.55],['s','AR',0.8,1.3,324,126],['d','SR',1.35,2.2]].concat([['s','SR',2.3,2.85,206,52]]).concat([['s','TL',2.95,3.2,150,14]]));
+  {r1:[[0,300,150],[1.2,294,146],[2.0,290,122],[C,290,122]]},
+  [['p','SR','AR',0.2,0.55],['s','AR',0.8,1.3,324,126],['d','SR',1.35,2.2]].concat([['s','SR',2.3,2.85,206,52]]).concat([['s','TL',2.95,3.2,150,14]]),{caps:["Schiene auf die Achterin", "Doppelpass zurück in den Lauf der Schiene", "Die Schiene geht bis zur Grundlinie", "Flanke, die Stürmerinnen kreuzen", "Abschluss"]});
 
 /* 5 · Verlagerung über die Dreierkette */
 })();
@@ -3408,7 +3432,7 @@ popMake('pop4',C,[[1.4,'Schiene und Achterin spielen Doppelpass'],[2.4,'Die Schi
 popMake('pop5',C,[[1.4,'Die Gegnerinnen schieben auf die linke Seite'],[2.2,'Verlagerung über die Dreierkette'],[99,'Die rechte Schiene ist frei: andribbeln und flanken']],
   {HL:[[0,104,292]],IV:[[0,180,302]],HR:[[0,256,292],[1.4,270,282],[C,270,282]],SR:[[0,320,206],[1.8,320,206],[2.5,322,150],[3.3,326,92],[C,326,92]],TL:[[0,150,110],[3.2,150,110],[3.9,196,60],[C,196,60]]},
   {r1:[[0,140,216],[1.0,120,220],[2.4,206,214],[C,214,210]],r2:[[0,200,166],[1.0,150,176],[2.6,256,166],[C,270,160]]},
-  [['p','HL','IV',0.2,0.65],['p','IV','HR',0.85,1.4],['s','HR',1.6,2.3,322,160],['d','SR',2.35,3.3],['s','SR',3.4,3.95,198,50],['s','TL',4.05,4.3,160,14]]);
+  [['p','HL','IV',0.2,0.65],['p','IV','HR',0.85,1.4],['s','HR',1.6,2.3,322,160],['d','SR',2.35,3.3],['s','SR',3.4,3.95,198,50],['s','TL',4.05,4.3,160,14]],{caps:["Die Gegnerinnen schieben nach links: Pass auf die Innenverteidigerin", "Weiter auf die rechte Halbverteidigerin", "Diagonal in den Lauf der freien Schiene", "Andribbeln", "Flanke", "Abschluss"]});
 
 /* 6 · Halbraum: die Achterin dreht auf */
 })();
@@ -3416,8 +3440,8 @@ popMake('pop5',C,[[1.4,'Die Gegnerinnen schieben auf die linke Seite'],[2.2,'Ver
 (function(){const C=5.0;
 popMake('pop6',C,[[1.2,'Die Achterin löst sich in den Halbraum'],[2.0,'Offen annehmen und aufdrehen'],[99,'Steil in die Schnittstelle, die zweite Stürmerin geht nach']],
   {IV:[[0,180,302]],AR:[[0,236,196],[0.7,226,216],[1.3,226,216],[1.9,232,186],[C,232,186]],TL:[[0,150,110],[1.6,126,118],[2.3,170,108],[2.8,196,56],[C,196,56]],TR:[[0,210,110],[2.4,214,110],[3.4,214,74],[C,214,74]]},
-  {r1:[[0,162,96],[2.6,150,88],[C,150,88]],r2:[[0,248,98],[2.6,244,96],[C,244,96]],r3:[[0,196,228],[1.0,206,236],[2.0,218,216],[C,218,216]]},
-  [['p','IV','AR',0.25,0.8],['d','AR',1.2,1.9],['s','AR',2.0,2.75,194,72],['d','TL',2.8,2.95],['s','TL',3.05,3.35,152,14]]);
+  {r1:[[0,172,90],[2.6,150,88],[C,150,88]],r2:[[0,248,98],[2.6,244,96],[C,244,96]],r3:[[0,196,228],[1.0,206,236],[2.0,218,216],[C,218,216]]},
+  [['p','IV','AR',0.25,0.8],['d','AR',1.2,1.9],['s','AR',2.0,2.75,194,72],['d','TL',2.8,2.95],['s','TL',3.05,3.35,152,14]],{caps:["Pass auf die Achterin im Halbraum", "Offen annehmen und aufdrehen", "Steilpass in die Schnittstelle", "Mitnahme im Lauf", "Abschluss, die zweite Stürmerin geht nach"]});
 
 /* 7 · Links überladen, rechts angreifen */
 })();
@@ -3426,16 +3450,16 @@ popMake('pop6',C,[[1.2,'Die Achterin löst sich in den Halbraum'],[2.0,'Offen an
 popMake('pop7',C,[[2.0,'Links mit vier Spielerinnen kombinieren, die Gegnerinnen schieben herüber'],[3.0,'Die Sechserin verlagert auf die freie rechte Schiene'],[99,'1 gegen 1, zurücklegen in den Rückraum, die Achterin schließt ab']],
   {HL:[[0,104,292]],AL:[[0,124,196],[0.8,110,214],[C,110,214]],SL:[[0,40,206],[1.0,44,180],[C,44,180]],S6:[[0,180,246],[1.2,150,240],[C,150,240]],SR:[[0,320,206],[2.6,320,206],[3.2,322,150],[4.0,326,72],[C,326,72]],AR:[[0,236,196],[3.6,236,196],[4.6,232,92],[C,232,92]]},
   {r1:[[0,140,170],[1.2,96,190],[C,104,186]],r2:[[0,200,160],[1.6,140,180],[3.2,190,170],[C,200,164]],r3:[[0,290,150],[2.2,240,160],[3.6,300,118],[C,300,118]]},
-  [['p','HL','AL',0.2,0.6],['p','AL','SL',0.8,1.15],['p','SL','S6',1.35,1.9],['s','S6',2.1,2.9,320,190],['d','SR',3.0,4.0],['s','SR',4.1,4.6,232,104],['s','AR',4.7,5.0,214,14]]);
+  [['p','HL','AL',0.2,0.6],['p','AL','SL',0.8,1.15],['p','SL','S6',1.35,1.9],['s','S6',2.1,2.9,320,190],['d','SR',3.0,4.0],['s','SR',4.1,4.6,232,104],['s','AR',4.7,5.0,214,14]],{caps:["Links kombinieren: Halbverteidigerin auf die Achterin", "Weiter auf die Schiene", "Zurück auf die Sechserin, die Gegnerinnen stehen links", "Verlagerung auf die freie rechte Schiene", "1 gegen 1 bis zur Grundlinie", "Zurücklegen in den Rückraum", "Abschluss der Achterin"]});
 
 /* 8 · Gegen hohes Pressing: über die abkippende Sechserin */
 })();
 
 (function(){const C=5.4;
 popMake('pop8',C,[[1.2,'Drei Gegnerinnen pressen hoch'],[2.0,'Die Sechserin kippt ab und spielt direkt lang auf die Stürmerin'],[99,'Ablage auf die Achterin, Steilpass, Abschluss']],
-  {TW:[[0,180,344]],IV:[[0,180,302]],S6:[[0,180,246],[0.8,198,276],[C,198,276]],TR:[[0,210,110],[1.4,214,146],[C,214,146]],AR:[[0,236,196],[1.6,236,196],[2.3,230,170],[C,230,170]],TL:[[0,150,110],[2.4,150,110],[3.3,186,58],[C,186,58]]},
+  {TW:[[0,180,344]],IV:[[0,180,302]],S6:[[0,180,246],[0.8,198,276],[C,198,276]],TR:[[0,210,110],[1.4,214,146],[C,214,146]],AR:[[0,236,196],[1.6,236,196],[2.3,252,172],[C,252,172]],TL:[[0,150,110],[2.4,150,110],[3.3,186,58],[C,186,58]]},
   {r1:[[0,150,226],[0.8,160,282],[C,160,282]],r2:[[0,110,250],[1.0,116,270],[C,116,270]],r3:[[0,250,250],[1.0,244,264],[C,244,264]],r4:[[0,176,128],[1.6,190,130],[C,190,130]]},
-  [['p','TW','IV',0.2,0.6],['p','IV','S6',0.85,1.25],['s','S6',1.4,2.0,214,160],['p','TR','AR',2.1,2.4],['s','AR',2.6,3.2,186,72],['d','TL',3.25,3.35],['s','TL',3.45,3.75,212,14]]);
+  [['p','TW','IV',0.2,0.6],['p','IV','S6',0.85,1.25],['s','S6',1.4,2.0,214,160],['p','TR','AR',2.1,2.4],['s','AR',2.6,3.2,186,72],['d','TL',3.25,3.35],['s','TL',3.45,3.75,212,14]],{caps:["Torfrau auf die Innenverteidigerin, drei Gegnerinnen pressen", "Die Sechserin kippt ab und bekommt den Ball", "Direkt lang auf die entgegenkommende Stürmerin", "Ablage auf die Achterin", "Steilpass in den Lauf der zweiten Stürmerin", "Mitnahme", "Abschluss"]});
 
 /* 9 · Positionsangriff mit Entscheidung */
 })();
@@ -3443,8 +3467,8 @@ popMake('pop8',C,[[1.2,'Drei Gegnerinnen pressen hoch'],[2.0,'Die Sechserin kipp
 (function(){const C=5.6;
 popMake('pop9',C,[[1.6,'Die Schiene bekommt den Ball, die gegnerische Außenverteidigerin rückt heraus'],[3.0,'Entscheidung: Die Achterin läuft in den freien Raum hinter ihr'],[99,'Zurücklegen auf die Stürmerin, Abschluss']],
   {HR:[[0,256,292],[1.0,266,260],[C,266,260]],SR:[[0,320,206],[1.0,322,180],[C,322,180]],AR:[[0,236,196],[1.6,236,190],[2.6,300,110],[3.2,306,72],[C,306,72]],TL:[[0,150,110],[3.0,150,110],[3.7,186,70],[C,186,70]],TR:[[0,210,110],[3.0,214,104],[3.8,222,96],[C,222,96]],S6:[[0,180,246],[1.4,206,232],[C,206,232]]},
-  {r1:[[0,306,150],[1.4,306,150],[C,306,150]],r2:[[0,226,150],[1.6,216,160],[3.0,236,128],[C,236,128]],r3:[[0,136,90],[C,136,90]],r4:[[0,240,80],[C,240,80]]},
-  [['p','HR','SR',0.3,0.85],['d','SR',0.9,1.6],['s','SR',1.8,2.45,288,124],['d','AR',2.6,3.2],['s','AR',3.3,3.75,196,80],['s','TL',3.85,4.1,150,14]]);
+  {r1:[[0,306,150],[1.4,306,150],[C,306,150]],r2:[[0,226,150],[1.6,216,160],[3.0,236,128],[C,236,128]],r3:[[0,136,90],[C,136,90]],r4:[[0,252,104],[C,252,104]]},
+  [['p','HR','SR',0.3,0.85],['d','SR',0.9,1.6],['s','SR',1.8,2.45,288,124],['d','AR',2.6,3.2],['s','AR',3.3,3.75,196,80],['s','TL',3.85,4.1,150,14]],{caps:["Halbverteidigerin auf die Schiene", "Die Außenverteidigerin rückt heraus", "Steilpass hinter sie in den Lauf der Achterin", "Die Achterin geht bis zur Grundlinie", "Zurücklegen auf die Stürmerin", "Abschluss"]});
 
 /* 10 · Pattern-Spiel 10 gegen 8 */
 })();
@@ -3453,7 +3477,7 @@ popMake('pop9',C,[[1.6,'Die Schiene bekommt den Ball, die gegnerische Außenvert
 popMake('pop10',C,[[2.2,'Aufbau gegen acht Gegnerinnen, der Ball läuft durch die Linien'],[3.6,'Die Mannschaft wählt das passende Muster'],[99,'Abschluss, nach Ballverlust sofort Gegenpressing']],
   {TW:[[0,180,344]],IV:[[0,180,302]],HL:[[0,104,292],[1.2,96,270],[C,96,270]],AL:[[0,124,196],[1.4,140,214],[C,140,214]],TL:[[0,150,110],[1.8,146,140],[C,146,140]],AR:[[0,236,196],[2.4,236,196],[3.2,220,130],[C,220,130]],TR:[[0,210,110],[3.0,214,106],[3.9,200,58],[C,200,58]],SL:[[0,40,206],[2.0,44,150],[C,44,150]],SR:[[0,320,206],[2.0,322,150],[C,322,150]],S6:[[0,180,246],[1.0,186,236],[C,186,236]],HR:[[0,256,292],[1.0,266,272],[C,266,272]]},
   {r1:[[0,150,226],[1.0,140,250],[C,140,250]],r2:[[0,228,234],[1.2,214,252],[C,214,252]],r3:[[0,120,170],[1.4,128,184],[C,128,184]],r4:[[0,180,170],[1.6,170,180],[C,170,180]],r5:[[0,250,160],[2.4,258,160],[C,258,160]],r6:[[0,120,110],[1.8,124,120],[C,124,120]],r7:[[0,180,96],[3.0,182,96],[C,182,96]],r8:[[0,250,104],[3.2,240,92],[C,240,92]]},
-  [['p','TW','IV',0.2,0.6],['p','IV','HL',0.8,1.2],['p','HL','AL',1.4,1.8],['p','AL','TL',2.0,2.35],['p','TL','AR',2.6,3.1],['s','AR',3.3,3.85,204,72],['s','TR',3.95,4.2,150,14]]);
+  [['p','TW','IV',0.2,0.6],['p','IV','HL',0.8,1.2],['p','HL','AL',1.4,1.8],['p','AL','TL',2.0,2.35],['p','TL','AR',2.6,3.1],['s','AR',3.3,3.85,204,72],['s','TR',3.95,4.2,150,14]],{caps:["Aufbau: Torfrau auf die Innenverteidigerin", "Weiter auf die Halbverteidigerin", "Durch die erste Linie auf die Achterin", "Die Stürmerin kommt entgegen", "Klatsch auf die zweite Achterin", "Steilpass in die Tiefe", "Abschluss"]});
 })();
 
 /* ---------- Schuss Bambini – U9 ---------- */
