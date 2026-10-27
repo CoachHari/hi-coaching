@@ -3964,8 +3964,8 @@ function rondoGroups(G,L){const S={L,BALLS:[]},ents=[];let C=0;const R=G.map(g=>
 (function(){
   const Av=[180,60],Bv=[290,250],Cv=[70,250],J1=[205,150],J2=[150,205],tw=(a,b)=>toward(a,b,15);
   const S={A:[[0,...Av]],B:[[0,...Bv]],C:[[0,...Cv]],J:[[0,...J1],[1.9,...J1],[2.6,...J2],[4.2,...J2],[4.8,...J1]],
-    D:[[0,125,160],[0.9,172,190],[1.7,240,205],[2.6,215,210],[3.4,190,182],[4.2,125,160]],
-    BALL:[[0,...tw(Av,J1)],[0.3,...tw(Av,J1)],[0.8,...tw(J1,Av)],[1.0,...tw(J1,Bv)],[1.1,...tw(J1,Bv)],[1.6,...tw(Bv,J1)],[1.75,...tw(Bv,Cv)],[1.9,...tw(Bv,Cv)],[2.6,...tw(Cv,Bv)],[2.75,...tw(Cv,J2)],[2.9,...tw(Cv,J2)],[3.3,...tw(J2,Cv)],[3.45,...tw(J2,Av)],[3.6,...tw(J2,Av)],[4.1,...tw(Av,J2)],[4.6,...tw(Av,J1)]],
+    D:[[0,125,160],[0.9,172,190],[1.7,240,205],[2.6,215,210],[3.4,212,172],[4.2,215,118],[4.9,125,160]],
+    BALL:[[0,...tw(Av,J1)],[0.3,...tw(Av,J1)],[0.8,...tw(J1,Av)],[0.9,220,146],[1.0,...tw(J1,Bv)],[1.1,...tw(J1,Bv)],[1.6,...tw(Bv,J1)],[1.75,...tw(Bv,Cv)],[1.9,...tw(Bv,Cv)],[2.6,...tw(Cv,Bv)],[2.75,...tw(Cv,J2)],[2.9,...tw(Cv,J2)],[3.3,...tw(J2,Cv)],[3.375,138,196],[3.45,...tw(J2,Av)],[3.6,...tw(J2,Av)],[4.1,...tw(Av,J2)],[4.6,...tw(Av,J1)]],
     P:[[0.3,0.8],[1.1,1.6],[1.9,2.6],[2.9,3.3],[3.6,4.1]],
     L:[[1.6,'Der Joker spielt immer mit der Mannschaft am Ball'],[2.6,'Er lässt den Ball zu einem Kind außen zurückprallen'],[4.1,'Joker bewegt sich in eine Lücke und wird wieder angespielt'],[99,'Drei außen plus Joker gegen eins: viel Überzahl, viele Pässe']]};
   A.rjoker={vb:'0 0 360 300',cycle:4.9,fade:false,draw(s){field(s,0,0,360,300);outline(s,[Av,Bv,Cv]);},
@@ -4010,7 +4010,8 @@ function rondoGroups(G,L){const S={L,BALLS:[]},ents=[];let C=0;const R=G.map(g=>
   const S={BALL:[[0,...bp(3,0)]],P:[],L:[[2.0,'Die linke Gruppe passt, der Fänger links jagt'],[2.8,'Weiter Pass zur anderen Gruppe'],[5.7,'Jetzt passt die rechte Gruppe, der Fänger rechts ist dran'],[99,'Und wieder zurück: Wer schafft die meisten Wechsel?']],
     DL:[[0,...dl(3)],[0.9,...dl(0)],[1.75,...dl(1)],[2.9,...cL],[6.0,...cL],[6.6,...dl(2)],[7.45,...dl(3)]],
     DR:[[0,...cR],[2.2,...cR],[2.9,...dr(4)],[3.75,...dr(5)],[4.6,...dr(6)],[5.45,...dr(7)],[6.2,...cR]]};
-  PS.forEach(([a,b,t,d])=>{S.BALL.push([t,...bp(a,b)],[r2(t+d),...bp(b,a)]);S.P.push([t,r2(t+d)]);});S.BALL.push([7.6,...bp(3,0)]);
+  const rnd=(o,pi,ni,tm)=>{const u=unit(P[o],P[pi]),v=unit(P[o],P[ni]);let m=[u[0]+v[0],u[1]+v[1]];const l=Math.hypot(m[0],m[1]);m=l<0.3?[-u[1],u[0]]:[m[0]/l,m[1]/l];S.BALL.push([r2(tm),P[o][0]+m[0]*15,P[o][1]+m[1]*15]);};
+  PS.forEach(([a,b,t,d],k)=>{if(k){const q=PS[k-1];rnd(a,q[0],b,(q[2]+q[3]+t)/2);}S.BALL.push([t,...bp(a,b)],[r2(t+d),...bp(b,a)]);S.P.push([t,r2(t+d)]);});rnd(3,2,0,7.48);S.BALL.push([7.6,...bp(3,0)]);
   P.forEach((p,j)=>{S['q'+j]=[[0,...p]];});
   A.rdoppel={vb:'0 0 360 360',cycle:7.7,fade:false,draw(s){field(s,0,0,360,360);outline(s,sqP(85,180,50));outline(s,sqP(275,180,50));},
     ents:[...P.map((_,j)=>({id:'q'+j})),{id:'DL',fill:RED},{id:'DR',fill:RED}],sc:{a:S}};
@@ -4596,11 +4597,15 @@ const G1=(r,L,o)=>gameS([r],Object.assign({teams:[[{fill:BLUE},{fill:RED}]],L},o
 })();
 
 /* --- Rondo --- */
-(function(){
-  const r=game({seed:221,sep:34,dur:12,bounds:[100,100,260,260],restart:'home',start:0,passEvery:0.8,tackle:0.03,intercept:0.25,
-    teams:[{pos:[[180,92],[268,180],[180,268],[92,180]],fixed:true},{pos:[[155,165],[205,195]]},{pos:[[180,180]]}],goals:[]});
-  const {S,ents}=G1(r,[[99,'Vier außen plus Joker innen gegen zwei: Der Joker bietet sich zwischen den Jägern an']]);
-  A.rondo4p1={vb:'0 0 360 360',cycle:12,linear:true,thumbT:2.0,draw(s){field(s,0,0,360,360);outline(s,[[92,92],[268,92],[268,268],[92,268]]);},ents,sc:{a:S}};
+(function(){const C=3.6;
+  const S={o0:[[0,180,92]],o1:[[0,268,180]],o2:[[0,180,268]],o3:[[0,92,180]],
+    J:[[0,150,205],[0.5,150,205],[1.2,182,196],[2.4,182,196],[3.0,150,150],[C,150,150]],
+    r1:[[0,165,140],[0.4,165,140],[1.0,235,150],[1.9,235,150],[2.6,196,168],[C,196,168]],
+    r2:[[0,210,185],[0.4,210,185],[1.0,222,228],[2.0,222,228],[2.7,170,232],[C,170,232]],
+    L:[[1.2,'4 außen + Joker innen gegen 2'],[1.7,'Der Joker bietet sich zwischen den Jägerinnen an'],[2.4,'Offen annehmen und auf die andere Seite weiter'],[99,'Durch die Mitte auf die andere Seite = Doppelpunkt']]};
+  S.BALLS=[jrSeq(S,[['p','o0','o1',0.2,0.55],['p','o1','J',1.3,1.65],['p','J','o3',1.95,2.35],['p','o3','o0',2.75,3.15]],C)];
+  A.rondo4p1={vb:'0 0 360 360',cycle:C,thumbT:1.5,draw(s){field(s,0,0,360,360);outline(s,[[92,92],[268,92],[268,268],[92,268]]);},
+    ents:[{id:'o0'},{id:'o1'},{id:'o2'},{id:'o3'},{id:'J',fill:NEU,label:'J',tfill:'#412402'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
 })();
 (function(){
   const r=game({seed:222,sep:34,dur:12,bounds:[30,30,330,330],passEvery:0.9,tackle:0.025,intercept:0.25,
@@ -4608,11 +4613,131 @@ const G1=(r,L,o)=>gameS([r],Object.assign({teams:[[{fill:BLUE},{fill:RED}]],L},o
   const {S,ents}=G1(r,[[99,'4 gegen 4 plus 2 Joker: Das Team am Ball hält den Ball, die Joker spielen immer mit']]);
   A.ballhalten={vb:'0 0 360 360',cycle:12,linear:true,thumbT:2.0,draw(s){field(s,0,0,360,360);outline(s,[[30,30],[330,30],[330,330],[30,330]]);},ents,sc:{a:S}};
 })();
-(function(){
-  const r=game({seed:223,dur:12,bounds:[60,60,300,300],passEvery:0.8,tackle:0.04,intercept:0.35,
-    teams:[{pos:[[180,100],[260,180],[180,260],[100,180]],fixed:true},{pos:[[160,170],[200,190]]}],goals:[{team:1,pt:[180,18],w:40},{team:1,pt:[180,342],w:40}]});
-  const {S,ents}=G1(r,[[99,'Rondo 4 gegen 2: Erobern die Jäger den Ball, kontern sie sofort auf eines der Minitore']]);
-  A.rondokonter={vb:'0 0 360 360',cycle:12,linear:true,thumbT:2.0,draw(s){field(s,0,0,360,360);outline(s,[[100,100],[260,100],[260,260],[100,260]]);mtor(s,160,2,40,14);mtor(s,160,344,40,14);},ents,sc:{a:S}};
+(function(){const C=3.4;
+  const S={o0:[[0,180,100]],o1:[[0,260,180],[1.4,260,180],[2.4,250,238],[C,250,238]],o2:[[0,180,260],[1.4,180,260],[2.3,196,290],[C,196,290]],o3:[[0,100,180],[1.5,100,180],[2.5,140,226],[C,140,226]],
+    r1:[[0,165,170],[0.4,165,170],[1.0,228,148],[1.5,228,148],[2.4,214,186],[C,214,186]],
+    r2:[[0,200,195],[0.45,200,195],[1.05,203,215],[1.35,203,215],[1.85,238,248],[2.25,226,292],[C,226,292]],
+    L:[[1.05,'4 gegen 2: Die Außenkinder halten den Ball'],[1.4,'Abgefangen!'],[2.6,'Rot kontert sofort aufs Minitor, Blau jagt hinterher'],[99,'Tor = Punkt für die Jägerinnen, dann neuer Ball vom Trainer']]};
+  S.BALLS=[jrSeq(S,[['p','o0','o1',0.2,0.55],['s','o1',1.0,1.28,214,228],['d','r2',1.4,2.25],['s','r2',2.3,2.6,180,350]],C)];
+  A.rondokonter={vb:'0 0 360 360',cycle:C,thumbT:1.3,draw(s){field(s,0,0,360,360);outline(s,[[100,100],[260,100],[260,260],[100,260]]);mtor(s,160,2,40,14);mtor(s,160,344,40,14);},
+    ents:[{id:'o0'},{id:'o1'},{id:'o2'},{id:'o3'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* ---------- Rondo U10 – U12: zehn neue Rondos (5 Säulen) ---------- */
+const rkLab=(s,x,y,t,a)=>{const e=txt(s,x,y,a||'middle','12');e.textContent=t;e.setAttribute('opacity','.85');return e;};
+/* Rondo 5 gegen 2 mit Lückenpass */
+(function(){const C=4.4,c=[180,180],P=krCircle(c,120,5);
+  const S={L:[[1.8,'5 gegen 2: Der Ball läuft, die Jäger schieben mit'],[2.75,'Die Jäger stehen schräg: Zwischen ihnen ist eine Lücke'],[99,'Pass durch die Lücke = 2 Punkte']],
+    r1:[[0,160,140],[0.35,160,140],[0.95,238,152],[1.1,238,152],[1.75,232,228],[1.95,232,228],[2.6,158,240],[C,158,240]],
+    r2:[[0,205,190],[0.4,205,190],[1.0,200,212],[1.3,200,212],[1.7,170,232],[1.9,170,232],[2.5,98,186],[C,98,186]]};
+  P.forEach((p,i)=>{S['p'+i]=[[0,...p]];});
+  S.BALLS=[jrSeq(S,[['p','p0','p1',0.2,0.6],['p','p1','p2',1.05,1.45],['p','p2','p3',1.85,2.3],['p','p3','p0',2.8,3.35]],C)];
+  A.rk52={vb:'0 0 360 360',cycle:C,thumbT:3.0,draw(s){field(s,0,0,360,360);krRing(s,c,138);},
+    ents:[...P.map((_,i)=>({id:'p'+i})),{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* Rondo 4 + 2 gegen 2 mit Innenkindern */
+(function(){const C=4.4;
+  const S={L:[[1.45,'4 außen + 2 innen gegen 2: Die Innenkinder suchen die Lücke hinter den Jägern'],[2.1,'Pass nach innen, offen annehmen …'],[99,'… und auf die andere Seite weiter = Punkt']],
+    o0:[[0,180,50]],o1:[[0,310,180]],o2:[[0,180,310]],o3:[[0,50,180]],
+    i1:[[0,115,205],[0.6,115,205],[1.6,140,122],[C,140,122]],i2:[[0,225,262],[0.8,225,262],[1.4,212,192],[C,212,192]],
+    r1:[[0,165,105],[0.5,165,105],[1.2,272,150],[2.3,272,150],[3.1,195,150],[C,195,150]],
+    r2:[[0,215,160],[0.6,215,160],[1.3,262,236],[2.3,262,236],[3.2,140,212],[C,140,212]]};
+  S.BALLS=[jrSeq(S,[['p','o0','o1',0.25,0.65],['p','o1','i2',1.5,1.9],['p','i2','o3',2.15,2.6],['p','o3','o0',3.3,3.75]],C)];
+  A.rkinnen={vb:'0 0 360 360',cycle:C,thumbT:1.9,draw(s){field(s,0,0,360,360);outline(s,[[50,50],[310,50],[310,310],[50,310]]);},
+    ents:[{id:'o0'},{id:'o1'},{id:'o2'},{id:'o3'},{id:'i1',fill:NEU,label:'I',tfill:'#412402'},{id:'i2',fill:NEU,label:'I',tfill:'#412402'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* Freie-Ecke-Rondo 3 gegen 1 */
+(function(){const C=4.4,Aa=[90,90],B=[270,90],Cc=[270,270],D=[90,270];
+  const S={L:[[1.5,'Pass nach rechts: Das Kind gegenüber läuft sofort in die freie Ecke'],[2.8,'Wer den Ball hat, hat immer zwei Anspielstationen'],[99,'Der Jäger jagt, die Ecken wandern mit']],
+    a:[[0,...Aa],[1.75,...Aa],[2.7,...D],[C,...D]],b:[[0,...B],[3.05,...B],[4.0,...Aa],[C,...Aa]],d:[[0,...D],[0.55,...D],[1.45,...Cc],[C,...Cc]],
+    r:[[0,175,175],[0.4,175,175],[1.0,222,130],[1.45,222,130],[2.2,226,222],[2.85,226,222],[3.6,140,224],[C,140,224]]};
+  S.BALLS=[jrSeq(S,[['p','a','b',0.2,0.6],['p','b','d',1.5,1.9],['p','d','a',2.8,3.25]],C)];
+  A.rkecke={vb:'0 0 360 360',cycle:C,thumbT:1.2,draw(s){field(s,0,0,360,360);outline(s,[Aa,B,Cc,D]);[[72,72],[288,72],[288,288],[72,288]].forEach(([x,y])=>cone(s,x,y));},
+    ents:[{id:'a'},{id:'b'},{id:'d'},{id:'r',fill:RED}],sc:{a:S}};
+})();
+/* Rondo 4 gegen 2 mit Tiefenkind */
+(function(){const C=4.4;
+  const S={L:[[1.1,'4 gegen 2 im Feld, vorne wartet das Tiefenkind'],[1.8,'Erst nach vorne schauen …'],[2.6,'… Weg frei: Pass zum Tiefenkind = Punkt'],[99,'Tausch: Das Tiefenkind dribbelt ins Feld, das passende Kind geht nach vorne']],
+    o0:[[0,180,140],[2.6,180,140],[3.1,222,98],[3.6,186,52],[C,186,52]],o1:[[0,280,220]],o2:[[0,180,300]],o3:[[0,80,220]],
+    T:[[0,180,55],[2.6,180,55],[3.1,140,96],[3.7,176,138],[C,176,138]],
+    r1:[[0,160,200],[0.4,160,200],[1.0,125,245],[1.6,125,245],[2.2,158,190],[C,158,190]],
+    r2:[[0,205,240],[0.4,205,240],[1.0,150,276],[1.7,150,276],[2.4,212,232],[C,212,232]]};
+  S.BALLS=[jrSeq(S,[['p','o2','o3',0.2,0.6],['p','o3','o0',1.1,1.5],['p','o0','T',1.95,2.4],['d','T',2.65,3.7]],C)];
+  A.rktiefe={vb:'0 0 360 360',cycle:C,thumbT:2.3,draw(s){field(s,0,0,360,360);outline(s,[[180,140],[280,220],[180,300],[80,220]]);
+      el('rect',{x:110,y:24,width:140,height:62,fill:'rgba(255,255,255,.06)',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.6'},s);rkLab(s,258,40,'Tiefenzone','start');},
+    ents:[{id:'o0'},{id:'o1'},{id:'o2'},{id:'o3'},{id:'T',fill:NEU,label:'T',tfill:'#412402'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* Seitenwechsel-Rondo 3 + 3 gegen 2 */
+(function(){const C=4.2;
+  const S={L:[[2.05,'3 gegen 2 links: drei Pässe in Folge'],[2.75,'Dann Seitenwechsel ins andere Feld'],[99,'Die Jäger sprinten hinterher, drüben geht es weiter']],
+    a:[[0,40,180]],b:[[0,140,95]],c:[[0,140,265]],d:[[0,222,95]],e:[[0,222,265]],f:[[0,320,180]],
+    r1:[[0,95,160],[0.35,95,160],[1.0,110,128],[1.5,110,128],[2.05,118,224],[2.75,118,224],[3.5,256,206],[C,256,206]],
+    r2:[[0,110,215],[0.35,110,215],[1.0,76,214],[1.6,76,214],[2.1,84,188],[2.75,84,188],[3.55,242,140],[C,242,140]]};
+  S.BALLS=[jrSeq(S,[['p','a','b',0.2,0.6],['p','b','c',1.05,1.5],['p','c','f',2.15,2.7],['p','f','d',2.95,3.35]],C)];
+  A.rkseite={vb:'0 0 360 360',cycle:C,thumbT:2.4,draw(s){field(s,0,0,360,360);
+      el('rect',{x:20,y:70,width:320,height:220,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);line(s,180,70,180,290,'8 6','.7');rkLab(s,100,62,'Feld 1');rkLab(s,260,62,'Feld 2');},
+    ents:[{id:'a'},{id:'b'},{id:'c'},{id:'d'},{id:'e'},{id:'f'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* Feldwechsel-Rondo 4 gegen 2 ins 2 gegen 4 */
+(function(){const C=4.4;
+  const S={L:[[1.6,'Feld 1: Blau hält den Ball 4 gegen 2'],[2.4,'Ballgewinn Rot: sofort ins andere Feld passen'],[99,'Zwei Blaue sprinten hinüber: Jetzt hält Rot den Ball 4 gegen 2']],
+    b1:[[0,125,55]],b2:[[0,235,55]],b3:[[0,235,155],[2.75,235,155],[3.5,205,250],[C,205,250]],b4:[[0,125,155],[2.75,125,155],[3.5,165,236],[C,165,236]],
+    r1:[[0,165,95],[0.35,165,95],[0.9,205,85],[2.1,205,85],[2.55,180,172],[2.95,255,205],[C,255,205]],
+    r2:[[0,200,128],[1.0,200,128],[1.5,182,140],[1.9,182,140],[2.75,120,235],[C,120,235]],
+    r3:[[0,130,290]],r4:[[0,230,290]]};
+  S.BALLS=[jrSeq(S,[['p','b1','b2',0.2,0.55],['p','b2','b3',0.8,1.15],['s','b3',1.4,1.62,186,153],['p','r2','r3',1.9,2.35],['p','r3','r4',3.3,3.7]],C)];
+  A.rkfeld={vb:'0 0 360 360',cycle:C,thumbT:1.0,draw(s){field(s,0,0,360,360);
+      el('rect',{x:110,y:40,width:140,height:130,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);el('rect',{x:110,y:190,width:140,height:130,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);
+      rkLab(s,102,108,'Feld 1','end');rkLab(s,102,258,'Feld 2','end');},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED}],sc:{a:S}};
+})();
+/* Drei-Team-Rondo 6 gegen 3 */
+(function(){const C=4.2;
+  const S={L:[[1.3,'Blau und Gelb halten zusammen den Ball: 6 gegen 3'],[1.65,'Rot erobert den Ball von Gelb'],[2.6,'Sofort tauschen: Gelb jagt, Rot spielt mit Blau'],[99,'Wer den Ball verliert, ist mit dem ganzen Team Jäger']],
+    b1:[[0,60,100]],b2:[[0,300,100]],b3:[[0,180,310]],
+    y1:[[0,180,50],[1.9,180,50],[2.7,180,135],[C,180,135]],y2:[[0,60,260],[1.8,60,260],[2.6,122,222],[C,122,222]],y3:[[0,300,260],[1.8,300,260],[2.6,248,238],[C,248,238]],
+    r1:[[0,150,140],[0.3,150,140],[0.8,166,122],[1.65,166,122],[2.45,40,180],[C,40,180]],
+    r2:[[0,215,160],[0.4,215,160],[1.0,252,176],[1.65,252,176],[2.45,320,180],[C,320,180]],
+    r3:[[0,175,215],[0.9,175,215],[1.45,236,270],[1.6,236,270],[2.4,256,316],[C,256,316]]};
+  S.BALLS=[jrSeq(S,[['p','y1','b2',0.2,0.55],['p','b2','y3',0.75,1.1],['s','y3',1.25,1.5,239,284],['d','r3',1.65,2.4],['p','r3','b3',2.55,2.9],['p','b3','r1',3.2,3.65]],C)];
+  A.rkdreiteam={vb:'0 0 360 360',cycle:C,thumbT:1.0,draw(s){field(s,0,0,360,360);outline(s,[[30,30],[330,30],[330,330],[30,330]]);},
+    ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'y1',fill:NEU},{id:'y2',fill:NEU},{id:'y3',fill:NEU},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED}],sc:{a:S}};
+})();
+/* Zielspieler-Rondo 3 gegen 2 + 2 */
+(function(){const C=3.8;
+  const S={L:[[1.3,'3 gegen 2 in der Mitte: Pass zum ersten Zielkind'],[2.0,'Ablage auf das nachrückende Kind'],[99,'Verlagerung zum zweiten Zielkind = Punkt']],
+    Z1:[[0,35,180]],Z2:[[0,325,180]],
+    b1:[[0,120,120],[1.25,120,120],[1.8,160,95],[C,160,95]],b2:[[0,120,240],[0.7,120,240],[1.45,88,216],[C,88,216]],b3:[[0,200,180],[0.6,200,180],[1.6,206,172],[C,206,172]],
+    r1:[[0,180,130],[0.6,180,130],[1.3,124,152],[2.5,124,152],[3.1,165,150],[C,165,150]],
+    r2:[[0,235,215],[0.7,235,215],[1.5,136,244],[2.5,136,244],[3.1,190,220],[C,190,220]]};
+  S.BALLS=[jrSeq(S,[['p','b3','b1',0.2,0.55],['p','b1','Z1',0.85,1.25],['p','Z1','b2',1.55,1.85],['p','b2','b3',2.05,2.45],['p','b3','Z2',2.7,3.1]],C)];
+  A.rkziel={vb:'0 0 360 360',cycle:C,thumbT:1.7,draw(s){field(s,0,0,360,360);
+      el('rect',{x:60,y:80,width:240,height:200,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);
+      [[14,80],[300,80]].forEach(([x])=>el('rect',{x,y:130,width:46,height:100,fill:'rgba(255,255,255,.08)',stroke:'#FFFFFF','stroke-width':'1.5','stroke-dasharray':'5 5',opacity:'.6'},s));},
+    ents:[{id:'Z1',fill:NEU,label:'Z',tfill:'#412402'},{id:'Z2',fill:NEU,label:'Z',tfill:'#412402'},{id:'b1'},{id:'b2'},{id:'b3'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
+})();
+/* Positionsspiel 3 gegen 3 + 3 */
+(function(){const C=3.4;
+  const S={L:[[1.2,'3 gegen 3 + 3 Joker: Das Team am Ball spielt mit den Jokern'],[1.9,'Den Joker in der Mitte zwischen den Gegnern anspielen'],[99,'Von Ende zu Ende = Punkt']],
+    N1:[[0,25,180]],N2:[[0,335,180]],N3:[[0,180,180],[0.6,180,180],[1.0,176,186],[C,176,186]],
+    b1:[[0,110,95]],b2:[[0,110,270],[1.4,110,270],[2.2,150,290],[C,150,290]],b3:[[0,250,110],[1.2,250,110],[1.6,252,100],[C,252,100]],
+    r1:[[0,140,160],[0.3,140,160],[0.85,85,128],[1.5,85,128],[2.2,140,140],[C,140,140]],
+    r2:[[0,150,235],[0.5,150,235],[1.0,128,248],[C,128,248]],
+    r3:[[0,250,215],[1.3,250,215],[2.05,224,142],[C,224,142]]};
+  S.BALLS=[jrSeq(S,[['p','N1','b1',0.2,0.55],['p','b1','N3',0.9,1.25],['p','N3','b3',1.5,1.85],['p','b3','N2',2.15,2.55]],C)];
+  A.rkpos={vb:'0 0 360 360',cycle:C,thumbT:1.4,draw(s){field(s,0,0,360,360);
+      el('rect',{x:45,y:45,width:270,height:270,fill:'none',stroke:'#FFFFFF','stroke-width':'1.5',opacity:'.6'},s);},
+    ents:[{id:'N1',fill:NEU,label:'J',tfill:'#412402'},{id:'N2',fill:NEU,label:'J',tfill:'#412402'},{id:'N3',fill:NEU,label:'J',tfill:'#412402'},{id:'b1'},{id:'b2'},{id:'b3'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED}],sc:{a:S}};
+})();
+/* Ausbruch-Rondo 4 gegen 2 mit Hütchentoren */
+(function(){const C=3.8;
+  const S={L:[[1.0,'4 gegen 2: Blau hält den Ball'],[1.9,'Rot erobert den Ball und will durch ein Hütchentor ausbrechen'],[2.75,'Blau presst sofort zu zweit: Ball zurück!'],[99,'Schafft Rot das Hütchentor, gibt es einen Punkt für Rot']],
+    o0:[[0,180,80]],o1:[[0,280,180],[1.35,280,180],[2.2,272,238],[C,272,238]],o2:[[0,180,280],[1.35,180,280],[2.15,232,282],[2.6,232,282],[3.3,196,276],[C,196,276]],o3:[[0,80,180],[2.6,80,180],[3.2,110,200],[C,110,200]],
+    r1:[[0,165,165],[0.35,165,165],[0.95,240,158],[1.4,240,158],[2.2,236,196],[C,236,196]],
+    r2:[[0,200,200],[0.45,200,200],[1.0,214,226],[1.3,214,226],[2.05,240,250],[C,240,250]]};
+  S.BALLS=[jrSeq(S,[['p','o0','o1',0.2,0.55],['s','o1',0.95,1.2,222,240],['d','r2',1.35,2.05],['p','r2','o2',2.15,2.3],['p','o2','o3',2.85,3.3]],C)];
+  A.rkausbruch={vb:'0 0 360 360',cycle:C,thumbT:0.9,draw(s){field(s,0,0,360,360);outline(s,[[80,80],[280,80],[280,280],[80,280]]);
+      [[64,64,1],[296,64,-1],[296,296,1],[64,296,-1]].forEach(([x,y,k])=>{cone(s,x-14,y+14*k);cone(s,x+14,y-14*k);});},
+    ents:[{id:'o0'},{id:'o1'},{id:'o2'},{id:'o3'},{id:'r1',fill:RED},{id:'r2',fill:RED}],sc:{a:S}};
 })();
 
 /* --- Verteidigung --- */
@@ -6168,6 +6293,121 @@ EX.push(...[
  leicht:['3 gegen 1 (Stufe 1)','Kürzeres Feld','Torfrauen spielen den Ball ab'],
  steig:['3 gegen 2 (Stufe 2)','Zeitlimit von 10 Sekunden','Nachlaufende (Stufe 3)']}
 ].map(e=>Object.assign({},KUS,e)));
+/* ---------- Rondo U10 – U12: zehn neue Rondos (5 Säulen) ---------- */
+Object.assign(LEG,{innen:['Innenkind',NEU,1],tiefe:['Tiefenkind',NEU,1],zielkind:['Zielkind',NEU,1]});
+const KRK={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'rondo',lv:['u12'],saeulen:true};
+EX.push(...[
+{id:'rk52',title:'Rondo 5 gegen 2 mit Lückenpass',legend:['kind','jaeger','ball'],
+ chips:[['Schwerpunkt','Passen · Linie überspielen'],['','7 Kinder pro Rondo'],['Feld','Kreis ca. 12 m Durchmesser'],['Dauer','10–12 min'],['Material','1 Ball pro Rondo, Hütchen, Leibchen']],
+ ziel:'Das Kind erkennt die Lücke zwischen den zwei Jägern und spielt den Ball flach und fest hindurch. Im Spiel: den Pass durch die Linie des Gegners wagen statt nur außen herum.',
+ org:['Kreis mit ca. 12 m Durchmesser aus Hütchen','5 Kinder außen, 2 Jäger in der Mitte','Ersatzbälle am Rand'],
+ rot:'Wer den Ball verliert oder ins Aus spielt, geht für den Jäger in die Mitte, der am längsten drin ist. Spätestens nach 90 Sekunden wechseln.',
+ ablauf:['Die Kinder außen passen sich den Ball zu.','Die zwei Jäger versuchen, den Ball zu erobern.','Ein Pass durch die Lücke zwischen den Jägern zählt 2 Punkte.','Nach Ballgewinn tauscht das Kind, das den Ball verloren hat, mit einem Jäger.'],
+ stufen:[['Stufe 1 · Jäger gehen','Die Jäger gehen nur, freie Kontakte. Lückenpass = 2 Punkte.'],['Stufe 2 · Jäger jagen','Die Jäger jagen, höchstens drei Kontakte.'],['Stufe 3 · Zwei Kontakte','Höchstens zwei Kontakte. Lückenpass zählt nur, wenn er direkt weitergespielt wird.']],
+ coach:[['Lücke sehen','Vor der Annahme schauen, wo die Jäger stehen. Erkennbar: Das Kind dreht vor dem Pass kurz den Kopf.'],['Lückenpass','Flach und fest durch die Mitte. Fehlerbild: Der Ball ist zu langsam und ein Jäger kommt mit dem Fuß dran.'],['Offen anbieten','Seitlich stehen, damit man beide Seiten sieht.'],['Jäger','Zu zweit eng stehen, damit keine Lücke entsteht.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Kind: ca. 20–25 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Größerer Kreis','Jäger gehen (Stufe 1)','6 gegen 2'],
+ steig:['Jäger jagen (Stufe 2)','Zwei Kontakte (Stufe 3)','Kleinerer Kreis']},
+{id:'rkinnen',title:'Rondo 4 + 2 gegen 2 mit Innenkindern',legend:['kind','innen','jaeger','ball'],
+ chips:[['Schwerpunkt','Passen · Spiel zwischen den Linien'],['','8 Kinder pro Rondo'],['Feld','Quadrat ca. 14 × 14 m'],['Dauer','10–12 min'],['Material','1 Ball pro Rondo, Hütchen, Leibchen in 3 Farben']],
+ ziel:'Das Innenkind bietet sich in der Lücke hinter den Jägern an, nimmt den Ball offen an und spielt auf die andere Seite weiter. Im Spiel: den Ball durch die Mitte spielen, wo eine Mitspielerin zwischen den Gegnern steht.',
+ org:['Quadrat ca. 14 × 14 m','4 Kinder außen an den Seiten, 2 Innenkinder im Feld','2 Jäger im Feld'],
+ rot:'Nach 2 Minuten tauschen: Die Jäger gehen nach innen, die Innenkinder nach außen, zwei Außenkinder werden Jäger.',
+ ablauf:['Die Außenkinder passen sich den Ball zu.','Die Innenkinder suchen die Lücke hinter den Jägern.','Pass außen – innen – auf die andere Seite = Punkt.','Erobern die Jäger den Ball, spielen sie ihn sofort zurück zum Trainer, der neu einspielt.'],
+ stufen:[['Stufe 1 · Ein Jäger','Nur ein Jäger, Innenkinder haben freie Kontakte.'],['Stufe 2 · Zwei Jäger','Zwei Jäger, Punkt nur über ein Innenkind.'],['Stufe 3 · Zwei Kontakte innen','Die Innenkinder dürfen höchstens zwei Kontakte machen.']],
+ coach:[['Lücke finden','Innenkind steht hinter den Jägern, nicht neben ihnen. Erkennbar: Zwischen Ball und Innenkind steht kein Jäger.'],['Offene Annahme','Den Ball mit dem hinteren Fuß annehmen und gleich aufdrehen. Fehlerbild: Das Innenkind nimmt mit dem Rücken zum Ziel an und spielt zurück.'],['Geduld außen','Erst passen, bis der Weg nach innen frei ist.'],['Jäger','Den Pass nach innen zustellen, nicht nur dem Ball nachlaufen.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15–20 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Ein Jäger (Stufe 1)','Größeres Quadrat','Innenkinder dürfen angespielt werden, ohne dass es eine Lücke gibt'],
+ steig:['Zwei Kontakte innen (Stufe 3)','Kleineres Quadrat','Punkt nur bei direktem Weiterspielen']},
+{id:'rkecke',title:'Freie-Ecke-Rondo 3 gegen 1',legend:['kind','jaeger','ball','cone'],
+ chips:[['Schwerpunkt','Anbieten · Passwinkel'],['','8–12 Kinder, Gruppen zu 4'],['Feld','Quadrate ca. 8 × 8 m, 4 Hütchen'],['Dauer','8–10 min'],['Material','1 Ball und 4 Hütchen pro Gruppe']],
+ ziel:'Das Kind ohne Ball läuft sofort in die freie Ecke neben dem Ball, sodass das Kind am Ball immer zwei Anspielstationen hat. Im Spiel: nach jedem Pass neu anbieten und ein Dreieck bilden.',
+ org:['Quadrate ca. 8 × 8 m, an jeder Ecke ein Hütchen','3 Kinder an drei Ecken, eine Ecke bleibt frei','1 Jäger im Quadrat'],
+ rot:'Wer den Ball verliert, wird Jäger. Spätestens nach 1 Minute wechseln.',
+ ablauf:['Die drei Kinder passen sich entlang der Seiten den Ball zu.','Nach jedem Pass läuft das Kind gegenüber vom Ball in die freie Ecke.','So hat das Kind am Ball immer zwei Kinder in den Nachbarecken.','Der Jäger versucht, den Ball zu erobern.'],
+ stufen:[['Stufe 1 · Ohne Jäger','Pass und Laufweg ohne Gegner üben.'],['Stufe 2 · Jäger geht','Der Jäger geht nur und stellt einen Passweg zu.'],['Stufe 3 · Jäger jagt','Der Jäger jagt, höchstens zwei Kontakte.']],
+ coach:[['Freie Ecke','Sofort loslaufen, wenn der Pass gespielt ist. Erkennbar: Das Kind kommt in der Ecke an, bevor der nächste Pass kommt.'],['Zwei Möglichkeiten','Am Ball immer beide Nachbarecken anschauen. Fehlerbild: Ein Kind steht gegenüber vom Ball und ist nicht anspielbar.'],['Annahme','In Richtung des nächsten Passes annehmen.'],['Jäger','Einen Passweg zustellen und das Kind zur anderen Seite zwingen.']],
+ last:['Dauer: 5 Runden à 1 Minute, 30 Sekunden Pause','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte und viele kurze Läufe pro Runde','Intensität: hoch'],
+ leicht:['Ohne Jäger (Stufe 1)','Größeres Quadrat','Freie Kontakte'],
+ steig:['Jäger jagt (Stufe 3)','Nur direkt passen','Kleineres Quadrat']},
+{id:'rktiefe',title:'Rondo 4 gegen 2 mit Tiefenkind',legend:['kind','tiefe','jaeger','ball'],
+ chips:[['Schwerpunkt','Passen · Blick nach vorne'],['','7 Kinder pro Rondo'],['Feld','Raute ca. 12 m + Tiefenzone 5 m'],['Dauer','10–12 min'],['Material','1 Ball pro Rondo, Hütchen, Leibchen']],
+ ziel:'Das Kind am Ball schaut zuerst nach vorne: Ist der Weg zum Tiefenkind frei, spielt es den Pass dorthin. Im Spiel: nicht nur quer passen, sondern den Pass nach vorne suchen.',
+ org:['Raute ca. 12 m, 4 Kinder an den Ecken, 2 Jäger innen','Vor der Raute eine Zone (ca. 5 m tief) mit einem Tiefenkind'],
+ rot:'Wer zum Tiefenkind passt, tauscht mit ihm. Wer den Ball an die Jäger verliert, wird Jäger.',
+ ablauf:['Die vier Kinder passen sich in der Raute den Ball zu.','Die Jäger versuchen, den Ball zu erobern und den Weg nach vorne zu schließen.','Ist der Weg frei, Pass zum Tiefenkind = Punkt.','Das Tiefenkind dribbelt in die Raute, das Kind, das gepasst hat, geht in die Tiefenzone.'],
+ stufen:[['Stufe 1 · Ein Jäger','Nur ein Jäger, Pass nach vorne jederzeit erlaubt.'],['Stufe 2 · Zwei Jäger','Zwei Jäger, Pass nach vorne erst nach drei Pässen.'],['Stufe 3 · Ablage','Das Tiefenkind spielt direkt zurück in die Raute, erst dann zählt der Punkt.']],
+ coach:[['Erst nach vorne','Vor der Annahme nach vorne schauen. Erkennbar: Das Kind hebt den Kopf, bevor der Ball ankommt.'],['Weg frei?','Nur nach vorne spielen, wenn kein Jäger im Weg steht. Fehlerbild: Der Pass geht nach vorne, obwohl ein Jäger davor steht.'],['Tiefenkind','Seitlich bewegen, damit es anspielbar bleibt.'],['Jäger','Einer presst, der andere schließt den Weg nach vorne.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Ein Jäger (Stufe 1)','Breitere Tiefenzone','Größere Raute'],
+ steig:['Ablage (Stufe 3)','Höchstens zwei Kontakte','Ein zweites Tiefenkind auf der anderen Seite']},
+{id:'rkseite',title:'Seitenwechsel-Rondo 3 + 3 gegen 2',legend:['kind','jaeger','ball'],
+ chips:[['Schwerpunkt','Passen · Spielverlagerung'],['','8 Kinder pro Gruppe'],['Feld','2 Felder à 10 × 12 m nebeneinander'],['Dauer','10–12 min'],['Material','1 Ball pro Gruppe, Hütchen, Leibchen']],
+ ziel:'Das Kind spielt mit seinem Team drei Pässe in Folge und verlagert dann den Ball ins andere Feld, wo es mehr Platz gibt. Im Spiel: wenn eine Seite zu ist, auf die andere Seite spielen.',
+ org:['Zwei Felder à 10 × 12 m nebeneinander','In jedem Feld 3 Kinder','2 Jäger im Feld mit Ball'],
+ rot:'Wer den Ball verliert, wird mit dem Kind daneben Jäger. Nach spätestens 2 Minuten wechseln.',
+ ablauf:['3 gegen 2 im Feld mit Ball.','Nach drei Pässen in Folge darf in das andere Feld gespielt werden.','Die Jäger sprinten hinterher, im anderen Feld geht es weiter.','Seitenwechsel nach drei Pässen = Punkt.'],
+ stufen:[['Stufe 1 · Ein Jäger','Ein Jäger, Seitenwechsel jederzeit.'],['Stufe 2 · Zwei Jäger','Zwei Jäger, Seitenwechsel nach drei Pässen.'],['Stufe 3 · Ein Jäger bleibt','Ein Jäger darf im anderen Feld warten. Seitenwechsel nur flach.']],
+ coach:[['Kopf hoch','Vor dem Wechselpass schauen, ob drüben jemand frei ist. Erkennbar: Das Kind schaut ins andere Feld, bevor der Ball kommt.'],['Fester Pass','Flach und fest, damit die Jäger nicht dazwischenkommen. Fehlerbild: Der Pass ist zu langsam und wird abgefangen.'],['Drüben bereit','Das andere Feld bietet sich breit an.'],['Jäger','Nach dem Wechselpass sofort hinübersprinten.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 12–15 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Ein Jäger (Stufe 1)','Felder größer','Seitenwechsel nach zwei Pässen'],
+ steig:['Ein Jäger bleibt drüben (Stufe 3)','Höchstens zwei Kontakte','Seitenwechsel nur direkt']},
+{id:'rkfeld',title:'Feldwechsel-Rondo 4 gegen 2 ins 2 gegen 4',legend:['teamblau','teamrot','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Umschalten'],['','8 Kinder (4 gegen 4)'],['Feld','2 Felder à 10 × 10 m übereinander'],['Dauer','10–12 min'],['Material','Bälle beim Trainer, Hütchen, Leibchen in 2 Farben']],
+ ziel:'Das Kind hält mit seinem Team im 4 gegen 2 den Ball. Erobert Rot den Ball, passt es sofort ins andere Feld zu den eigenen Kindern, und zwei Blaue sprinten zum Pressen hinüber. Im Spiel: nach Ballgewinn sofort den ersten Pass spielen.',
+ org:['Zwei Felder à 10 × 10 m, dazwischen 2 m Abstand','Feld 1: 4 Blaue gegen 2 Rote','Feld 2: 2 Rote warten'],
+ rot:'Es geht hin und her: Nach jedem Ballgewinn wechselt das Spiel ins andere Feld. Nach 3 Minuten neue Teams.',
+ ablauf:['Blau hält den Ball 4 gegen 2.','Erobert Rot den Ball, passt es sofort ins andere Feld.','Die zwei roten Jäger laufen mit, zwei Blaue sprinten zum Pressen hinüber.','Jetzt hält Rot 4 gegen 2, die anderen zwei Blauen warten.'],
+ stufen:[['Stufe 1 · Mit Trainerball','Nach Ballgewinn spielt der Trainer einen neuen Ball ins andere Feld.'],['Stufe 2 · Erster Pass','Nach Ballgewinn passt Rot selbst ins andere Feld.'],['Stufe 3 · Schnell rüber','Die zwei Blauen müssen in 3 Sekunden drüben sein, sonst Punkt für Rot.']],
+ coach:[['Erster Pass','Nach dem Ballgewinn sofort ins andere Feld schauen. Erkennbar: Der Pass geht mit höchstens zwei Kontakten hinüber.'],['Drüben bereit','Die wartenden Kinder stehen breit. Fehlerbild: Beide stehen nebeneinander und können zugestellt werden.'],['Sprint zum Pressen','Die Blauen sprinten sofort los.'],['Ballbesitz','Viele kurze Pässe, offen anbieten.']],
+ last:['Dauer: 3 Runden à 3 Minuten, 1 Minute Pause','Wartezeit: kurz, die wartenden Kinder sind gleich wieder dran','Pro Kind: ca. 6–10 Umschaltaktionen pro Runde','Intensität: hoch'],
+ leicht:['Mit Trainerball (Stufe 1)','Größere Felder','3 Kontakte'],
+ steig:['Schnell rüber (Stufe 3)','Höchstens zwei Kontakte','Kleinere Felder']},
+{id:'rkdreiteam',title:'Drei-Team-Rondo 6 gegen 3',legend:['teamblau','teamgelb','teamrot','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Umschalten als Team'],['','9 Kinder in 3 Teams'],['Feld','Quadrat ca. 15 × 15 m'],['Dauer','10–12 min'],['Material','Bälle, Hütchen, Leibchen in 3 Farben']],
+ ziel:'Zwei Teams halten gemeinsam den Ball gegen ein Team. Wer den Ball verliert, ist sofort mit dem ganzen Team Jäger. Im Spiel: Ballbesitz und schnelles Umschalten ohne Pause.',
+ org:['Quadrat ca. 15 × 15 m','3 Teams à 3 Kinder in Blau, Gelb und Rot','Zwei Teams am Rand verteilt, ein Team jagt innen'],
+ rot:'Das Team, das den Ball verliert, wird sofort Jägerteam. Das Team, das den Ball erobert, spielt mit dem anderen Team weiter.',
+ ablauf:['Blau und Gelb halten zusammen den Ball gegen Rot.','Gepasst wird abwechselnd zur anderen Farbe.','Erobert Rot den Ball, wird das Team, das ihn verloren hat, Jäger.','Rot und das andere Team spielen sofort weiter.'],
+ stufen:[['Stufe 1 · Freie Pässe','Pässe zu allen erlaubt, der Trainer ruft den Wechsel.'],['Stufe 2 · Farbwechsel','Pässe nur zur anderen Farbe.'],['Stufe 3 · Zwei Kontakte','Höchstens zwei Kontakte, nach Ballgewinn muss der erste Pass sofort kommen.']],
+ coach:[['Sofort umschalten','Nach Ballverlust sofort jagen. Erkennbar: Das ganze Team ist innerhalb von 2 Sekunden auf dem Weg zum Ball.'],['Schnell breit machen','Nach Ballgewinn sofort nach außen laufen. Fehlerbild: Das Team bleibt in der Mitte stehen und verliert den Ball gleich wieder.'],['Farbe sehen','Vor dem Pass schauen, wo die andere Farbe steht.'],['Jagen zu dritt','Einer presst, zwei stellen Passwege zu.']],
+ last:['Dauer: 3 Runden à 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte und 4–6 Wechsel pro Runde','Intensität: hoch'],
+ leicht:['Freie Pässe (Stufe 1)','Größeres Feld','Trainer ruft den Wechsel'],
+ steig:['Zwei Kontakte (Stufe 3)','Kleineres Feld','Jägerteam bekommt einen Punkt für jeden Ballgewinn in 5 Sekunden']},
+{id:'rkziel',title:'Zielkind-Rondo 3 gegen 2 + 2',legend:['kind','zielkind','jaeger','ball'],
+ chips:[['Schwerpunkt','Passen · Ablage und Verlagerung'],['','7 Kinder pro Gruppe'],['Feld','20 × 15 m plus 2 Zielzonen'],['Dauer','10–12 min'],['Material','1 Ball pro Gruppe, Hütchen, Leibchen']],
+ ziel:'Das Kind spielt das Zielkind an, rückt für die Ablage nach und verlagert dann zum Zielkind auf der anderen Seite. Im Spiel: den Ball nach vorne spielen, unterstützen und die Seite wechseln.',
+ org:['Feld ca. 20 × 15 m','An beiden Enden eine Zielzone mit einem Zielkind','3 Kinder gegen 2 Jäger im Feld'],
+ rot:'Wer zum zweiten Zielkind passt, tauscht mit ihm. Wer den Ball verliert, wird Jäger.',
+ ablauf:['3 gegen 2 im Feld.','Pass zum ersten Zielkind.','Das Zielkind legt auf ein nachrückendes Kind ab.','Verlagerung zum zweiten Zielkind = Punkt.'],
+ stufen:[['Stufe 1 · Ein Jäger','Ein Jäger, Ablage frei.'],['Stufe 2 · Zwei Jäger','Zwei Jäger, Punkt nur nach Ablage.'],['Stufe 3 · Direkt','Zielkinder spielen nur direkt, Punkt nur mit flachem Pass.']],
+ coach:[['Nachrücken','Nach dem Pass zum Zielkind ein Kind nach vorne. Erkennbar: Bei der Ablage steht ein Kind schräg vor dem Zielkind.'],['Ablage','Das Zielkind spielt den Ball sauber zurück, flach und in den Fuß. Fehlerbild: Die Ablage geht hinter das nachrückende Kind.'],['Verlagerung','Nach der Ablage sofort zur anderen Seite schauen.'],['Jäger','Einer stört das Zielkind, einer stellt die Verlagerung zu.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 12–15 Ballkontakte pro Runde','Intensität: mittel'],
+ leicht:['Ein Jäger (Stufe 1)','Kürzeres Feld','Zielkinder dürfen zwei Kontakte'],
+ steig:['Direkt (Stufe 3)','Längeres Feld','Punkt nur, wenn die Verlagerung in 8 Sekunden gelingt']},
+{id:'rkpos',title:'Positionsspiel 3 gegen 3 + 3',legend:['teamblau','teamrot','joker','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Spiel von Ende zu Ende'],['','9 Kinder (3 gegen 3 + 3 Joker)'],['Feld','Quadrat ca. 20 × 20 m'],['Dauer','12 min'],['Material','Bälle, Hütchen, Leibchen in 3 Farben']],
+ ziel:'Das Kind spielt mit seinem Team und drei Jokern von einem Ende zum anderen und sucht dabei den Joker in der Mitte zwischen den Gegnern. Im Spiel: geduldig den Ball halten und durch die Mitte nach vorne spielen.',
+ org:['Quadrat ca. 20 × 20 m','Ein Joker an jedem Ende, ein Joker in der Mitte','3 Blaue gegen 3 Rote im Feld'],
+ rot:'Joker wechseln alle 3 Minuten. Nach Ballverlust spielt das andere Team mit den Jokern.',
+ ablauf:['Das Team am Ball spielt mit den drei Jokern.','Ziel: vom Joker an einem Ende zum Joker am anderen Ende spielen.','Pass über den Joker in der Mitte zählt doppelt.','Nach Ballverlust spielt sofort das andere Team in die Gegenrichtung.'],
+ stufen:[['Stufe 1 · Freie Kontakte','Freie Kontakte, Punkt für jeden Weg von Ende zu Ende.'],['Stufe 2 · Über die Mitte','Punkt nur, wenn der Joker in der Mitte mitgespielt hat.'],['Stufe 3 · Joker direkt','Die Joker spielen nur direkt.']],
+ coach:[['Breit und tief','Ein Kind breit links, eins breit rechts, eins vorne. Erkennbar: Die drei Kinder stehen nie auf einer Linie.'],['Joker anspielen','Den Joker in der Mitte suchen, wenn er frei ist. Fehlerbild: Der Ball läuft nur außen herum und kommt nie durch die Mitte.'],['Offen annehmen','Mit Blick nach vorne annehmen.'],['Gegen den Ball','Die Mitte zumachen, damit der Joker nicht angespielt werden kann.']],
+ last:['Dauer: 4 Runden à 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Runde','Intensität: mittel bis hoch'],
+ leicht:['Freie Kontakte (Stufe 1)','Größeres Feld','Vier Joker'],
+ steig:['Joker direkt (Stufe 3)','Höchstens drei Kontakte im Team','Kleineres Feld']},
+{id:'rkausbruch',title:'Ausbruch-Rondo 4 gegen 2 mit Hütchentoren',legend:['kind','jaeger','ball','kleintor'],
+ chips:[['Schwerpunkt','Ballbesitz · Gegenpressing'],['','6 Kinder pro Gruppe'],['Feld','Quadrat ca. 12 × 12 m, 4 Hütchentore an den Ecken'],['Dauer','10–12 min'],['Material','1 Ball pro Gruppe, 8 Hütchen']],
+ ziel:'Das Kind hält im 4 gegen 2 den Ball und jagt nach einem Ballverlust sofort mit, damit die Jäger nicht durch ein Hütchentor ausbrechen. Im Spiel: nach Ballverlust sofort zurückerobern.',
+ org:['Quadrat ca. 12 × 12 m','An jeder Ecke ein Hütchentor (ca. 2 m breit)','4 Kinder außen, 2 Jäger innen'],
+ rot:'Bricht ein Jäger durch ein Tor aus, tauscht er mit dem Kind, das den Ball verloren hat. Spätestens nach 90 Sekunden wechseln.',
+ ablauf:['Die vier Kinder halten den Ball gegen zwei Jäger.','Erobern die Jäger den Ball, dribbeln sie durch ein Hütchentor.','Die zwei Kinder, die am nächsten sind, jagen sofort.','Ball in 5 Sekunden zurück = Punkt für Blau.'],
+ stufen:[['Stufe 1 · Ein Jäger presst','Nach Ballverlust jagt nur das Kind, das den Ball verloren hat.'],['Stufe 2 · Zwei jagen','Die zwei nächsten Kinder jagen sofort.'],['Stufe 3 · Zeitlimit','Der Jäger hat 5 Sekunden, um auszubrechen. Schafft Blau den Ball zurück, zählt es doppelt.']],
+ coach:[['Sofort jagen','Nach Ballverlust nicht stehen bleiben. Erkennbar: Das nächste Kind ist innerhalb von 1 Sekunde auf dem Weg zum Ball.'],['Zu zweit','Ein Kind presst, das andere schneidet den Weg zum Tor ab. Fehlerbild: Beide laufen von hinten hinterher.'],['Ballbesitz','Vorher sicher passen, weg vom Jäger.'],['Ausbrechen','Der Jäger dribbelt mit Tempo in die freie Ecke.']],
+ last:['Dauer: 4 Runden à 2 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Kind: ca. 12 Ballkontakte und 4–6 Sprints pro Runde','Intensität: hoch'],
+ leicht:['Ein Kind jagt (Stufe 1)','Hütchentore schmaler','Größeres Quadrat'],
+ steig:['Zeitlimit (Stufe 3)','Hütchentore breiter','Höchstens zwei Kontakte']}
+].map(e=>Object.assign({},KRK,e)));
 /* ---------- Passen U13 – KM: Inhalte ---------- */
 Object.assign(LEG,{wandsp:['Wandspielerin',WAIT,1],stange:['Stange','#D85A30',1]});
 const KJP={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'passen',lv:['jugend','km'],saeulen:true};
@@ -8198,8 +8438,8 @@ const LVX={
  rfuchs:{u12:'Feld 12 × 12 m, 5 gegen 2 mit maximal 2 Kontakten.'},
  rjoker:{u12:'4 + 1 gegen 2: Der Joker spielt nur direkt.'},
  rtor:{u12:'Mit zwei Jägern, Punkt nur nach Pass durch das Tor mit maximal 2 Kontakten.'},
- rzaehlen:{u12:'5 gegen 2 mit Kontaktbegrenzung. Die Gruppe setzt sich ein Ziel (z. B. 10 Pässe).'},
- rwechsel:{u12:'5 gegen 2, wer den Ball verliert, geht mit der Spielerin, die am längsten außen ist, in die Mitte.'},
+ rzaehlen:{u12:'5 gegen 2 im Quadrat 10 × 10 m, höchstens zwei Kontakte. Die Gruppe setzt sich ein Ziel (z. B. 10 Pässe).'},
+ rwechsel:{u12:'5 gegen 2 im Quadrat 12 × 12 m. Wer den Ball verliert, geht mit dem Kind, das am längsten außen ist, in die Mitte.'},
  rseiten:{u12:'Mit zwei Jägern und maximal 3 Kontakten pro Seite.'},
  rdoppel:{u12:'Zwei Rondos 4 gegen 1 im Abstand 15 m, Spielverlagerung nach 5 Pässen.'},
  huetchenklau:{u12:'Spielerisch als Reaktionsspiel: kürzere Abstände, viele lustige Kommandos, ohne Sprint auf Zeit. Wer das Hütchen schnappt, holt einen Punkt.'},
