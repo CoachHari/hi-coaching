@@ -1171,6 +1171,57 @@ dialog.wm-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-bnote{margin:8px 0 0;font-size:13px;color:var(--kb-muted)}
 .kb-empty-act{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .kb-sheet{--kb-club:#1F53A0;--kb-club-deep:#163E7A;--kb-keeper:#3A3D46;--kb-gold:#F2C230;--kb-ink:#fff;--kb-muted:rgba(255,255,255,.72);--kb-faint:rgba(255,255,255,.48);--kb-line:rgba(255,255,255,.16);--kb-night:#060C20;--kb-danger:#FF8A7A}
+/* ---------- KI-Assistent ---------- */
+.ai-fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:40;display:inline-flex;align-items:center;gap:8px;padding:12px 18px 12px 14px;border:0;border-radius:999px;background:var(--gold);color:#1B2440;font:700 16px var(--display);letter-spacing:.04em;text-transform:uppercase;box-shadow:0 6px 18px rgba(8,18,48,.35);cursor:pointer}
+.ai-fab:hover{background:#FFD24A}.ai-fab:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.ai-fab svg{flex:none}
+html.testmode .ai-fab{display:none!important}
+@media print{.ai-fab{display:none!important}}
+dialog.ai-dlg{width:min(560px,100vw);height:100dvh;max-height:100dvh;max-width:100vw;margin:0 0 0 auto;border:0;border-radius:0;padding:0;background:var(--bg);color:var(--ink);display:none;flex-direction:column}
+dialog.ai-dlg[open]{display:flex}
+dialog.ai-dlg::backdrop{background:rgba(10,15,25,.55)}
+.ai-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;background:var(--paper);border-bottom:1px solid var(--line)}
+.ai-head h3{font-family:var(--display);font-weight:700;font-size:24px;text-transform:uppercase;margin:0;line-height:1.1}
+.ai-head h3 span{color:var(--club)}
+.ai-hact{display:flex;gap:6px;flex-wrap:nowrap;justify-content:flex-end}
+.ai-head h3{white-space:nowrap}.ai-head h3 b{font-weight:700}
+.ai-log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;overscroll-behavior:contain}
+.ai-msg{background:var(--paper);border:1px solid var(--line);border-radius:10px 10px 10px 2px;padding:10px 14px;max-width:92%;align-self:flex-start;font-size:15px;line-height:1.55;overflow-wrap:anywhere}
+.ai-msg.me{align-self:flex-end;background:var(--club);border-color:var(--club);color:#fff;border-radius:10px 10px 2px 10px}
+.ai-msg p{margin:0 0 8px}.ai-msg p:last-child{margin-bottom:0}
+.ai-msg ul,.ai-msg ol{margin:4px 0 8px;padding-left:20px}.ai-msg li{margin:2px 0}
+.ai-h4{font-weight:700}
+.ai-ex{display:inline;font:600 14px var(--body);color:var(--club-ink);background:var(--club-soft);border:1px solid transparent;border-radius:4px;padding:1px 7px;cursor:pointer;text-align:left}
+.ai-ex:hover{border-color:var(--club)}
+.ai-exx{font-family:monospace;font-size:13px;color:var(--muted)}
+.ai-intro{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+.ai-intro p{margin:0 0 12px}
+.ai-sug{display:flex;flex-direction:column;gap:8px}
+.ai-chip{text-align:left;font:500 14px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
+.ai-chip:hover{border-color:var(--club)}
+.ai-card{align-self:stretch;background:var(--paper);border:2px solid var(--gold);border-radius:10px;padding:12px 14px}
+.ai-ct{font-family:var(--display);font-weight:700;font-size:20px;text-transform:uppercase;margin:0;line-height:1.15}
+.ai-cm{color:var(--muted);font-size:14px;margin:2px 0 10px}
+.ai-pt{border-top:1px solid var(--line);padding:8px 0}
+.ai-pt ul{list-style:none;margin:4px 0 0;padding:0}.ai-pt li{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:2px 0}
+.ai-pt li span{color:var(--muted);font-size:13px;white-space:nowrap}
+.ai-note{color:var(--muted);font-size:13px;margin:4px 0 0}
+.ai-card .btn{margin-top:8px}
+.ai-wait{display:flex;gap:5px;align-items:center;padding:14px}
+.ai-wait i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:aiDot 1s infinite ease-in-out}
+.ai-wait i:nth-child(2){animation-delay:.15s}.ai-wait i:nth-child(3){animation-delay:.3s}
+@keyframes aiDot{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.ai-wait i{animation:none;opacity:.6}}
+.ai-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ai-err{color:#B42318;background:#FDECEA;border-radius:8px;padding:8px 12px;margin:0;font-size:14px}
+.ai-form{display:flex;gap:8px;align-items:flex-end;padding:10px 16px 6px;background:var(--paper);border-top:1px solid var(--line)}
+.ai-form textarea{flex:1;resize:none;font:400 16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;min-height:42px;max-height:160px}
+.ai-form textarea:focus{outline:2px solid var(--club);outline-offset:0}
+.ai-form .btn{height:42px}
+.ai-foot{margin:0;padding:0 16px calc(8px + env(safe-area-inset-bottom));background:var(--paper);color:var(--muted);font-size:12px}
+@media (max-width:600px){.ai-fab span{display:none}.ai-fab{padding:14px}}
+@media (max-width:440px){.ai-hi{display:none}.ai-head{padding-left:12px;padding-right:12px;gap:8px}.ai-hact{gap:4px}.ai-head h3{font-size:20px}.ai-hact .btn{padding:7px 9px;font-size:13px}}
+.ai-hact .btn{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1526,6 +1577,13 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
 <button type="button" class="sv-pill" id="sv-pill" hidden></button>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
+<button type="button" class="ai-fab" id="ai-fab" hidden aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/></svg><span>Assistent</span></button>
+<dialog id="ai-dlg" class="ai-dlg" aria-labelledby="ai-h">
+  <div class="ai-head"><h3 id="ai-h"><b class="ai-hi">H.I. </b><span>Assistent</span></h3><div class="ai-hact"><button type="button" class="btn sm" id="ai-new">Neues Gespräch</button><button type="button" class="btn sm" id="ai-x">Schließen</button></div></div>
+  <div class="ai-log" id="ai-log" aria-live="polite"></div>
+  <form class="ai-form" id="ai-form"><textarea id="ai-in" rows="1" placeholder="Deine Frage …" aria-label="Nachricht an den Assistenten"></textarea><button type="submit" class="btn primary" id="ai-send">Senden</button></form>
+  <p class="ai-foot">Antworten können Fehler enthalten. Für Antworten werden Übungen, Termine und Kaderdaten an die Claude-API übertragen.</p>
+</dialog>
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="sync.js"></script>
@@ -10862,6 +10920,125 @@ let heroPlayed=false;
 function homeEnter(){fitTitle();document.body.classList.add('is-home');if(window.__heroAnim)window.__heroAnim(true);
   if(!heroPlayed){const go=()=>{heroPlayed=true;requestAnimationFrame(()=>heroEl.classList.add('go'));};if(document.getElementById('splash')){window.addEventListener('hi:splashdone',go,{once:true});setTimeout(go,4200);}else go();}}
 
+/* ---------- KI-Assistent (Claude über die Supabase-Funktion „assistent“) ---------- */
+(function(){
+  const fab=document.getElementById('ai-fab'),dlg=document.getElementById('ai-dlg');if(!fab||!dlg)return;
+  const logEl=document.getElementById('ai-log'),form=document.getElementById('ai-form'),inp=document.getElementById('ai-in'),sendB=document.getElementById('ai-send');
+  const AKEY='hi-assistent-v1';
+  let msgs=[];try{msgs=JSON.parse(localStorage.getItem(AKEY))||[];}catch(_){msgs=[];}if(!Array.isArray(msgs))msgs=[];
+  let busy=false,err='',armB=null;
+  const keep=()=>{try{localStorage.setItem(AKEY,JSON.stringify(msgs));}catch(_){}};
+  const sb=()=>window.HI_SB||null;
+  if(sb()&&window.HI_isTrainer)window.HI_isTrainer().then(t=>{if(t===true)fab.hidden=false;}).catch(()=>{});
+
+  /* ---- Werkzeuge, die die Website selbst ausführt ---- */
+  const LVIDS=LV.map(l=>l.id),RIDS=CATS.map(c=>c[0]);
+  const cut=(s,n)=>{s=String(s==null?'':s);return s.length>n?s.slice(0,n-1)+'…':s;};
+  const flat=v=>Array.isArray(v)?v.map(x=>Array.isArray(x)?x.filter(Boolean).join(': '):String(x)):v;
+  const catsAll=e=>[...new Set(e.lv.flatMap(l=>catsOf(e,l)))];
+  const chip=(e,k)=>{const c=(e.chips||[]).find(c=>c[0]===k);return c?String(c[1]):'';};
+  const stem=w=>w.length>5?w.slice(0,w.length-2):w;
+  function tSearch(a){a=a||{};const lv=LVIDS.includes(a.altersbereich)?a.altersbereich:'',r=RIDS.includes(a.reiter)?a.reiter:'',n=Math.max(1,Math.min(25,+a.anzahl||10));
+    const words=String(a.suchbegriffe||'').toLowerCase().split(/[^a-zäöüß0-9+]+/).filter(w=>w.length>=3||/^\d$/.test(w)).map(stem);
+    let list=EX.filter(e=>(!lv||e.lv.includes(lv))&&(!r||(lv?catsOf(e,lv):catsAll(e)).includes(r)));
+    if(words.length){list=list.map(e=>{const T=String(e.title).toLowerCase(),C=JSON.stringify(e.chips||[]).toLowerCase(),Z=String(e.ziel||'').toLowerCase(),
+        R=JSON.stringify([e.org,e.ablauf,e.stufen,e.coach,e.ad&&lv?e.ad[lv]:'']).toLowerCase();
+        let s=0;words.forEach(w=>{if(T.includes(w))s+=6;if(C.includes(w))s+=3;if(Z.includes(w))s+=2;if(R.includes(w))s+=1;});return[s,e];})
+      .filter(x=>x[0]>0).sort((x,y)=>y[0]-x[0]).map(x=>x[1]);}
+    return{treffer:list.length,uebungen:list.slice(0,n).map(e=>({id:e.id,titel:e.title,reiter:lv?catsOf(e,lv):catsAll(e),altersbereiche:e.lv,schwerpunkt:chip(e,'Schwerpunkt'),
+      spieler:chip(e,''),feld:chip(e,'Feld'),dauer:chip(e,'Dauer'),lernziel:cut(e.ziel,220)}))};}
+  function tDetail(a){const e=EXM[a&&a.id];if(!e)return{fehler:'Keine Übung mit der ID '+(a&&a.id)+'. Erst mit uebungen_suchen suchen.'};
+    const lv=LVIDS.includes(a.altersbereich)?a.altersbereich:(e.lv.includes(level)?level:e.lv[0]);
+    const o={id:e.id,titel:e.title,altersbereiche:e.lv,reiter:catsOf(e,lv),eckdaten:(e.chips||[]).map(c=>(c[0]?c[0]+': ':'')+c[1]),lernziel:e.ziel,
+      organisation:flat(e.org),wechsel:e.rot,ablauf:flat(e.ablauf),stufen:flat(e.stufen),coaching:flat(e.coach),belastung:flat(e.last),leichter:flat(e.leicht),schwerer:flat(e.steig)};
+    if(e.ad&&e.ad[lv])o['anpassung_'+lv]=e.ad[lv];if(e.desc)o.beschreibung=e.desc;
+    Object.keys(o).forEach(k=>{if(o[k]==null||o[k]===''||(Array.isArray(o[k])&&!o[k].length))delete o[k];});return o;}
+  function tKader(){let S=null;try{S=JSON.parse(localStorage.getItem('hi-kabine-v1'));}catch(_){S=null;}
+    if(!S||!Array.isArray(S.players)||!S.players.length)return{fehler:'Auf diesem Gerät ist noch kein Kader gespeichert.'};
+    const st={};S.players.forEach(p=>{st[p.id]={einsaetze:0,startelf:0,tore:0,vorlagen:0};});const G=(S.games||[]).filter(g=>g&&g.datum);
+    G.forEach(g=>{(g.starters||[]).forEach(id=>{if(st[id]){st[id].einsaetze++;st[id].startelf++;}});(g.subs||[]).forEach(x=>{if(x&&st[x.in])st[x.in].einsaetze++;});
+      (g.goals||[]).forEach(x=>{if(!x)return;if(st[x.pid])st[x.pid].tore++;if(st[x.ast])st[x.ast].vorlagen++;});});
+    const SL={fit:'spielbereit',knock:'angeschlagen',inj:'verletzt'};
+    return{hinweis:S.demo?'Das ist der Beispielkader, noch kein echter Kader angelegt.':undefined,
+      spielerinnen:S.players.slice().sort((a,b)=>(+a.nr||99)-(+b.nr||99)).map(p=>Object.assign({nr:p.nr,name:[p.first,p.name].filter(Boolean).join(' '),position:p.pos,status:SL[p.status]||'spielbereit'},
+        p.status==='inj'&&p.back?{zurueck_voraussichtlich:p.back}:{},st[p.id])),
+      spiele:G.slice().sort((a,b)=>String(b.datum).localeCompare(String(a.datum))).slice(0,12).map(g=>({datum:g.datum,gegner:g.gegner,ergebnis:(g.us!==''&&g.us!=null&&g.them!==''&&g.them!=null)?g.us+':'+g.them:'offen'}))};}
+  function tTermine(a){a=a||{};const ok=s=>/^\d{4}-\d{2}-\d{2}$/.test(String(s||''));const von=ok(a.von)?a.von:today();
+    const b=new Date();b.setDate(b.getDate()+21);const bis=ok(a.bis)?a.bis:ymd(b);
+    const l=termStore.all().filter(t=>t.datum>=von&&t.datum<=bis).sort((x,y)=>(x.datum+(x.zeit||''))<(y.datum+(y.zeit||''))?-1:1);
+    return{von,bis,termine:l.slice(0,40).map(t=>{const o={datum:t.datum,wochentag:WDL[parseYmd(t.datum).getDay()],zeit:t.zeit,art:artName(t.art),titel:t.titel||t.title,ort:t.ort,notiz:t.notiz,einheit_geplant:!!t.einheit};
+      Object.keys(o).forEach(k=>{if(o[k]==null||o[k]==='')delete o[k];});return o;})};}
+  function propPlan(a){a=a||{};const P={};const unk=[];let tot=0;
+    PARTS.forEach(([k])=>{const s=(a.abschnitte||{})[k]||{};P[k]={note:cut(s.notiz||'',300),items:(Array.isArray(s.punkte)?s.punkte:[]).map(x=>{const m=Math.max(1,Math.min(60,Math.round(+x.minuten||10)));
+      if(x.id){if(!EXM[x.id]){unk.push(x.id);return null;}tot+=m;return{t:'ex',id:x.id,min:m};}tot+=m;return{t:'free',title:cut(x.titel||'Eigener Punkt',80),min:m};}).filter(Boolean)};});
+    const lv=LVIDS.includes(a.altersbereich)?a.altersbereich:(level||'km');
+    const p=normPlan({meta:{thema:cut(a.thema||'',120),datum:/^\d{4}-\d{2}-\d{2}$/.test(a.datum||'')?a.datum:today(),zeit:/^\d{1,2}:\d{2}$/.test(a.uhrzeit||'')?a.uhrzeit:'',lv,anzahl:a.teilnehmer?String(a.teilnehmer):''},parts:P});
+    return{p,unk,tot};}
+  function tVorschlag(a){const r=propPlan(a);return{ok:true,gesamt_minuten:r.tot,unbekannte_ids:r.unk.length?r.unk:undefined,hinweis:'Der Vorschlag wird dem Trainer mit dem Knopf „Im Planer öffnen“ angezeigt.'+(r.unk.length?' Unbekannte IDs wurden weggelassen.':'')};}
+  const TOOLS={uebungen_suchen:tSearch,uebung_details:tDetail,kader_abfragen:tKader,termine_abfragen:tTermine,einheit_vorschlagen:tVorschlag};
+
+  /* ---- Darstellung ---- */
+  const exBtn=id=>{const e=EXM[id];return e?'<button type="button" class="ai-ex" data-ai-ex="'+esc(id)+'">'+esc(e.title)+'</button>':'<span class="ai-exx">'+esc(id)+'</span>';};
+  function md(s){const L=esc(s).split('\n');let h='',list='';
+    const inl=t=>t.replace(/\[\[ex:([a-z0-9_-]+)\]\]/gi,(_,id)=>exBtn(id)).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+    const close=()=>{if(list){h+='</'+list+'>';list='';}};
+    L.forEach(l=>{let m;
+      if((m=l.match(/^\s*[-•*]\s+(.*)/))){if(list!=='ul'){close();h+='<ul>';list='ul';}h+='<li>'+inl(m[1])+'</li>';}
+      else if((m=l.match(/^\s*\d+[.)]\s+(.*)/))){if(list!=='ol'){close();h+='<ol>';list='ol';}h+='<li>'+inl(m[1])+'</li>';}
+      else{close();if((m=l.match(/^#{1,4}\s+(.*)/)))h+='<p class="ai-h4">'+inl(m[1])+'</p>';else if(l.trim())h+='<p>'+inl(l)+'</p>';}});
+    close();return h;}
+  function card(u,key){const r=propPlan(u);const p=r.p;
+    const parts=PARTS.map(([k,n])=>{const it=p.parts[k].items;if(!it.length)return'';return'<div class="ai-pt"><b>'+esc(n)+'</b> · '+it.reduce((s,x)=>s+x.min,0)+' min<ul>'+
+      it.map(x=>'<li>'+(x.t==='ex'?exBtn(x.id):esc(x.title))+' <span>'+x.min+' min</span></li>').join('')+'</ul>'+(p.parts[k].note?'<p class="ai-note">'+esc(p.parts[k].note)+'</p>':'')+'</div>';}).join('');
+    return'<div class="ai-card"><p class="ai-ct">'+esc(p.meta.thema||'Trainingseinheit')+'</p><p class="ai-cm">'+esc([longDate(p.meta.datum),p.meta.zeit,lvName(p.meta.lv),r.tot+' min'].filter(Boolean).join(' · '))+'</p>'+parts+
+      '<button type="button" class="btn primary sm" data-ai-plan="'+key+'">Im Planer öffnen</button></div>';}
+  const SUG=['Welche Rondos passen für U10–U12, wenn wir das Umschalten üben wollen?','Stell mir eine Einheit für das nächste Training zum Thema Pressing zusammen.','Wer ist gerade verletzt und wann kommt sie voraussichtlich zurück?','Erklär mir die Coaching-Punkte vom Rondo 5 gegen 2 mit Lückenpass.'];
+  function render(){let h='';
+    if(!msgs.length)h+='<div class="ai-intro"><p><b>Hallo!</b> Ich kenne die ganze Übungsmappe, den Kader und den Kalender. Frag mich nach passenden Übungen oder lass dir eine Einheit zusammenstellen.</p><div class="ai-sug">'+
+      SUG.map(s=>'<button type="button" class="ai-chip" data-ai-sug="'+esc(s)+'">'+esc(s)+'</button>').join('')+'</div></div>';
+    msgs.forEach((m,i)=>{
+      if(m.role==='user'){const t=typeof m.content==='string'?m.content:m.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');if(t)h+='<div class="ai-msg me">'+esc(t).replace(/\n/g,'<br>')+'</div>';return;}
+      (Array.isArray(m.content)?m.content:[{type:'text',text:String(m.content)}]).forEach((b,j)=>{
+        if(b.type==='text'&&b.text.trim())h+='<div class="ai-msg">'+md(b.text)+'</div>';
+        else if(b.type==='tool_use'&&b.name==='einheit_vorschlagen')h+=card(b.input,i+'-'+j);});});
+    if(busy)h+='<div class="ai-msg ai-wait" role="status"><i></i><i></i><i></i><span class="ai-sr">Assistent denkt nach</span></div>';
+    if(err)h+='<p class="ai-err" role="alert">'+esc(err)+'</p>';
+    logEl.innerHTML=h;logEl.scrollTop=logEl.scrollHeight;sendB.disabled=busy;inp.disabled=busy;}
+  const ctx=()=>({heute:longDate(today())+' ('+today()+')',altersbereich:level?lvName(level)+' ('+level+')':'',ansicht:{home:'Start',mappe:'Übungsmappe',plan:'Einheit planen',list:'Trainingseinheiten',cal:'Kalender',kader:'Kader'}[view]||''});
+  function trim(){while(msgs.length>50){const i=msgs.findIndex((m,k)=>k>0&&m.role==='user'&&typeof m.content==='string');if(i<0)break;msgs=msgs.slice(i);}}
+  async function call(){const {data,error}=await sb().functions.invoke('assistent',{body:{messages:msgs,kontext:ctx()}});
+    if(error){let m='';const r=error.context;try{if(r&&r.json){const j=await r.json();m=j&&j.fehler;}}catch(_){}
+      if(!m)m=r&&r.status===404?'Der Assistent ist noch nicht eingerichtet: In Supabase fehlt die Funktion „assistent“.':/fetch|network/i.test(String(error.message||error.name))?'Keine Verbindung. Prüfe das Internet und versuch es noch einmal.':'Der Assistent hat gerade nicht geantwortet. Versuch es gleich noch einmal.';
+      throw new Error(m);}
+    if(!data||!Array.isArray(data.content))throw new Error('Unerwartete Antwort vom Assistenten.');return data;}
+  async function ask(text){if(busy)return;text=String(text||'').trim();if(!text)return;err='';
+    const last=msgs[msgs.length-1];
+    if(last&&last.role==='user'){if(typeof last.content==='string')last.content=[{type:'text',text:last.content}];last.content.push({type:'text',text});}else msgs.push({role:'user',content:text});
+    trim();keep();busy=true;render();
+    try{for(let n=0;n<10;n++){const r=await call();msgs.push({role:'assistant',content:r.content});keep();
+        if(r.stop_reason!=='tool_use'){break;}render();busy=true;
+        const res=[];for(const b of r.content){if(b.type!=='tool_use')continue;let out;try{const f=TOOLS[b.name];out=f?f(b.input):{fehler:'Unbekanntes Werkzeug'};}catch(e){out={fehler:String(e&&e.message||e)};}
+          res.push({type:'tool_result',tool_use_id:b.id,content:JSON.stringify(out)});}
+        msgs.push({role:'user',content:res});keep();}}
+    catch(e){err=String(e&&e.message||e);}
+    busy=false;render();if(!err)inp.focus();}
+  function grow(){inp.style.height='auto';inp.style.height=Math.min(160,inp.scrollHeight)+'px';}
+
+  /* ---- Bedienung ---- */
+  fab.addEventListener('click',()=>{render();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');setTimeout(()=>{if(!busy&&matchMedia('(pointer:fine)').matches)inp.focus();},50);});
+  document.getElementById('ai-x').addEventListener('click',()=>dlg.close());
+  dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+  document.getElementById('ai-new').addEventListener('click',()=>{if(busy)return;msgs=[];err='';keep();render();inp.focus();});
+  form.addEventListener('submit',e=>{e.preventDefault();const t=inp.value;inp.value='';grow();ask(t);});
+  inp.addEventListener('input',grow);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&matchMedia('(pointer:fine)').matches){e.preventDefault();form.requestSubmit();}});
+  logEl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.aiSug){ask(b.dataset.aiSug);return;}
+    if(b.dataset.aiEx){dlg.close();openEx(b.dataset.aiEx);return;}
+    if(b.dataset.aiPlan){const [i,j]=b.dataset.aiPlan.split('-').map(Number);const blk=msgs[i]&&msgs[i].content[j];if(!blk)return;
+      if(plan.dirty&&itemCount()&&armB!==b){armB=b;b.textContent='Aktuellen Entwurf ersetzen?';setTimeout(()=>{if(armB===b){armB=null;b.textContent='Im Planer öffnen';}},4000);return;}
+      armB=null;const p=propPlan(blk.input).p;p.dirty=true;plan=p;savePlan();dlg.close();setView('plan');toast('Vorschlag im Planer: prüfen und speichern');}});
+})();
 cur=CATMAP[location.hash.slice(1)]||location.hash.slice(1)||'passen';
 renderLevel();
 setView(location.hash==='#kader'?'kader':CATS.some(c=>c[0]===(CATMAP[location.hash.slice(1)]||location.hash.slice(1)))?'mappe':'home');
