@@ -13,6 +13,7 @@ Läuft als Website über GitHub Pages und lässt sich am Handy und PC wie eine A
 | `sw.js` | Offline-Speicher, damit die App auch ohne Empfang startet |
 | `manifest.webmanifest`, `icon-*.png` | App-Name und App-Symbol |
 | `supabase.sql` | Einmalig in Supabase ausführen: Tabellen und Zugriffsregeln |
+| `favoriten.sql` | Einmalig in Supabase ausführen: Favoriten (Herz) pro Trainer auf allen Geräten |
 | `assistent.sql` | Einmalig in Supabase ausführen: Nutzungstabelle für den KI-Assistenten |
 | `supabase/functions/assistent/index.ts` | Server-Funktion des KI-Assistenten (in Supabase einfügen) |
 
@@ -26,6 +27,10 @@ Synchronisiert Trainingseinheiten, Kalender, Kader, Spiele und Matchplan zwische
 4. **Authentication → URL Configuration**: Site URL und Redirect URL auf `https://coachhari.github.io/hi-coaching/` setzen.
 5. Die Werte aus **Project Settings → API** (Project URL und anon public key) in `config.js` eintragen.
 6. Auf jedem Gerät oben auf **Anmelden für Sync** tippen. Beim ersten Anmelden werden die Daten, die bisher nur auf dem Gerät lagen, hochgeladen. Beim Kader gilt: Ist online schon ein Kader vorhanden, wird dieser übernommen. Der bisherige Kader des Geräts wird vorher als Sicherung im Browser abgelegt.
+
+## Favoriten auf allen Geräten (einmalig)
+
+In Supabase im **SQL Editor** den Inhalt von `favoriten.sql` einfügen und **Run**. Danach sind die Favoriten (Herz bei jeder Übung) pro Trainer auf allen angemeldeten Geräten gleich. Ohne diesen Schritt bleiben sie auf dem jeweiligen Gerät.
 
 ## KI-Assistent einrichten (einmalig)
 

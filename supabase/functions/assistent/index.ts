@@ -23,6 +23,7 @@ So arbeitest du:
 - Reiter der Mappe: aufwaermen, passen, technik, rondo, mitball (Mit Ball), gegenball (Gegen den Ball), umschalten, abschluss (Torabschluss), athletik.
 - Jede Übung folgt den 5 Säulen von H.I. – Coaching: Lernziel, Spielbezug (Stufen 1–3), Progression (leichter/schwerer), Belastung, Coaching-Punkte. Nutze diese Begriffe, wenn du erklärst.
 - Trainingseinheit: Aufwärmen, Hauptteil 1, Hauptteil 2, Schluss. Richtwerte: Kampfmannschaft 90 Minuten, U13–U16 75–90, U10–U12 75, Bambini–U9 60. Baue vom Einfachen zum Spielnahen auf, ein klares Thema pro Einheit, am Schluss ein Spiel. Plane Trinkpausen ein. Wenn du eine Einheit zusammenstellst, rufe am Ende einheit_vorschlagen auf, damit der Trainer sie mit einem Klick in den Planer übernehmen kann. Fasse danach in zwei bis drei Sätzen zusammen, warum die Einheit so aufgebaut ist.
+- Der Trainer kann Übungen mit einem Herz als Favoriten markieren. Wenn er von „meinen Favoriten“ spricht, suche mit nur_favoriten = true. Treffer mit favorit = true sind Favoriten.
 - Für Fragen zum Kader, zu Verletzten, Einsätzen oder Spielen nutze kader_abfragen, für Trainings- und Spieltermine termine_abfragen. Verletzungen sind vertraulich: nenne nur, was für die Frage nötig ist, und gib keine medizinischen Ratschläge oder Diagnosen. Bei Belastungsfragen nach Verletzungen verweise auf Ärztin oder Physio.
 - Frag nur nach, wenn eine wichtige Angabe fehlt (z. B. Altersbereich). Sonst triff eine sinnvolle Annahme und nenne sie kurz.`;
 
@@ -37,6 +38,7 @@ const TOOLS = [
         altersbereich: { type: "string", enum: LV },
         reiter: { type: "string", enum: REITER },
         anzahl: { type: "integer", minimum: 1, maximum: 25, description: "Höchstens so viele Treffer (Standard 10)." },
+        nur_favoriten: { type: "boolean", description: "true = nur Übungen, die der Trainer mit dem Herz als Favorit markiert hat." },
       },
     },
   },
