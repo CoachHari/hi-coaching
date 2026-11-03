@@ -3456,6 +3456,80 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
       txt(s,104,114,'end','12').textContent='Feld 1';txt(s,104,254,'end','12').textContent='Feld 2';txt(s,180,354,'middle','11').textContent='je 8 × 8 m';},
     ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'b5'},{id:'r1',fill:RED},{id:'r2',fill:RED},{id:'r3',fill:RED},{id:'r4',fill:RED},{id:'r5',fill:RED},{id:'tr',fill:'#2C2C2A',label:'T'}],sc:{a:S}};
 })();
+/* ---------- Rondo U13 – KM: Zwei-Felder-Rondos mit Mittelzone (nach Video von Haris) ---------- */
+const zfField=(s,lane)=>{field(s,0,0,360,300);
+  const R=(x,w,y,h)=>el('rect',{x,y:y||85,width:w,height:h||130,fill:'none',stroke:'#FFFFFF','stroke-width':'1.6',opacity:'.75'},s);
+  if(lane==='drei'){R(22,90,105,90);R(135,90,105,90);R(248,90,105,90);}
+  else{R(38,130);R(192,130);el('rect',{x:168,y:85,width:24,height:130,fill:'rgba(255,255,255,.10)',stroke:'#FFFFFF','stroke-width':'1.6',opacity:'.75'},s);}};
+const zfLab=(s,txt,x,y)=>{const t=el('text',{x,y,'text-anchor':'middle','font-size':'11','font-weight':'600','font-family':'Barlow Condensed, Arial Narrow, sans-serif',fill:'#FFFFFF',opacity:'.8'},s);t.textContent=txt;};
+const zfEnts=extra=>[{id:'E1',label:'E'},{id:'E2',label:'E'}].concat(extra);
+/* Grundform: 5 gegen 2 mit Endspielerinnen und Mittelspielerinnen */
+(function(){const C=5.8;
+  const S={L:[[1.6,'Linkes Feld: Endspielerin, zwei Mittelspielerinnen und zwei Innenspielerinnen gegen zwei'],[2.2,'Seitenwechsel über die Mittelspielerin zur Endspielerin gegenüber'],[3.3,'Innenspielerinnen und Jägerinnen wechseln ins andere Feld'],[99,'Rechts weiter halten und wieder zurück verlagern']],
+    E1:[[0,20,150]],E2:[[0,340,150]],Z1:[[0,180,68]],Z2:[[0,180,232]],
+    I1:[[0,100,110],[2.1,100,110],[3.0,255,118],[C,255,118]],I2:[[0,100,195],[2.2,100,195],[3.1,262,192],[C,262,192]],
+    D1:[[0,70,165],[0.5,70,165],[1.0,95,135],[2.4,95,135],[3.3,226,160],[C,226,160]],
+    D2:[[0,135,165],[0.6,135,165],[1.3,150,115],[2.15,150,115],[2.6,190,150],[3.3,282,145],[C,282,145]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['p','I1','Z1',1.0,1.35],['p','Z1','E2',1.6,2.15],['p','E2','I2',3.3,3.7],['p','I2','Z2',4.0,4.4],['p','Z2','E1',4.7,5.3]],C)];
+  A.zfrondo={vb:'0 0 360 300',cycle:C,thumbT:1.9,draw(s){zfField(s);},
+    ents:zfEnts([{id:'Z1',label:'M'},{id:'Z2',label:'M'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED}]),sc:{a:S}};
+})();
+/* Wechsel nur über die Pivot-Spielerin */
+(function(){const C=6.0;
+  const S={L:[[1.55,'Pivot-Spielerin in der Mittelzone, zwei Innenspielerinnen gegen zwei'],[2.4,'Pivot nimmt offen an und verlagert zur Endspielerin'],[3.6,'Alle wechseln ins rechte Feld'],[99,'Über die Pivot wieder zurück']],
+    E1:[[0,20,150]],E2:[[0,340,150]],PV:[[0,180,150],[0.8,180,150],[1.2,180,138],[C,180,138]],
+    I1:[[0,100,100],[2.3,100,100],[3.2,255,108],[C,255,108]],I2:[[0,100,200],[2.4,100,200],[3.3,262,195],[C,262,195]],
+    D1:[[0,62,175],[0.5,62,175],[1.0,82,128],[2.6,82,128],[3.05,180,166],[3.5,225,176],[C,225,176]],
+    D2:[[0,140,190],[0.9,140,190],[1.5,150,170],[2.3,150,170],[2.8,200,166],[3.3,290,176],[C,290,176]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['p','I1','PV',1.2,1.55],['p','PV','E2',1.9,2.4],['p','E2','I1',3.6,4.0],['p','I1','PV',4.3,4.7],['p','PV','E1',5.0,5.6]],C)];
+  A.zfpivot={vb:'0 0 360 300',cycle:C,thumbT:1.7,draw(s){zfField(s);},
+    ents:zfEnts([{id:'PV',label:'P',fill:NEU,tfill:'#412402'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED}]),sc:{a:S}};
+})();
+/* Drei Felder */
+(function(){const C=4.6;
+  const S={L:[[1.0,'Drei Felder: Blau startet links bei der Endspielerin'],[1.95,'Über die Mittelspielerin ins mittlere Feld'],[2.8,'… und weiter zur Endspielerin rechts = Punkt'],[99,'Die Jägerinnen schieben mit, Blau rückt ins rechte Feld nach']],
+    E1:[[0,10,150]],E2:[[0,350,150]],Z1:[[0,180,86]],Z2:[[0,180,214]],
+    I1:[[0,68,118],[1.5,68,118],[2.6,290,122],[C,290,122]],I2:[[0,160,178],[1.0,160,178],[1.5,195,170],[2.9,195,170],[3.6,292,185],[C,292,185]],
+    D1:[[0,60,172],[0.5,60,172],[1.0,80,150],[2.0,80,150],[2.9,178,122],[C,178,122]],
+    D2:[[0,150,128],[1.1,150,128],[1.7,160,150],[2.3,160,150],[2.7,215,132],[3.2,255,140],[C,255,140]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['p','I1','Z1',0.95,1.35],['p','Z1','I2',1.6,1.95],['p','I2','E2',2.3,2.8],['p','E2','I1',3.7,4.1]],C)];
+  A.zfdrei={vb:'0 0 360 300',cycle:C,thumbT:2.0,draw(s){zfField(s,'drei');},
+    ents:zfEnts([{id:'Z1',label:'M'},{id:'Z2',label:'M'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED}]),sc:{a:S}};
+})();
+/* Gegenpressing nach Ballverlust */
+(function(){const C=4.4;
+  const S={L:[[1.15,'5 gegen 2 im linken Feld'],[1.9,'Ballverlust: Rot will mit Ball über die Mittelzone ausbrechen'],[2.65,'Blau presst sofort zu zweit und erobert den Ball zurück'],[99,'Dann sofort verlagern: Ball zur Endspielerin rechts']],
+    E1:[[0,20,150]],E2:[[0,340,150]],Z1:[[0,180,68]],Z2:[[0,180,232]],
+    I1:[[0,95,105],[1.4,95,105],[1.95,140,134],[C,140,134]],I2:[[0,100,200],[1.3,100,200],[1.95,140,188],[C,140,188]],
+    D1:[[0,62,165],[0.5,62,165],[1.0,76,132],[C,76,132]],
+    D2:[[0,145,160],[0.75,145,160],[1.12,110,152],[1.25,110,152],[1.9,152,160],[2.2,152,160],[2.9,120,165],[C,120,165]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['s','I1',0.9,1.14,98,150],['d','D2',1.25,1.9],['p','D2','I2',1.95,2.08],['p','I2','Z2',2.35,2.7],['p','Z2','E2',3.0,3.6]],C)];
+  A.zfgegen={vb:'0 0 360 300',cycle:C,thumbT:1.6,draw(s){zfField(s);},
+    ents:zfEnts([{id:'Z1',label:'M'},{id:'Z2',label:'M'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED}]),sc:{a:S}};
+})();
+/* Drei Jägerinnen: eine wartet in der Mittelzone */
+(function(){const C=5.8;
+  const S={L:[[1.6,'Drei Jägerinnen: zwei jagen im Ballfeld, eine wartet in der Mittelzone'],[2.3,'Seitenwechsel: Die Wartende presst sofort die Endspielerin'],[3.3,'Eine Jägerin schiebt nach, die andere besetzt die Mittelzone'],[99,'Blau muss schnell weiterspielen, bevor die Jägerinnen sortiert sind']],
+    E1:[[0,20,150]],E2:[[0,340,150]],Z1:[[0,180,68]],Z2:[[0,180,232]],
+    I1:[[0,100,110],[2.1,100,110],[3.0,255,118],[C,255,118]],I2:[[0,100,195],[2.2,100,195],[3.1,262,192],[C,262,192]],
+    D1:[[0,70,165],[0.5,70,165],[1.0,95,135],[2.3,95,135],[2.8,165,178],[3.3,228,170],[C,228,170]],
+    D2:[[0,135,165],[0.6,135,165],[1.3,150,115],[2.0,150,115],[2.5,160,145],[3.3,180,150],[C,180,150]],
+    D3:[[0,180,150],[1.7,180,150],[2.3,302,170],[C,302,170]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['p','I1','Z1',1.0,1.35],['p','Z1','E2',1.6,2.15],['p','E2','I1',3.3,3.7],['p','I1','Z1',4.0,4.4],['p','Z1','E1',4.7,5.3]],C)];
+  A.zfdritte={vb:'0 0 360 300',cycle:C,thumbT:2.2,draw(s){zfField(s);},
+    ents:zfEnts([{id:'Z1',label:'M'},{id:'Z2',label:'M'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED},{id:'D3',fill:RED}]),sc:{a:S}};
+})();
+/* Seitenwechsel in den Lauf */
+(function(){const C=4.6;
+  const S={L:[[1.2,'Ballbesitz im linken Feld'],[2.3,'Eine Innenspielerin startet ins freie Feld, Pass in den Lauf'],[3.4,'Mitnahme in Laufrichtung und weiter zur Endspielerin'],[99,'Die anderen rücken nach, die Jägerinnen sprinten hinterher']],
+    E1:[[0,20,150]],E2:[[0,340,150]],Z1:[[0,180,68]],Z2:[[0,180,232]],
+    I1:[[0,100,110],[2.5,100,110],[3.4,255,115],[C,255,115]],I2:[[0,100,195],[1.2,100,195],[2.4,272,182],[3.0,292,168],[C,292,168]],
+    D1:[[0,70,165],[0.5,70,165],[1.0,95,135],[2.4,95,135],[3.3,215,185],[C,215,185]],
+    D2:[[0,140,150],[1.4,140,150],[2.6,172,150],[3.4,250,140],[C,250,140]]};
+  S.BALLS=[jrSeq(S,[['p','E1','I1',0.2,0.55],['p','I1','Z1',1.0,1.35],['p','Z1','I2',1.75,2.35],['d','I2',2.45,3.0],['p','I2','E2',3.1,3.4],['p','E2','I1',3.7,4.1]],C)];
+  A.zftiefe={vb:'0 0 360 300',cycle:C,thumbT:2.1,draw(s){zfField(s);},
+    ents:zfEnts([{id:'Z1',label:'M'},{id:'Z2',label:'M'},{id:'I1'},{id:'I2'},{id:'D1',fill:RED},{id:'D2',fill:RED}]),sc:{a:S}};
+})();
 
 /* ---------- Aufwärmen alle Bereiche: Raute Dribbeln und Passen ---------- */
 (function(){const C=4.6,P={N:[180,100],E:[264,184],S:[180,268],W:[96,184]};
@@ -7072,6 +7146,78 @@ EX.push(Object.assign({},KJR,{id:'rjfeldwechsel',title:'Feldwechsel-Rondo 5 gege
  last:['Dauer: 3 Minuten pro Durchgang (je nach Belastung auch länger), 1–2 Minuten Pause, 4–6 Durchgänge','Wartezeit: kurz, je drei Spielerinnen warten im anderen Feld und sind nach dem nächsten Ballgewinn sofort dran','Pro Spielerin: ca. 15–25 Ballkontakte pro Durchgang, als Jägerin viele kurze Sprints','Intensität: hoch'],
  leicht:['Ohne Abschluss (Stufe 1)','Felder 10 × 10 m','Joker im Ballbesitz (6 gegen 2)'],
  steig:['Mit Minitor in 5 Sekunden (Stufe 2)','Felder 7 × 7 m','Ohne neuen Ball (Stufe 3)','5 gegen 3 mit 11–12 Spielerinnen']}));
+/* ---------- Rondo U13 – KM: Zwei-Felder-Rondos mit Mittelzone (nach Video von Haris, 03.11.2026) ---------- */
+Object.assign(LEG,{pivot:['Pivot-Spielerin',NEU,1]});
+const KZF={rotTitle:'Wechsel',lastTitle:'Dauer',cat:'rondo',lv:['jugend','km'],saeulen:true};
+EX.push(...[
+{id:'zfrondo',title:'Zwei-Felder-Rondo mit Mittelzone',legend:['spielerin','jaegerin','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Seitenwechsel'],['','8 Spielerinnen (6 gegen 2)'],['Feld','2 Quadrate à 12 × 12 m, dazwischen 2–3 m Mittelzone'],['Dauer','12–16 min'],['Material','Hütchen oder Markierung, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Spielerin hält mit ihrem Team im Ballfeld den Ball, erkennt den Moment für den Seitenwechsel und verlagert über die Mittelspielerin ins andere Feld. Im Spiel: Ballbesitz auf einer Seite, dann schnell auf die freie Seite verlagern.',
+ org:['Zwei Quadrate à 12 × 12 m nebeneinander, dazwischen eine Mittelzone (2–3 m)','Blau: je eine Endspielerin außen an den Stirnseiten, zwei Mittelspielerinnen an den Enden der Mittelzone, zwei Innenspielerinnen im Ballfeld','Rot: zwei Jägerinnen im Ballfeld','Ersatzbälle bei beiden Endspielerinnen'],
+ rot:'Wer den Ball verliert, tauscht mit der Jägerin, die am längsten drin ist. Nach 3 Minuten Positionen tauschen: Endspielerinnen werden Innenspielerinnen und umgekehrt.',
+ ablauf:['Blau hält im linken Feld den Ball: Endspielerin, Mittelspielerinnen und Innenspielerinnen gegen zwei Jägerinnen.','Nach mindestens 4 Pässen spielt Blau über eine Mittelspielerin zur Endspielerin gegenüber.','Mit dem Seitenwechsel laufen beide Innenspielerinnen und beide Jägerinnen ins andere Feld.','Dort geht es weiter, bis wieder zurück verlagert wird.','Punkte: gelungener Seitenwechsel = 1 Punkt für Blau, Ballgewinn = 1 Punkt für Rot.'],
+ stufen:[['Stufe 1 · Freie Kontakte','Freie Kontakte, Seitenwechsel jederzeit erlaubt.'],['Stufe 2 · 4 Pässe, 2 Kontakte','Seitenwechsel erst nach 4 Pässen im Ballfeld, höchstens zwei Kontakte.'],['Stufe 3 · Mittelspielerin direkt','Die Mittelspielerinnen spielen nur direkt, Seitenwechsel nach 6 Pässen zählt doppelt.']],
+ coach:[['Breite und Tiefe','Im Ballfeld immer ein Dreieck bilden. Erkennbar: Die ballführende Spielerin hat jederzeit zwei Anspielstationen.'],['Moment für den Wechsel','Verlagern, wenn beide Jägerinnen auf einer Seite stehen. Fehlerbild: Der Wechselpass wird gespielt, obwohl eine Jägerin die Mittelspielerin zustellt.'],['Offene Annahme','Die Mittelspielerin nimmt mit dem hinteren Fuß an und dreht direkt Richtung anderes Feld.'],['Nachrücken','Mit dem Pass sofort ins andere Feld sprinten, damit dort wieder ein Dreieck steht.'],['Jägerinnen','Eine presst, die andere stellt die Mittelspielerin zu.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine, alle im Spiel','Pro Spielerin: ca. 20–30 Ballkontakte pro Durchgang','Intensität: mittel bis hoch, für die Jägerinnen hoch'],
+ leicht:['Freie Kontakte (Stufe 1)','Größere Felder (14 × 14 m)','Nur eine Jägerin im Ballfeld'],
+ steig:['Mittelspielerin direkt (Stufe 3)','Kleinere Felder (10 × 10 m)','Dritte Jägerin wartet in der Mittelzone']},
+{id:'zfpivot',title:'Zwei-Felder-Rondo über die Pivot-Spielerin',legend:['spielerin','pivot','jaegerin','ball'],
+ chips:[['Schwerpunkt','Spiel über die dritte Spielerin · Aufdrehen'],['','7–9 Spielerinnen (5 + 1 gegen 2)'],['Feld','2 Quadrate à 12 × 12 m, dazwischen 3 m Mittelzone'],['Dauer','12–16 min'],['Material','Hütchen, Bälle, Leibchen in 3 Farben']],
+ ziel:'Die Pivot-Spielerin bietet sich in der Mittelzone zwischen den Jägerinnen an, nimmt offen an und verlagert ins andere Feld. Die anderen erkennen, wann der Pass zur Pivot frei ist. Im Spiel: der Pass auf die Sechserin zwischen den Linien und die Spielverlagerung über sie.',
+ org:['Zwei Quadrate à 12 × 12 m, dazwischen eine Mittelzone von 3 m','Eine Pivot-Spielerin (andere Leibchenfarbe) nur in der Mittelzone','Je eine Endspielerin außen an den Stirnseiten, zwei Innenspielerinnen im Ballfeld','Zwei Jägerinnen im Ballfeld, sie dürfen nicht in die Mittelzone'],
+ rot:'Wer den Ball verliert, wird Jägerin. Die Pivot-Spielerin wechselt alle 3 Minuten.',
+ ablauf:['Blau hält im Ballfeld den Ball.','Der Seitenwechsel ist nur über die Pivot-Spielerin erlaubt.','Die Pivot nimmt offen an und spielt zur Endspielerin oder zu einer Innenspielerin im anderen Feld.','Innenspielerinnen und Jägerinnen wechseln mit dem Pass ins andere Feld.','Punkt für jeden Wechsel über die Pivot, Ballgewinn = Punkt für die Jägerinnen.'],
+ stufen:[['Stufe 1 · Pivot frei','Die Pivot hat freie Kontakte, die Jägerinnen gehen nur.'],['Stufe 2 · Jägerinnen aktiv','Die Jägerinnen jagen, die Pivot höchstens zwei Kontakte.'],['Stufe 3 · Pivot direkt','Die Pivot spielt direkt weiter (Klatsch oder direkte Verlagerung).']],
+ coach:[['Pivot anbieten','Seitlich zur Linie der Jägerinnen stehen, im Schatten weg. Erkennbar: Zwischen Ball und Pivot steht keine Jägerin.'],['Offene Annahme','Mit dem hinteren Fuß annehmen und in einer Bewegung aufdrehen. Fehlerbild: Die Pivot nimmt mit dem Rücken zum anderen Feld an und muss zurückspielen.'],['Geduld','Erst im Feld zirkulieren, bis der Weg zur Pivot frei ist.'],['Schulterblick','Die Pivot schaut vor der Annahme ins andere Feld.'],['Jägerinnen','Eine stellt immer den Weg zur Pivot zu.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 20–25 Ballkontakte pro Durchgang, die Pivot deutlich mehr','Intensität: mittel bis hoch'],
+ leicht:['Pivot frei (Stufe 1)','Breitere Mittelzone','Zwei Pivot-Spielerinnen'],
+ steig:['Pivot direkt (Stufe 3)','Jägerin darf in die Mittelzone','Wechsel nur mit Klatsch und Steilpass (dritte Spielerin)']},
+{id:'zfdrei',title:'Drei-Felder-Rondo',legend:['spielerin','jaegerin','ball'],
+ chips:[['Schwerpunkt','Ballbesitz · Spiel durch die Linien'],['','8–10 Spielerinnen (6 gegen 2)'],['Feld','3 Felder à 10 × 10 m in einer Reihe, je 2 m Abstand'],['Dauer','12–16 min'],['Material','Hütchen, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Spielerin spielt den Ball mit ihrem Team von einer Endspielerin über das mittlere Feld bis zur Endspielerin auf der anderen Seite. Im Spiel: geduldiger Aufbau durch die Linien des Gegners bis nach vorne.',
+ org:['Drei Felder à 10 × 10 m in einer Reihe','Je eine Endspielerin außen an beiden Stirnseiten','Zwei Mittelspielerinnen an den Längsseiten des mittleren Feldes','Zwei Innenspielerinnen und zwei Jägerinnen'],
+ rot:'Wer den Ball verliert, wird Jägerin. Nach 3 Minuten tauschen End- und Innenspielerinnen.',
+ ablauf:['Start bei einer Endspielerin.','Der Ball muss durch das mittlere Feld zur Endspielerin gegenüber: über eine Mittelspielerin oder eine Innenspielerin im mittleren Feld.','Die Innenspielerinnen schieben mit dem Ball mit, die Jägerinnen auch.','Ball bei der Endspielerin gegenüber = Punkt, dann geht es in die andere Richtung.'],
+ stufen:[['Stufe 1 · Eine Jägerin','Nur eine Jägerin, freie Kontakte.'],['Stufe 2 · Zwei Jägerinnen','Zwei Jägerinnen, höchstens zwei Kontakte.'],['Stufe 3 · Jägerin pro Feld','Eine Jägerin im mittleren Feld bleibt fest, die zweite jagt mit dem Ball.']],
+ coach:[['Durch die Mitte','Zuerst den Weg ins mittlere Feld suchen. Erkennbar: Der Ball geht nicht nur über die Mittelspielerinnen außen.'],['Nachschieben','Die Innenspielerinnen rücken mit, damit im nächsten Feld wieder ein Dreieck steht. Fehlerbild: Die Innenspielerin bleibt im alten Feld stehen.'],['Tempo','Flache, feste Pässe über die längeren Distanzen.'],['Jägerinnen','Den Weg nach vorne zustellen, nicht den Rückpass.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte pro Durchgang','Intensität: mittel bis hoch'],
+ leicht:['Eine Jägerin (Stufe 1)','Felder 12 × 12 m','Freie Kontakte'],
+ steig:['Jägerin pro Feld (Stufe 3)','Felder 8 × 8 m','Punkt nur, wenn die Endspielerin direkt zurückspielen kann']},
+{id:'zfgegen',title:'Zwei-Felder-Rondo mit Gegenpressing',legend:['spielerin','jaegerin','ball'],
+ catsLv:{jugend:['rondo','umschalten'],km:['rondo','umschalten']},
+ chips:[['Schwerpunkt','Ballbesitz · Gegenpressing'],['','8 Spielerinnen (6 gegen 2)'],['Feld','2 Quadrate à 12 × 12 m, dazwischen 2–3 m Mittelzone'],['Dauer','12–16 min'],['Material','Hütchen, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Spielerin hält im Zwei-Felder-Rondo den Ball und presst nach einem Ballverlust sofort mit, damit die Jägerinnen nicht mit Ball über die Mittelzone ausbrechen. Im Spiel: Gegenpressing direkt nach Ballverlust und danach sofort verlagern.',
+ org:['Aufbau wie das Zwei-Felder-Rondo mit Mittelzone','Blau: zwei Endspielerinnen, zwei Mittelspielerinnen, zwei Innenspielerinnen','Rot: zwei Jägerinnen'],
+ rot:'Bricht Rot mit Ball über die Mittelzone aus, tauscht die Spielerin, die den Ball verloren hat, mit einer Jägerin. Erobert Blau zurück, bleiben die Rollen.',
+ ablauf:['Blau hält im Ballfeld den Ball und verlagert über die Mittelspielerinnen.','Erobert Rot den Ball, versucht Rot, mit Ball über die Mittelzone ins andere Feld zu dribbeln (= Punkt für Rot).','Die zwei nächsten Blauen pressen sofort und erobern den Ball zurück.','Nach der Rückeroberung sofort verlagern: Pass zur Endspielerin gegenüber = 2 Punkte.'],
+ stufen:[['Stufe 1 · Ausbruch per Pass','Rot darf nach Ballgewinn einfach zur Mittelspielerin passen, um einen Punkt zu holen.'],['Stufe 2 · Ausbruch per Dribbling','Rot muss mit Ball durch die Mittelzone dribbeln.'],['Stufe 3 · 5-Sekunden-Regel','Blau hat 5 Sekunden zur Rückeroberung, sonst Punkt für Rot.']],
+ coach:[['Sofort umschalten','Nach Ballverlust keine Pause. Erkennbar: Die zwei nächsten Spielerinnen sind innerhalb von 1 Sekunde am Ball.'],['Zu zweit pressen','Eine geht auf den Ball, die andere sperrt den Weg zur Mittelzone. Fehlerbild: Beide laufen von hinten hinterher und Rot dribbelt frei.'],['Nach der Rückeroberung','Kopf hoch und sofort verlagern, nicht im Druck weiterdribbeln.'],['Absichern','Die anderen Blauen stellen die Passwege der Jägerinnen zu.']],
+ last:['Dauer: 4 × 3 Minuten, 1–2 Minuten Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte und 4–6 Pressingaktionen pro Durchgang','Intensität: hoch'],
+ leicht:['Ausbruch per Pass (Stufe 1)','Mittelzone breiter','Rot nur mit einer Jägerin'],
+ steig:['5-Sekunden-Regel (Stufe 3)','Felder kleiner','Nach Rückeroberung höchstens zwei Kontakte bis zum Wechsel']},
+{id:'zfdritte',title:'Zwei-Felder-Rondo mit drei Jägerinnen',legend:['spielerin','jaegerin','ball'],
+ chips:[['Schwerpunkt','Ballbesitz unter Druck · Verschieben'],['','9 Spielerinnen (6 gegen 3)'],['Feld','2 Quadrate à 12 × 12 m, dazwischen 3 m Mittelzone'],['Dauer','12–16 min'],['Material','Hütchen, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Spielerin verlagert schnell und spielt im neuen Feld sofort weiter, bevor die Jägerinnen sortiert sind. Die Jägerinnen lernen, beim Seitenwechsel gemeinsam zu verschieben. Im Spiel: schnelle Verlagerung gegen ein verschiebendes Team.',
+ org:['Aufbau wie das Zwei-Felder-Rondo mit Mittelzone','Drei Jägerinnen: zwei im Ballfeld, eine wartet in der Mittelzone','Blau: zwei Endspielerinnen, zwei Mittelspielerinnen, zwei Innenspielerinnen'],
+ rot:'Wer den Ball verliert, tauscht mit der Jägerin, die am längsten drin ist. Die Jägerinnen wechseln ihre Rolle (jagen oder warten) bei jedem Seitenwechsel.',
+ ablauf:['Zwei Jägerinnen jagen im Ballfeld, die dritte wartet in der Mittelzone.','Beim Seitenwechsel presst die Wartende sofort die Empfängerin im neuen Feld.','Eine der beiden anderen schiebt nach, die andere besetzt die Mittelzone.','Blau versucht, im neuen Feld 3 Pässe zu spielen, bevor die Jägerinnen sortiert sind (= Punkt).'],
+ stufen:[['Stufe 1 · Wartende passiv','Die Wartende geht erst nach dem zweiten Pass im neuen Feld los.'],['Stufe 2 · Wartende presst sofort','Die Wartende startet mit dem Seitenwechsel.'],['Stufe 3 · Zwei Kontakte','Blau höchstens zwei Kontakte, Mittelspielerinnen direkt.']],
+ coach:[['Schnell weiterspielen','Im neuen Feld den ersten Pass sofort spielen. Erkennbar: Die Empfängerin spielt mit höchstens zwei Kontakten weiter.'],['Nachrücken','Die Innenspielerinnen sprinten mit dem Seitenwechsel. Fehlerbild: Die Endspielerin hat im neuen Feld keine Anspielstation.'],['Jägerinnen verschieben','Absprechen, wer anläuft, wer nachschiebt und wer die Mitte hält.'],['Mittelzone','Die wartende Jägerin steht so, dass sie den Weg zur Mittelspielerin zustellt.']],
+ last:['Dauer: 4 × 3 Minuten, 1–2 Minuten Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte pro Durchgang, Jägerinnen viele kurze Sprints','Intensität: hoch'],
+ leicht:['Wartende passiv (Stufe 1)','Größere Felder','Joker im Ballfeld für Blau'],
+ steig:['Zwei Kontakte (Stufe 3)','Kleinere Felder','Wartende darf den Wechselpass in der Mittelzone abfangen']},
+{id:'zftiefe',title:'Zwei-Felder-Rondo mit Lauf in die Tiefe',legend:['spielerin','jaegerin','ball'],
+ chips:[['Schwerpunkt','Pass in den Lauf · Tiefe'],['','8 Spielerinnen (6 gegen 2)'],['Feld','2 Quadrate à 12 × 12 m, dazwischen 2–3 m Mittelzone'],['Dauer','12–16 min'],['Material','Hütchen, Bälle, Leibchen in 2 Farben']],
+ ziel:'Die Innenspielerin startet im richtigen Moment ins freie Feld, und die Mittelspielerin spielt ihr den Ball in den Lauf. Im Spiel: Tiefenlauf hinter die Linie und der Pass in den Lauf.',
+ org:['Aufbau wie das Zwei-Felder-Rondo mit Mittelzone','Blau: zwei Endspielerinnen, zwei Mittelspielerinnen, zwei Innenspielerinnen','Rot: zwei Jägerinnen'],
+ rot:'Wer den Ball verliert, wird Jägerin. Nach 3 Minuten tauschen End- und Innenspielerinnen.',
+ ablauf:['Blau hält im Ballfeld den Ball.','Eine Innenspielerin startet ins freie Feld.','Die Mittelspielerin spielt in den Lauf, die Innenspielerin nimmt in Laufrichtung mit.','Danach Pass zur Endspielerin, die anderen rücken nach.','Seitenwechsel in den Lauf = 2 Punkte, über die Endspielerin = 1 Punkt.'],
+ stufen:[['Stufe 1 · Laufweg vorgegeben','Die Trainerin ruft, wer startet.'],['Stufe 2 · Freier Start','Die Innenspielerin entscheidet selbst, wann sie startet.'],['Stufe 3 · Jägerin verfolgt','Eine Jägerin darf die startende Spielerin sofort verfolgen.']],
+ coach:[['Timing','Erst starten, wenn die Mittelspielerin den Ball hat und aufschaut. Erkennbar: Der Pass kommt ohne Abbremsen in den Lauf.'],['Pass in den Lauf','Vor die Spielerin passen, nicht in die Füße. Fehlerbild: Die Läuferin muss stehen bleiben oder zurücklaufen.'],['Mitnahme','Erster Kontakt in Laufrichtung ins Feld.'],['Absichern','Die zweite Innenspielerin bleibt im alten Feld anspielbar, bis der Pass angekommen ist.']],
+ last:['Dauer: 4 × 3 Minuten, 1 Minute Pause','Wartezeit: keine','Pro Spielerin: ca. 20 Ballkontakte und mehrere Tiefenläufe pro Durchgang','Intensität: hoch'],
+ leicht:['Laufweg vorgegeben (Stufe 1)','Längere Felder','Jägerinnen passiv'],
+ steig:['Jägerin verfolgt (Stufe 3)','Höchstens zwei Kontakte','Tiefenpass nur direkt']}
+].map(e=>Object.assign({},KZF,e)));
 /* ---------- Passen U13 – KM: Doppelsechs-Passform ---------- */
 EX.push(Object.assign({},KJP,{id:'pdoppelsechs',title:'Doppelsechs-Passform',legend:['spielerin','ball','cone'],
  chips:[['Schwerpunkt','Spiel über die Doppelsechs · Klatschen und Verlagern'],['','10 Spielerinnen pro Station (8 außen, 2 Sechserinnen)'],['Feld','15 × 30 m'],['Dauer','12–16 min'],['Material','4 Hütchen, Bälle']],
