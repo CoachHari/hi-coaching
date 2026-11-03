@@ -1157,7 +1157,7 @@ html.testmode article.card::after,html.testmode #plan::after,html.testmode #list
 html.testmode body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html.testmode input,html.testmode textarea,html.testmode select,html.testmode [contenteditable]{-webkit-user-select:text;user-select:text}
 html.testmode img,html.testmode svg{-webkit-user-drag:none}
-html.testmode #plan-pdf,html.testmode [data-pdf-s],html.testmode [data-t-pdf]{display:none!important}
+html.testmode #plan-pdf,html.testmode [data-pdf-s],html.testmode [data-t-pdf],html.testmode [data-expdf]{display:none!important}
 @media print{html.testmode body>*{display:none!important}html.testmode body::before{content:"Drucken ist in der Testversion nicht möglich. © H.I. – Coaching";display:block;padding:40px;font:600 18px Arial,sans-serif;color:#111}}
 dialog.wm-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-bform{width:min(620px,100%);max-height:calc(100dvh - 40px);overflow:auto}
@@ -1273,6 +1273,9 @@ dialog.av-dlg::backdrop{background:rgba(10,20,50,.6)}
 .tab-fav[aria-selected="true"] .heart{fill:#fff}
 .fav-other{display:block;margin-top:10px;font-size:14px}
 .fav-lv{font:600 14px var(--body);color:var(--club-ink);background:var(--club-soft);border:0;border-radius:4px;padding:3px 9px;margin:4px 4px 0 0;cursor:pointer}
+/* ---------- Übung als PDF ---------- */
+.expdf{display:inline-flex;align-items:center;gap:6px;font:600 14px var(--body);color:var(--club-ink);background:var(--paper);border:1.5px solid var(--club);border-radius:999px;padding:6px 14px 6px 11px;cursor:pointer;margin-right:auto}
+.expdf:hover{background:var(--club);color:#fff}.expdf:disabled{opacity:.6;cursor:progress}
 </style>
 </head>
 <body>
@@ -10144,7 +10147,7 @@ function card(e){const a=A[e.id];
   const leg=e.legend.map(k=>{const l=LEG[k];const ex=k==='cone'||k==='hut'?';border-radius:2px':k==='schuessel'?';border:3px solid #E8962A;box-sizing:border-box':k==='insel'||k==='haus'||k==='garage'?';border:2px solid #8A97A8;box-sizing:border-box':k==='minitor'||k==='bank'||k==='kegel'||k==='messzone'||k==='torrot'||k==='torgelb'?';border-radius:2px':'';return '<span><i class="dot" style="background:'+l[1]+';opacity:'+l[2]+ex+'"></i>'+l[0]+'</span>';}).join('');
   const adapt=Object.keys(e.ad).map(k=>'<section class="full adapt" data-lv="'+k+'" hidden><h4>Anpassung für '+LV.find(l=>l.id===k).name+'</h4><p>'+e.ad[k]+'</p></section>').join('');
   return '<article class="card" id="ex-'+e.id+'" hidden>'+
-   '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
+   '<div class="detail-bar"><button type="button" class="back" data-back>← Zurück zur Übersicht</button><button type="button" class="expdf" data-expdf="'+e.id+'" title="Diese Übung als PDF mit Skizze herunterladen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>PDF</button><div class="addto"><span>Zur Einheit hinzufügen:</span>'+PARTS.map(p=>'<button type="button" data-addto="'+p[0]+'" data-id="'+e.id+'">'+p[1]+'</button>').join('')+'</div></div>'+
    '<div class="card-head"><h3>'+e.title+'</h3><button type="button" class="fav-btn" data-fav="'+e.id+'" aria-pressed="false" aria-label="Zu den Favoriten hinzufügen">'+HEART+'<span class="fav-l">Favorisieren</span></button><div class="meta">'+
      e.chips.map(c=>'<span class="chip">'+(c[0]?c[0]+' ':'')+'<b>'+c[1]+'</b></span>').join('')+(e.saeulen?'<span class="chip saeulen" title="Lernziel, Spielbezug, Progression, Belastung und Coaching-Punkte überarbeitet">✓ 5 Säulen</span>':'')+'<button type="button" class="rate-btn" data-rate="'+e.id+'">★ Übung bewerten</button><button type="button" class="rate-res" data-rres="'+e.id+'" hidden></button></div></div>'+
    '<div class="grid"><div class="pitch"><svg id="svg-'+e.id+'" viewBox="'+a.vb+'" role="img" aria-label="Animierte Skizze: '+e.title+'"></svg>'+
@@ -10453,7 +10456,7 @@ if(TESTMODE){wmUpdate();
   ['copy','cut'].forEach(k=>document.addEventListener(k,ev=>{if(!free(ev.target)){ev.preventDefault();toast('Kopieren ist in der Testversion nicht möglich.');}}));
   document.addEventListener('dragstart',ev=>{if(!free(ev.target))ev.preventDefault();});
   document.addEventListener('keydown',ev=>{if((ev.ctrlKey||ev.metaKey)&&['p','s'].includes(String(ev.key).toLowerCase())){ev.preventDefault();toast(String(ev.key).toLowerCase()==='p'?'Drucken ist in der Testversion nicht möglich.':'Speichern ist in der Testversion nicht möglich.');}});
-  document.addEventListener('click',ev=>{if(ev.target.closest&&ev.target.closest('#plan-pdf,[data-pdf-s],[data-t-pdf]')){ev.preventDefault();ev.stopImmediatePropagation();toast('PDF ist in der Testversion nicht verfügbar.');}},true);
+  document.addEventListener('click',ev=>{if(ev.target.closest&&ev.target.closest('#plan-pdf,[data-pdf-s],[data-t-pdf],[data-expdf]')){ev.preventDefault();ev.stopImmediatePropagation();toast('PDF ist in der Testversion nicht verfügbar.');}},true);
   {const go=()=>setTimeout(()=>{if(window.__avWelcome&&window.__avWelcome())return;if(!(rLoad(RKEY,{}).name||'').trim())wmAskName();},400);if(document.getElementById('splash'))window.addEventListener('hi:splashdone',go,{once:true});else go();}}
 rateLoad();
 
@@ -10516,6 +10519,103 @@ pk.addEventListener('click',e=>{if(e.target===pk){closePicker();return;}const f=
   const t=e.target.closest('[data-pick]');if(t&&pkPart){addItem(pkPart,t.dataset.pick);closePicker();renderPlan();}});
 pkQ.addEventListener('input',pkFilter);pkAll.addEventListener('change',pkFilter);
 
+/* ---------- Statische Skizze: Startaufstellung mit nummerierten Pass- und Laufwegen (für PDFs) ---------- */
+function sketchActions(cfg,raw){
+  const key=Object.keys(cfg.sc)[0],S=cfg.sc[key],C=S.cycle||cfg.cycle,lin=!!cfg.linear,dt=0.02;
+  const ents=cfg.ents.filter(e=>S[e.id]);
+  /* Simulierte Spielformen (viele Zwischenpunkte) zeigen keine Laufwege, nur die ersten Pässe */
+  const sim=lin&&ents.length&&ents.reduce((n,e)=>n+S[e.id].length,0)/ents.length>30;
+  const on=p=>p[0]>-15&&p[1]>-15;
+  const P=(id,t)=>at(S[id],t,lin);
+  const balls=(S.BALLS||[]).concat(S.BALL?[S.BALL]:[]);
+  const N=Math.floor((C-0.05)/dt),acts=[];
+  const poss=[];/* Ballbesitz je Ball: [id,ta,tb] */
+  balls.forEach((B,bi)=>{let cur=null,ta=0,prev=null,last=[];const own=[];
+    for(let i=0;i<=N;i++){const t=i*dt,b=at(B,t,lin);
+      if(prev&&Math.hypot(b[0]-prev[0],b[1]-prev[1])>60){cur=null;own.push(['#jump',t,t]);}
+      prev=b;let best=null,bd=21;ents.forEach(e=>{const p=P(e.id,t);if(!on(p))return;const d=Math.hypot(b[0]-p[0],b[1]-p[1]);if(d<bd){bd=d;best=e.id;}});
+      own.push([best,t]);}
+    /* Läufe zusammenfassen, kurze Berührungen im Flug ignorieren */
+    const seg=[];own.forEach(o=>{if(o[0]==='#jump'){seg.push({id:'#jump',ta:o[1],tb:o[1]});return;}const s=seg[seg.length-1];if(s&&s.id===o[0])s.tb=o[1];else seg.push({id:o[0],ta:o[1],tb:o[1]});});
+    const hold=seg.filter(s=>s.id==='#jump'||(s.id&&s.tb-s.ta>=0.1));
+    const merged=[];hold.forEach(s=>{const m=merged[merged.length-1];if(m&&m.id===s.id&&s.id!=='#jump'&&s.ta-m.tb<0.25)m.tb=s.tb;else merged.push(Object.assign({},s));});
+    merged.forEach(s=>{if(s.id&&s.id!=='#jump')poss.push([s.id,s.ta,s.tb,bi]);});
+    for(let i=0;i<merged.length;i++){const a=merged[i],b=merged[i+1];if(!a.id||a.id==='#jump')continue;
+      /* Dribbling innerhalb des Ballbesitzes */
+      const pts=[];for(let t=a.ta;t<=a.tb+1e-9;t+=0.06)pts.push(P(a.id,t));let L=0;for(let k=1;k<pts.length;k++)L+=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);
+      const d0=pts.length?Math.hypot(pts[pts.length-1][0]-pts[0][0],pts[pts.length-1][1]-pts[0][1]):0;
+      if(L>36&&d0>(sim?60:30))acts.push({type:'drib',t0:a.ta,pts,who:a.id});
+      if(b&&b.id&&b.id!=='#jump'&&b.id!==a.id){const p0=at(B,a.tb,lin),p1=at(B,b.ta,lin);if(Math.hypot(p1[0]-p0[0],p1[1]-p0[1])>24)acts.push({type:'pass',t0:a.tb,pts:[p0,p1],who:a.id,to:b.id});}
+      else if(!b||b.id==='#jump'||!b.id){/* Schuss / Ball bleibt ohne Spielerin liegen */
+        const tEnd=b?b.ta:C-0.05;let tt=a.tb,p0=at(B,a.tb,lin),pe=p0;for(let t=a.tb;t<=tEnd;t+=dt){const q=at(B,t,lin);if(Math.hypot(q[0]-pe[0],q[1]-pe[1])>0.5){pe=q;tt=t;}}
+        if(b&&b.id===null){const nb=merged[i+2];if(nb&&nb.id&&nb.id!=='#jump'&&nb.id!==a.id){const p1=at(B,nb.ta,lin);if(Math.hypot(p1[0]-p0[0],p1[1]-p0[1])>24){acts.push({type:'pass',t0:a.tb,pts:[p0,p1],who:a.id,to:nb.id});continue;}}}
+        if(Math.hypot(pe[0]-p0[0],pe[1]-p0[1])>40)acts.push({type:'shot',t0:a.tb,pts:[p0,pe],who:a.id});}}});
+  /* Laufwege (ohne Ball). Simulierte Spielformen mit Ball: nur Pässe. Gegnerinnen und Wartende: keine Laufwege.
+     Richtungswechsel beginnen einen neuen Laufweg; Spielerinnen, die dasselbe Muster laufen (parallele Bahnen), nur einmal zeigen. */
+  const sigs=[];
+  if(!sim){ents.forEach(e=>{if(e.wait||e.fill===RED)return;const id=e.id;
+    const hasBall=t=>poss.some(p=>p[0]===id&&t>=p[1]-0.05&&t<=p[2]+0.05);
+    let run=null;const runs=[];
+    for(let i=0;i<N;i++){const t=i*dt,p=P(id,t),q=P(id,t+dt);if(!on(p)||!on(q)){run=null;continue;}const v=Math.hypot(q[0]-p[0],q[1]-p[1])/dt;
+      if(!(v>12&&!hasBall(t)))continue;const u=[(q[0]-p[0])/(v*dt),(q[1]-p[1])/(v*dt)];
+      if(run&&t-run.tb<=0.2&&!(run.u&&run.u[0]*u[0]+run.u[1]*u[1]<-0.2)){run.tb=t+dt;run.pts.push(q);run.u=u;}else{run={ta:t,tb:t+dt,pts:[p,q],u};runs.push(run);}}
+    const legs=runs.filter(r=>{let L=0;for(let k=1;k<r.pts.length;k++)L+=Math.hypot(r.pts[k][0]-r.pts[k-1][0],r.pts[k][1]-r.pts[k-1][1]);
+      const a=r.pts[0],b=r.pts[r.pts.length-1];return L>34&&Math.hypot(b[0]-a[0],b[1]-a[1])>26;});
+    if(!legs.length)return;
+    const sig=legs.map(r=>{const a=r.pts[0],b=r.pts[r.pts.length-1];return[b[0]-a[0],b[1]-a[1]];});
+    if(sigs.some(o=>o.length===sig.length&&o.every((v,k)=>Math.hypot(v[0]-sig[k][0],v[1]-sig[k][1])<14)))return;sigs.push(sig);
+    legs.forEach(r=>acts.push({type:'run',t0:r.ta,pts:r.pts,who:id}));});}
+  acts.sort((x,y)=>x.t0-y.t0||(x.type==='run'?1:-1));
+  if(raw)return{acts};
+  let out=acts;if(sim)out=acts.filter(a=>(a.type!=='drib'||balls.length===1)&&(a.type!=='pass'||Math.hypot(a.pts[1][0]-a.pts[0][0],a.pts[1][1]-a.pts[0][1])>30)).slice(0,6);
+  else{const per={};out=acts.filter(a=>{if(a.type!=='run')return true;per[a.who]=(per[a.who]||0)+1;return per[a.who]<=3;}).slice(0,9);}
+  const pos0={};ents.forEach(e=>{const p=P(e.id,0);if(on(p))pos0[e.id]=p;});
+  return{key,S,acts:out,pos0,ball0:balls.map(B=>at(B,0,lin))};}
+function rdp(pts,eps){if(pts.length<3)return pts.slice();let dm=0,ix=0;const a=pts[0],b=pts[pts.length-1],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1;
+  for(let i=1;i<pts.length-1;i++){const p=pts[i],d=Math.abs((b[0]-a[0])*(a[1]-p[1])-(a[0]-p[0])*(b[1]-a[1]))/L;if(d>dm){dm=d;ix=i;}}
+  if(dm>eps){const l=rdp(pts.slice(0,ix+1),eps),r=rdp(pts.slice(ix),eps);return l.slice(0,-1).concat(r);}return[a,b];}
+function staticSketchSvg(id){const cfg=A[id];if(!cfg)return null;
+  const R=sketchActions(cfg),vb=(cfg.vb||'0 0 360 360').split(/\s+/).map(Number);
+  const host=document.createElement('div');host.style.cssText='position:absolute;left:-9999px;top:0;width:10px;height:10px;overflow:hidden';document.body.appendChild(host);
+  const svg=el('svg',{xmlns:NS,viewBox:vb.join(' ')},host);const inst=Object.create(cfg);
+  try{if(cfg.draw)cfg.draw.call(inst,svg);}catch(_){}
+  (cfg.cones||[]).forEach(c=>{el('polygon',{fill:'#E8962A',stroke:'#7A4A0C','stroke-width':'.8',points:(c[0]-7)+','+(c[1]+5)+' '+c[0]+','+(c[1]-6)+' '+(c[0]+7)+','+(c[1]+5)},svg);if(c[2])label(svg,c[3]==='l'?c[0]-12:c[0]+12,c[1]+5,c[2],c[3]==='l'?'end':'start');});
+  const lay=el('g',{},svg),ents=el('g',{},svg),top=el('g',{},svg);const G={};
+  cfg.ents.forEach(e=>{G[e.id]=player(ents,e);const p=R.pos0[e.id];G[e.id].setAttribute('transform',p?'translate('+p[0]+','+p[1]+')':'translate(-80,-80)');});
+  R.ball0.forEach(b=>el('circle',{cx:b[0],cy:b[1],r:6,fill:'#FFFFFF',stroke:'#2C2C2A','stroke-width':'1'},ents));
+  try{if(cfg.tick)cfg.tick.call(inst,0,{G,mx:x=>x,st:{t:0,sc:R.key,mir:false},S:R.S});}catch(_){}
+  /* Startpositionen nach dem tick erneut setzen (manche ticks verschieben Elemente) */
+  cfg.ents.forEach(e=>{const p=R.pos0[e.id];G[e.id].setAttribute('transform',p?'translate('+p[0]+','+p[1]+')':'translate(-80,-80)');});
+  const occ=Object.values(R.pos0);
+  const head=(a,b,col)=>{const u=unit(a,b),s=9,w=5;el('polygon',{points:b[0]+','+b[1]+' '+(b[0]-u[0]*s-u[1]*w)+','+(b[1]-u[1]*s+u[0]*w)+' '+(b[0]-u[0]*s+u[1]*w)+','+(b[1]-u[1]*s-u[0]*w),fill:col},lay);};
+  const trimEnd=(pts,d)=>{const p=pts.slice();const b=p[p.length-1],a=p[p.length-2];const L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L>d+4){const u=unit(a,b);p[p.length-1]=[b[0]-u[0]*d,b[1]-u[1]*d];}return p;};
+  const badges=[];
+  R.acts.forEach((a,i)=>{let pts=a.type==='pass'||a.type==='shot'?a.pts:rdp(a.pts,2.5);
+    if(a.type==='run'){const e=pts[pts.length-1];if(occ.some(o=>Math.hypot(o[0]-e[0],o[1]-e[1])<18))pts=trimEnd(pts,16);}
+    if(a.type==='pass'||a.type==='shot')pts=trimEnd(pts,2);
+    const col=a.type==='run'?'#F2C230':'#FFFFFF';const d=pts.map((p,k)=>(k?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    if(a.type==='drib'){/* Wellenlinie */let w='';const fl=[];for(let k=1;k<pts.length;k++){const p0=pts[k-1],p1=pts[k],L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]),u=unit(p0,p1),n=Math.max(1,Math.round(L/8));
+        for(let j=0;j<n;j++){const f=j/n,x=p0[0]+(p1[0]-p0[0])*f,y=p0[1]+(p1[1]-p0[1])*f,o=(j%2?1:-1)*3.5;fl.push([x-u[1]*o,y+u[0]*o]);}}fl.push(pts[pts.length-1]);
+      el('path',{d:fl.map((p,k)=>(k?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' '),fill:'none',stroke:col,'stroke-width':'2.2','stroke-linejoin':'round',opacity:'.95'},lay);}
+    else el('path',{d,fill:'none',stroke:col,'stroke-width':a.type==='run'?'2.4':'2.6','stroke-dasharray':a.type==='run'?'7 5':'','stroke-linecap':'round','stroke-linejoin':'round'},lay);
+    head(pts[pts.length-2],pts[pts.length-1],col);
+    /* Nummer: an der Wegmitte, seitlich versetzt, ohne Überlappung */
+    let Lt=0;const segs=[];for(let k=1;k<pts.length;k++){const l=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);segs.push(l);Lt+=l;}
+    let want=Lt*(a.type==='pass'||a.type==='shot'?0.5:0.45),k=0;while(k<segs.length-1&&want>segs[k]){want-=segs[k];k++;}
+    const p0=pts[k],p1=pts[k+1],u=unit(p0,p1),f=Math.min(1,want/(segs[k]||1)),m=[p0[0]+(p1[0]-p0[0])*f,p0[1]+(p1[1]-p0[1])*f];
+    let best=null;[11,-11,17,-17,24,-24].some(o=>{const c=[m[0]-u[1]*o,m[1]+u[0]*o];if(!badges.some(b=>Math.hypot(b[0]-c[0],b[1]-c[1])<17)&&!occ.some(q=>Math.hypot(q[0]-c[0],q[1]-c[1])<20)){best=c;return true;}return false;});
+    if(!best)best=[m[0]-u[1]*11,m[1]+u[0]*11];badges.push(best);
+    const g=el('g',{},top);el('circle',{cx:best[0],cy:best[1],r:8,fill:a.type==='run'?'#F2C230':'#13213F',stroke:a.type==='run'?'#13213F':'#FFFFFF','stroke-width':'1.5'},g);
+    const tx=el('text',{x:best[0],y:best[1]+0.5,'text-anchor':'middle','dominant-baseline':'central','font-size':'11','font-weight':'700','font-family':'Arial, sans-serif',fill:a.type==='run'?'#13213F':'#FFFFFF'},g);tx.textContent=String(i+1);});
+  const str=new XMLSerializer().serializeToString(svg);host.remove();return{str,vb,count:R.acts.length,types:[...new Set(R.acts.map(a=>a.type))]};}
+async function staticSketchImg(id,k){const s=staticSketchSvg(id);if(!s)return sketchImg(id);k=k||2.6;const w=Math.round(s.vb[2]*k),h=Math.round(s.vb[3]*k);
+  const str=s.str.replace('<svg ','<svg width="'+w+'" height="'+h+'" ');const img=new Image();
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(str);});
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');g.fillStyle=GRASS;g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);
+  return{url:cv.toDataURL('image/jpeg',0.9),r:s.vb[3]/s.vb[2],types:s.types,count:s.count};}
+window.__hiStatic=id=>{const s=staticSketchSvg(id);return s&&s.str;};
+window.__hiSkRaw=(id,raw)=>sketchActions(A[id],raw);
+window.__hiSkInfo=()=>Object.keys(A).map(id=>{const c=A[id],S=c.sc[Object.keys(c.sc)[0]];let n=-1;try{n=sketchActions(c).acts.length;}catch(_){}return[id,n,!!c.linear,!!c.tick,(S.BALLS||[]).length+(S.BALL?1:0),c.ents.length];});
 /* PDF */
 const dlP=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(()=>null):Promise.resolve(null);
 function loadPdfLib(){if(window.jspdf)return Promise.resolve();return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('load'));document.head.appendChild(s);});}
@@ -10583,12 +10683,13 @@ async function buildPdf(p){
       if(i>0){y+=2;ensure(20);doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.line(M,y,W-M,y);y+=6;}
       if(it.t==='free'){ensure(12);font(13,'bold',INK);doc.text(pdfTxt(it.title||'Eigener Punkt').toUpperCase(),M,y,{baseline:'top'});font(11,'bold',CLUB);doc.text((+it.min||0)+' min',W-M,y,{baseline:'top',align:'right'});y+=LH(13)+2;continue;}
       const e=EXM[it.id];
-      if(!imgs[e.id]){try{imgs[e.id]=await sketchImg(e.id);}catch(_){imgs[e.id]=null;}}
+      if(!imgs[e.id]){try{imgs[e.id]=await staticSketchImg(e.id);}catch(_){try{imgs[e.id]=await sketchImg(e.id);}catch(__){imgs[e.id]=null;}}}
       const im=imgs[e.id];
       const IW=74,ih=im?Math.min(IW*im.r,86):0,iw=im?ih/im.r:0;
       const RX=M+IW+6,RW=CW-IW-6;
       const legend=(e.legend||[]).map(k=>LEG[k]).filter(Boolean);
-      const legH=legend.length?Math.ceil(legend.length/3)*4.2+2:0;
+      const lineH=im&&im.types?pdfLineLegendRow(doc,M,0,IW,im.types,true):0;
+      const legH=(legend.length?Math.ceil(legend.length/3)*4.2+2:0)+(lineH?lineH+0.6:0);
       const rightH=LH(8.5)+0.8+measure(e.ziel,RW)+3+LH(8.5)+0.8+measureList(e.org,RW)+3+(e.rot?LH(8.5)+0.8+measure(e.rot,RW):0);
       const titleH=measure(e.title.toUpperCase(),CW-25,13,1.15)+LH(8.5)+3;
       const blockH=Math.max(ih+legH,rightH);
@@ -10601,6 +10702,7 @@ async function buildPdf(p){
       if(im){doc.addImage(im.url,'JPEG',M,y0,iw,ih);doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.rect(M,y0,iw,ih);}
       let ly=y0+ih+2.5;legend.forEach((l,j)=>{const lx=M+(j%3)*(IW/3),yy=ly+Math.floor(j/3)*4.2;const c=l[1]==='transparent'?'#8A97A8':l[1];
         doc.setFillColor(c);doc.setDrawColor(150,160,172);doc.setLineWidth(0.15);doc.circle(lx+1.3,yy+1.4,1.25,l[1]==='transparent'?'D':'FD');font(7,'normal',MUT);doc.text(doc.splitTextToSize(pdfTxt(l[0]),IW/3-4)[0],lx+3.3,yy,{baseline:'top'});});
+      if(lineH)pdfLineLegendRow(doc,M,ly+(legend.length?Math.ceil(legend.length/3)*4.2+0.4:0),IW,im.types);
       if(fits){y=y0;head('Ziel',{x:RX,noBreak:true});para(e.ziel,{x:RX,w:RW,noBreak:true,gap:2.5});head('Organisation',{x:RX,noBreak:true});list(e.org,{x:RX,w:RW,noBreak:true,gap:2});
         if(e.rot){head(e.rotTitle||'Rotation',{x:RX,noBreak:true});para(e.rot,{x:RX,w:RW,noBreak:true});}
         y=Math.max(y,y0+ih+legH)+3;}
@@ -10630,6 +10732,83 @@ async function exportPdf(p,autosave){let doc;
     if(c==='declined')return 'Speichern abgebrochen.'+note;
     if(c==='rate_limited')return 'Bitte einen Moment warten und dann noch einmal versuchen.';
     try{doc.save(filename);return 'PDF wurde heruntergeladen: '+filename+'.'+note;}catch(_){return 'Das PDF konnte hier nicht gespeichert werden.';}}}
+/* Linienlegende für statische Skizzen im PDF: Pass (durchgezogen), Laufweg (gestrichelt), Dribbling (Welle), Nummer = Reihenfolge */
+function pdfLineSample(doc,cx,y,k){const ly=y+1.6;
+  if(k==='run'){doc.setDrawColor(201,150,10);doc.setFillColor(201,150,10);doc.setLineWidth(0.45);doc.setLineDashPattern([1.2,0.9],0);doc.line(cx,ly,cx+7,ly);doc.setLineDashPattern([],0);}
+  else if(k==='drib'){doc.setDrawColor(40,48,60);doc.setFillColor(40,48,60);doc.setLineWidth(0.4);let px=cx,py=ly;for(let i=1;i<=8;i++){const nx=cx+i*0.85,ny=ly+(i%2?-0.7:0.7);doc.line(px,py,nx,ny);px=nx;py=ny;}}
+  else{doc.setDrawColor(40,48,60);doc.setFillColor(40,48,60);doc.setLineWidth(0.45);doc.line(cx,ly,cx+7,ly);}
+  doc.triangle(cx+8.6,ly,cx+6.6,ly-1.1,cx+6.6,ly+1.1,'F');}
+function pdfNumBadge(doc,cx,y){doc.setFillColor(19,33,63);doc.circle(cx+1.6,y+1.6,1.6,'F');doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(255,255,255);doc.text('1',cx+1.6,y+1.65,{align:'center',baseline:'middle'});}
+const LINELEG=[['pass','Pass / Schuss'],['run','Laufweg'],['drib','Dribbling']];
+const lineTypes=types=>LINELEG.filter(t=>(types||[]).includes(t[0])||(t[0]==='pass'&&(types||[]).includes('shot')));
+/* eine Zeile unter der Skizze (Einheiten-PDF) */
+function pdfLineLegendRow(doc,x,y,w,types,dry){const it=lineTypes(types);if(!it.length)return 0;let cx=x,cy=y;doc.setFont('helvetica','normal');doc.setFontSize(7);
+  const put=(need,draw)=>{if(cx+need>x+w&&cx>x){cx=x;cy+=4.4;}if(!dry)draw(cx,cy);cx+=need;};
+  it.forEach(([k,n])=>{doc.setFont('helvetica','normal');doc.setFontSize(7);const tw=doc.getTextWidth(n);put(10+tw+4,(px,py)=>{pdfLineSample(doc,px,py,k);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(86,98,115);doc.text(n,px+10,py,{baseline:'top'});});});
+  doc.setFont('helvetica','normal');doc.setFontSize(7);put(4.2+doc.getTextWidth('Reihenfolge'),(px,py)=>{pdfNumBadge(doc,px,py);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(86,98,115);doc.text('Reihenfolge',px+4.2,py,{baseline:'top'});});
+  return cy-y+4.6;}
+async function buildExPdf(e,lv){
+  await loadPdfLib();const {jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});
+  const W=210,H=297,M=15,CW=W-2*M,BOT=H-18,CLUB=[31,83,160],INK=[17,23,32],MUT=[86,98,115],LINE=[216,223,232],SOFT=[231,238,248];
+  let y=M;const cats=catsOf(e,lv).map(c=>catName(c)).join(' · ');
+  const font=(size,style,color)=>{doc.setFont('helvetica',style||'normal');doc.setFontSize(size);doc.setTextColor(...(color||INK));};
+  const LH=(size,lh)=>size*0.3528*(lh||1.35);
+  const runHead=()=>{font(8,'bold',CLUB);doc.text('H.I. – COACHING',M,10);font(8,'normal',MUT);doc.text(pdfTxt(e.title),W-M,10,{align:'right'});
+    doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.line(M,12.5,W-M,12.5);y=19;};
+  const ensure=h=>{if(y+h>BOT){doc.addPage();runHead();}};
+  const para=(t,o)=>{o=o||{};const size=o.size||9.5,x=o.x||M,w=o.w||CW;font(size,o.style,o.color);const L=LH(size,o.lh);
+    doc.splitTextToSize(pdfTxt(t),w).forEach(l=>{if(!o.noBreak)ensure(L);doc.text(l,x,y,{baseline:'top'});y+=L;});y+=o.gap||0;};
+  const list=(arr,o)=>{o=o||{};const size=o.size||9.5,x=o.x||M,w=o.w||CW;const L=LH(size,o.lh);
+    (arr||[]).forEach((a,i)=>{font(size,'normal',INK);const lines=doc.splitTextToSize(pdfTxt(a),w-5);lines.forEach((l,j)=>{if(!o.noBreak)ensure(L);
+      if(j===0){font(size,'bold',CLUB);doc.text(o.num?(i+1)+'.':'•',x,y,{baseline:'top'});font(size,'normal',INK);}doc.text(l,x+5,y,{baseline:'top'});y+=L;});y+=0.6;});y+=o.gap||0;};
+  const head=(t,o)=>{o=o||{};const size=o.size||8.5;if(!o.noBreak)ensure(LH(size)+LH(9.5)*2+1);font(size,'bold',CLUB);doc.setCharSpace(0.25);doc.text(pdfTxt(t).toUpperCase(),o.x||M,y,{baseline:'top'});doc.setCharSpace(0);y+=LH(size)+0.8;};
+  /* Kopf */
+  doc.setFillColor(...CLUB);doc.rect(0,0,W,30,'F');
+  font(20,'bold',[255,255,255]);doc.text('H.I. – COACHING',M,14);font(9.5,'normal',[214,226,245]);doc.text(pdfTxt('Übungsmappe · '+cats),M,21.5);
+  font(11,'bold',[255,255,255]);doc.text(pdfTxt(lvName(lv)),W-M,14,{align:'right'});if(e.saeulen){font(9,'normal',[214,226,245]);doc.text('5 Säulen geprüft',W-M,21.5,{align:'right'});}
+  y=39;font(21,'bold',INK);doc.splitTextToSize(pdfTxt(e.title).toUpperCase(),CW).forEach(l=>{doc.text(l,M,y,{baseline:'top'});y+=LH(21,1.1);});y+=2;
+  const facts=(e.chips||[]).filter(c=>String(c[1]||'').trim());const cols=3,cw=CW/cols,rows=Math.ceil(facts.length/cols);
+  if(facts.length){const rowH=r=>{let h=0;facts.slice(r*cols,r*cols+cols).forEach(f=>{font(9.5,'bold');h=Math.max(h,doc.splitTextToSize(pdfTxt(f[1]),cw-6).slice(0,2).length*LH(9.5,1.2));});return h+5.2;};
+    let bh=4;for(let r=0;r<rows;r++)bh+=rowH(r);doc.setFillColor(...SOFT);doc.roundedRect(M,y,CW,bh,1.5,1.5,'F');let cy=y+3;
+    for(let r=0;r<rows;r++){const h=rowH(r);facts.slice(r*cols,r*cols+cols).forEach((f,i)=>{const cx=M+4+i*cw;font(7,'bold',MUT);doc.text(pdfTxt(f[0]||'Spieler').toUpperCase(),cx,cy,{baseline:'top'});
+      font(9.5,'bold',INK);doc.splitTextToSize(pdfTxt(f[1]),cw-6).slice(0,2).forEach((l,k)=>doc.text(l,cx,cy+3.6+k*LH(9.5,1.2),{baseline:'top'}));});cy+=h;}
+    y+=bh+6;}
+  /* Skizze mit Pass- und Laufwegen */
+  let im=null;try{im=await staticSketchImg(e.id,3);}catch(_){im=null;}
+  if(im){const maxH=Math.min(118,BOT-y-30);let iw=Math.min(CW*0.66,maxH/im.r),ih=iw*im.r;const RX=M+iw+6,RW=CW-iw-6;
+    doc.addImage(im.url,'JPEG',M,y,iw,ih);doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.rect(M,y,iw,ih);
+    const y0=y;y=y0;head('Legende',{x:RX,noBreak:true});
+    const legend=(e.legend||[]).map(k=>LEG[k]).filter(Boolean);
+    legend.forEach(l=>{const c=l[1]==='transparent'?'#8A97A8':l[1];doc.setFillColor(c);doc.setDrawColor(150,160,172);doc.setLineWidth(0.15);doc.circle(RX+1.4,y+1.5,1.35,l[1]==='transparent'?'D':'FD');
+      font(8,'normal',INK);doc.text(doc.splitTextToSize(pdfTxt(l[0]),RW-5)[0],RX+4.2,y,{baseline:'top'});y+=4.4;});
+    y+=1.5;lineTypes(im.types).forEach(([k,n])=>{pdfLineSample(doc,RX,y,k);font(8,'normal',INK);doc.text(n,RX+10.5,y,{baseline:'top'});y+=4.4;});
+    if(im.count){pdfNumBadge(doc,RX+2.4,y);font(8,'normal',INK);doc.text('Reihenfolge der Aktionen',RX+10.5,y,{baseline:'top'});y+=4.4;}
+    y+=3;font(7.5,'italic',MUT);doc.splitTextToSize('Skizze zeigt die Grundform (Stufe 1). Die animierte Skizze findest du in der Übungsmappe.',RW).forEach(l=>{doc.text(l,RX,y,{baseline:'top'});y+=LH(7.5);});
+    y+=4;let zielDone=false;if(e.ziel){font(9);const zl=doc.splitTextToSize(pdfTxt(e.ziel),RW);if(y+LH(8.5)+0.8+zl.length*LH(9)<=y0+ih){head('Ziel',{x:RX,noBreak:true});font(9,'normal',INK);zl.forEach(l=>{doc.text(l,RX,y,{baseline:'top'});y+=LH(9);});zielDone=true;}}
+    y=Math.max(y,y0+ih)+6;if(!zielDone&&e.ziel){head('Ziel');para(e.ziel,{gap:2.5});}}
+  else if(e.ziel){head('Ziel');para(e.ziel,{gap:2.5});}
+  if(e.org&&e.org.length){head('Organisation');list(e.org,{gap:2});}
+  if(e.rot){head(e.rotTitle||'Rotation');para(e.rot,{gap:2.5});}
+  if(e.ablauf&&e.ablauf.length){head(e.ablaufTitle||'Ablauf');list(e.ablauf,{num:true,gap:2});}
+  if(e.stufen&&e.stufen.length){head('Methodische Stufen');list(e.stufen.map(x=>x[0]+': '+x[1]),{gap:2});}
+  if(e.coach&&e.coach.length){head('Coachingpunkte');list(e.coach.map(c=>Array.isArray(c)?c[0]+': '+c[1]:c),{gap:2});}
+  if(e.last&&e.last.length){head(e.lastTitle||'Belastung');list(e.last,{gap:2});}
+  if(e.leicht&&e.leicht.length){head('Leichter');list(e.leicht,{gap:2});}
+  if(e.steig&&e.steig.length){head(e.leicht?'Schwerer':(e.steigTitle||'Steigerungen'));list(e.steig,{gap:2});}
+  const ad=e.ad&&e.ad[lv];
+  if(ad){font(9.5);const h=doc.splitTextToSize(pdfTxt(ad),CW-8).length*LH(9.5)+LH(8.5)+5;ensure(h);doc.setFillColor(...SOFT);doc.roundedRect(M,y,CW,h,1.5,1.5,'F');y+=2.5;head('Anpassung für '+lvName(lv),{x:M+4,noBreak:true});para(ad,{x:M+4,w:CW-8,noBreak:true});y+=3;}
+  y+=3;ensure(40);head('Notizen',{size:9});doc.setDrawColor(...LINE);doc.setLineWidth(0.3);for(let i=0;i<4;i++){y+=8;if(y>BOT)break;doc.line(M,y,W-M,y);}
+  const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);font(7.5,'normal',MUT);doc.text('H.I. – Coaching · FC Bergheim',M,H-9);doc.text('Seite '+i+' von '+n,W-M,H-9,{align:'right'});}
+  return doc;}
+async function exportExPdf(id){const e=EXM[id];if(!e)return'';const lv=e.lv.includes(level)?level:e.lv[e.lv.length-1];let doc;
+  try{doc=await buildExPdf(e,lv);}catch(err){console.error(err);return 'Das PDF konnte nicht erstellt werden. Prüfe die Internetverbindung und versuche es noch einmal.';}
+  const slug=x=>String(x||'').replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/Ä/g,'Ae').replace(/Ö/g,'Oe').replace(/Ü/g,'Ue').replace(/ß/g,'ss').normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,50);
+  const filename='Uebung_'+slug(e.title)+'_'+(LV.find(l=>l.id===lv)||{short:lv}).short.replace(/[^A-Za-z0-9]+/g,'-')+'.pdf';
+  const dl=await dlP;
+  try{if(dl){await dl.save({filename,data:doc.output('blob')});return 'PDF gespeichert: '+filename;}doc.save(filename);return 'PDF heruntergeladen: '+filename;}
+  catch(err){const c=err&&err.code;if(c==='declined')return 'Speichern abgebrochen.';try{doc.save(filename);return 'PDF heruntergeladen: '+filename;}catch(_){return 'Das PDF konnte hier nicht gespeichert werden.';}}}
+document.addEventListener('click',async ev=>{const b=ev.target.closest&&ev.target.closest('[data-expdf]');if(!b||b.disabled)return;
+  const old=b.innerHTML;b.disabled=true;b.textContent='PDF wird erstellt …';const msg=await exportExPdf(b.dataset.expdf);b.disabled=false;b.innerHTML=old;if(msg)toast(msg);});
 const pdfBtn=document.getElementById('plan-pdf');
 pdfBtn.addEventListener('click',async()=>{
   if(!itemCount()){planMsg.textContent='Füge zuerst mindestens eine Übung oder einen eigenen Punkt hinzu.';return;}
