@@ -3157,7 +3157,6 @@ const jpPole=(s,x,y)=>el('rect',{x:x-3,y:y-14,width:6,height:28,rx:2,fill:'#D85A
   A.pzielzone={vb:'0 0 360 360',cycle:C,draw(s){field(s,0,0,360,360);el('rect',{x:6,y:6,width:348,height:58,fill:'#F2C230',opacity:'.16'},s);line(s,6,64,354,64,'6 5','.7');},
     ents:[{id:'b1'},{id:'b2'},{id:'b3'},{id:'b4'},{id:'g1',fill:RED},{id:'g2',fill:RED}],sc:{a:S}};
 })();
-
 /* ---------- Technik U13 – KM: sechs neue Formen (5 Säulen) ---------- */
 const jtQuad=(p0,p1,p2,t0,t1,n)=>{const r=[];for(let i=0;i<=n;i++){const u=i/n,a=(1-u)*(1-u),b=2*(1-u)*u,c=u*u;r.push([t0+(t1-t0)*u,a*p0[0]+b*p1[0]+c*p2[0],a*p0[1]+b*p1[1]+c*p2[1]]);}return r;};
 
@@ -3472,6 +3471,72 @@ const jaBox=s=>{taGoal(s);el('rect',{x:70,y:6,width:220,height:90,fill:'none',st
       [[100,40],[260,40],[100,320],[260,320]].forEach(([x,y])=>cone(s,x+(x<180?-14:14),y+(y<180?14:-14)));[100,260].forEach(x=>line(s,x,52,x,308,'4 6','.35'));
       txt(s,180,316,'middle','12').textContent='15 m';const t=txt(s,226,184,'middle','12');t.textContent='30 m';},
     ents:[{id:'l1'},{id:'l1b'},{id:'r1'},{id:'r1b'},{id:'l2'},{id:'l2b'},{id:'r2'},{id:'r2b'},{id:'a',label:'6'},{id:'b',label:'6'}],sc:{a:S}};
+})();
+/* ---------- Passen U13 – KM: Slalom, Finte und Kombination auf Minitore (nach Skizze von Haris, 09.11.2026) ---------- */
+const pmDraw=(s,o)=>{o=o||{};field(s,0,0,360,300,false);
+  const W='#FFFFFF',ln=(x1,y1,x2,y2)=>el('line',{x1,y1,x2,y2,stroke:W,'stroke-width':'1.6',opacity:'.8'},s);
+  ln(0,14,360,14);el('rect',{x:70,y:14,width:220,height:76,fill:'none',stroke:W,'stroke-width':'1.6',opacity:'.8'},s);el('rect',{x:130,y:14,width:100,height:26,fill:'none',stroke:W,'stroke-width':'1.4',opacity:'.7'},s);
+  el('circle',{cx:180,cy:62,r:2.2,fill:W,opacity:'.8'},s);el('rect',{x:158,y:4,width:44,height:10,fill:'rgba(255,255,255,.35)',stroke:W,'stroke-width':'2'},s);
+  mgoal(s,128,4,24,10);mgoal(s,208,4,24,10);
+  (o.slalom===false?[]:[[326,127],[326,145],[326,162],[326,179]]).forEach(([x,y])=>cone(s,x,y,'#E8962A'));
+  (o.cones||[]).forEach(([x,y])=>cone(s,x,y,'#E8962A'));
+  (o.dummies||[]).forEach(([x,y])=>{const g=el('g',{transform:'translate('+x+','+y+')'},s);el('rect',{x:-6,y:-6,width:12,height:15,rx:3,fill:'#F2C230',stroke:'#5A4500','stroke-width':'1'},g);el('circle',{cx:0,cy:-9,r:3.6,fill:'#F2C230',stroke:'#5A4500','stroke-width':'1'},g);});};
+const pmSlalom=[[0,329,206],[0.4,337,181],[0.75,315,163],[1.1,337,146],[1.45,315,128],[1.75,318,112]];
+/* Grundform: Slalom, Finte am Dummy, Pass, Ablage, Abschluss */
+(function(){const C=4.6;
+  const S={L:[[0.85,'Spielerin 1 startet ins Dribbling durch den Slalom'],[1.9,'In der Mitte des Slaloms startet Spielerin 2'],[2.5,'Spielerin 1 zieht nach innen, Finte am Dummy'],[3.3,'Pass zu Spielerin 2, Ablage nach links'],[99,'Abschluss aufs linke Minitor, dann Positionen tauschen']],
+    P1:pmSlalom.concat([[2.1,300,120],[2.45,285,113],[2.8,262,136],[3.1,232,150],[3.45,200,150],[C,200,150]]),
+    P2:[[0,181,182],[0.9,181,182],[1.6,272,162],[2.25,178,128],[2.8,222,100],[3.05,222,100],[3.5,250,114],[C,250,114]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,2.45],['p','P1','P2',2.5,2.85],['p','P2','P1',3.0,3.3],['s','P1',3.5,3.8,141,9]],C)];
+  A.pmablage={vb:'0 0 360 300',cycle:C,thumbT:3.2,draw(s){pmDraw(s,{cones:[[204,132],[257,151],[195,164]],dummies:[[240,86],[298,94]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'}],sc:{a:S}};
+})();
+/* Doppelpass */
+(function(){const C=4.4;
+  const S={L:[[1.6,'Slalom, Spielerin 2 löst sich mit einer Gegenbewegung'],[2.45,'Finte am Dummy und Pass zu Spielerin 2'],[3.1,'Doppelpass direkt in den Lauf'],[99,'Abschluss aufs rechte Minitor']],
+    P1:pmSlalom.concat([[2.1,300,120],[2.45,285,113],[3.1,262,90],[C,262,90]]),
+    P2:[[0,232,150],[1.2,232,150],[1.7,252,172],[2.3,244,128],[C,244,128]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,2.4],['p','P1','P2',2.5,2.8],['p','P2','P1',2.85,3.15],['s','P1',3.3,3.6,221,9]],C)];
+  A.pmdoppel={vb:'0 0 360 300',cycle:C,thumbT:3.0,draw(s){pmDraw(s,{dummies:[[298,94],[212,104]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'}],sc:{a:S}};
+})();
+/* Dritte Spielerin */
+(function(){const C=4.4;
+  const S={L:[[2.45,'Slalom und Finte, Spielerin 2 kommt entgegen'],[3.1,'Pass zu Spielerin 2, Klatsch auf Spielerin 3'],[3.55,'Spielerin 3 spielt Spielerin 1 in den Lauf'],[99,'Abschluss aufs rechte Minitor']],
+    P1:pmSlalom.concat([[2.1,300,120],[2.45,285,113],[3.1,262,80],[3.5,250,62],[C,250,62]]),
+    P2:[[0,232,142],[1.5,232,142],[2.2,232,106],[C,232,106]],
+    P3:[[0,170,206],[1.8,170,206],[2.6,178,150],[2.95,186,134],[C,186,134]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,2.4],['p','P1','P2',2.5,2.8],['p','P2','P3',2.85,3.1],['p','P3','P1',3.2,3.55],['s','P1',3.65,3.95,221,9]],C)];
+  A.pmdritte={vb:'0 0 360 300',cycle:C,thumbT:3.3,draw(s){pmDraw(s,{dummies:[[298,94],[214,88]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'},{id:'P3',label:'3'}],sc:{a:S}};
+})();
+/* Hinterlaufen */
+(function(){const C=4.4;
+  const S={L:[[1.85,'Slalom, Spielerin 2 kommt entgegen'],[2.5,'Pass nach innen, Spielerin 1 hinterläuft außen'],[3.1,'Spielerin 2 dribbelt kurz nach innen und spielt in den Lauf'],[99,'Abschluss aufs rechte Minitor']],
+    P1:pmSlalom.concat([[1.9,318,112],[2.5,308,88],[3.05,288,62],[C,288,62]]),
+    P2:[[0,225,152],[1.0,225,152],[1.8,244,122],[2.75,226,114],[C,226,114]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,1.75],['p','P1','P2',1.85,2.2],['d','P2',2.3,2.75],['p','P2','P1',2.8,3.15],['s','P1',3.3,3.6,222,9]],C)];
+  A.pmhinter={vb:'0 0 360 300',cycle:C,thumbT:2.9,draw(s){pmDraw(s,{dummies:[[244,98]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'}],sc:{a:S}};
+})();
+/* Querpass vor dem Tor */
+(function(){const C=4.2;
+  const S={L:[[1.6,'Slalom, Spielerin 2 startet von links'],[2.6,'Finte am Dummy, Dribbling zur Strafraumgrenze'],[3.05,'Flacher Querpass in den Lauf von Spielerin 2'],[99,'Direktabschluss aufs rechte Minitor']],
+    P1:pmSlalom.concat([[2.1,300,120],[2.45,285,113],[2.7,270,98],[C,270,98]]),
+    P2:[[0,140,170],[1.3,140,170],[2.3,172,110],[3.0,204,62],[C,204,62]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,2.7],['p','P1','P2',2.75,3.05],['s','P2',3.1,3.35,220,9]],C)];
+  A.pmquer={vb:'0 0 360 300',cycle:C,thumbT:2.9,draw(s){pmDraw(s,{dummies:[[298,94],[232,116]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'}],sc:{a:S}};
+})();
+/* Gegen Verteidigerin */
+(function(){const C=4.6;
+  const S={L:[[2.45,'Wie die Grundform, aber statt des Dummys steht eine Verteidigerin'],[2.95,'Pass zu Spielerin 2, die Verteidigerin presst'],[3.4,'Ablage auf Spielerin 1 vor dem Druck'],[99,'Abschluss aufs linke Minitor, die Verteidigerin versucht zu blocken']],
+    P1:pmSlalom.concat([[2.1,300,120],[2.45,285,113],[2.8,262,136],[3.1,232,150],[3.45,200,150],[C,200,150]]),
+    P2:[[0,181,182],[0.9,181,182],[1.6,272,162],[2.25,178,128],[2.8,222,100],[3.0,222,100],[3.4,254,112],[C,254,112]],
+    V:[[0,200,72],[2.55,200,72],[2.95,204,84],[3.45,190,114],[C,190,114]]};
+  S.BALLS=[jrSeq(S,[['d','P1',0.1,2.45],['p','P1','P2',2.5,2.85],['p','P2','P1',3.0,3.3],['s','P1',3.5,3.8,141,9]],C)];
+  A.pmduell={vb:'0 0 360 300',cycle:C,thumbT:3.2,draw(s){pmDraw(s,{cones:[[204,132],[257,151],[195,164]],dummies:[[298,94]]});},
+    ents:[{id:'P1',label:'1'},{id:'P2',label:'2'},{id:'V',fill:RED}],sc:{a:S}};
 })();
 
 /* ---------- Rondo U13 – KM: Feldwechsel-Rondo 5 gegen 2 ---------- */
@@ -7277,6 +7342,76 @@ EX.push(Object.assign({},KJP,{id:'pdoppelsechs',title:'Doppelsechs-Passform',leg
  last:['Dauer: pro Sechserpaar 2 Minuten volle Belastung, dann Wechsel, 4–6 Durchgänge','Wartezeit: keine für die Sechserinnen, kurz für die Außenspielerinnen','Pro Spielerin: Sechserinnen ca. 30–40 Ballkontakte in 2 Minuten, Außen ca. 10–15 pro Durchgang','Intensität: hoch für die Sechserinnen, mittel für die Außen'],
  leicht:['Zwei Kontakte (Stufe 1)','Kleineres Feld (12 × 25 m)','Nur eine Richtung, dann neu starten'],
  steig:['Direkt (Stufe 2)','Zwei Bälle gleichzeitig: unten links und oben rechts starten zusammen','Gegnerin im Zentrum (Stufe 3)','Nur schwacher Fuß bei der Verlagerung']}));
+/* ---------- Passen U13 – KM: Slalom, Finte und Kombination auf Minitore (nach Skizze von Haris, 09.11.2026) ---------- */
+Object.assign(LEG,{dummy:['Dummy','#F2C230',1]});
+EX.push(...[
+Object.assign({},KJP,{id:'pmablage',title:'Slalom, Finte und Ablage auf Minitore',legend:['spielerin','ball','cone','dummy','minitor'],
+ chips:[['Schwerpunkt','Dribbling mit Finte · Pass und Ablage · Abschluss'],['','8–12 Spielerinnen (2 Aufbauten)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 8 Hütchen, 2–4 Dummys, Bälle']],
+ ziel:'Die Spielerin dribbelt mit Tempo durch den Slalom, zieht nach innen, überwindet den Dummy mit einer Finte und spielt im Lauf Richtung Tor einen sauberen Pass. Nach der Ablage schließt sie ab. Im Spiel: von außen nach innen ziehen, eine Gegnerin ausspielen und über eine Ablage zum Abschluss kommen.',
+ org:['Rechts neben dem Strafraum ein Slalom aus 4 Hütchen, Startposition von Spielerin 1 dahinter','Ein Dummy schräg vor dem Slalom Richtung Strafraum (hier macht Spielerin 1 die Finte), ein zweiter Dummy an der Strafraumgrenze','Spielerin 2 startet halbrechts vor dem Strafraum, Hütchen markieren ihren Laufweg','Links und rechts neben dem großen Tor je ein Minitor auf Höhe des Torraums','Optional: links spiegelverkehrt ein zweiter Aufbau, diese Gruppe schließt aufs rechte Minitor ab'],
+ rot:'Spielerin 1 wechselt nach ihrem Abschluss auf die Position von Spielerin 2, Spielerin 2 wechselt auf die Position von Spielerin 1. Bei zwei Aufbauten wechselt Spielerin 2 in die andere Gruppe auf die Position von Spielerin 1, so spielen alle mal von rechts und mal von links.',
+ ablauf:['Spielerin 1 startet ins Dribbling durch den Slalom.','Ist sie ungefähr in der Mitte des Slaloms, startet Spielerin 2 und läuft sich frei.','Spielerin 1 zieht nach innen Richtung Tor und geht mit einer Finte am Dummy vorbei.','Auf dem Weg Richtung Tor spielt sie Spielerin 2 an.','Spielerin 2 legt den Ball nach links ab, Spielerin 1 läuft in die Ablage.','Spielerin 1 schließt aufs linke Minitor ab. Im linken Aufbau läuft alles spiegelverkehrt mit Abschluss aufs rechte Minitor.'],
+ stufen:[['Stufe 1 · Technik','Ruhiges Tempo im Slalom, eine vorgegebene Finte (Übersteiger), Ablage mit zwei Kontakten erlaubt.'],['Stufe 2 · Tempo','Slalom mit hohem Tempo, freie Wahl der Finte, Ablage direkt, Abschluss mit dem ersten oder zweiten Kontakt.'],['Stufe 3 · Zeitdruck','Ab Start Slalom höchstens 8 Sekunden bis zum Abschluss. Beide Aufbauten starten gleichzeitig: Wer zuerst trifft, holt den Punkt.']],
+ coach:[['Ballführung im Slalom','Kleine Kontakte, Ball eng am Fuß, Blick zwischen den Hütchen kurz nach vorne. Erkennbar: Kein Hütchen wird berührt, das Tempo bleibt hoch.'],['Finte am Dummy','Die Finte zwei Schritte vor dem Dummy, danach mit dem ersten Kontakt am Dummy vorbei beschleunigen. Fehlerbild: Die Finte kommt direkt am Dummy, die Spielerin bleibt stehen.'],['Timing von Spielerin 2','Start erst in der Mitte des Slaloms, dann mit einer Gegenbewegung anbieten. Fehlerbild: Spielerin 2 startet zu früh und wartet stehend auf den Pass.'],['Ablage','Spielerin 2 legt flach und in den Lauf nach links, nicht auf den Fuß. Erkennbar: Spielerin 1 muss nicht abbremsen.'],['Abschluss','Platziert ins Minitor, Standbein neben den Ball, Blick vorher kurz aufs Ziel.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 4–6 Spielerinnen pro Aufbau ca. 30–40 Sekunden','Pro Spielerin: ca. 6 Aktionen pro Durchgang, davon die Hälfte mit Abschluss','Intensität: mittel bis hoch, kurze Sprints und Dribblings'],
+ leicht:['Slalom mit größeren Abständen','Finte vorgeben (Stufe 1)','Ablage mit zwei Kontakten'],
+ steig:['Slalom enger stellen','Ablage und Abschluss direkt (Stufe 2)','8-Sekunden-Regel und Wettkampf beider Aufbauten (Stufe 3)','Abschluss nur mit dem schwachen Fuß']}),
+Object.assign({},KJP,{id:'pmdoppel',title:'Slalom, Finte und Doppelpass auf Minitore',legend:['spielerin','ball','cone','dummy','minitor'],
+ chips:[['Schwerpunkt','Dribbling mit Finte · Doppelpass · Abschluss'],['','8–12 Spielerinnen (2 Aufbauten)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 8 Hütchen, 4 Dummys, Bälle']],
+ ziel:'Nach Slalom und Finte spielt die Spielerin einen Doppelpass und bekommt den Ball direkt in den Lauf zurück. Im Spiel: mit einem Doppelpass an der Gegnerin vorbei in den Strafraum kommen.',
+ org:['Aufbau wie bei „Slalom, Finte und Ablage auf Minitore“','Spielerin 2 steht etwas höher, halbrechts vor dem Strafraum','Ein Dummy vor dem Slalom für die Finte, ein zweiter Dummy links neben Spielerin 2 als Gegenspielerin','Links optional spiegelverkehrt ein zweiter Aufbau'],
+ rot:'Spielerin 1 wechselt auf die Position von Spielerin 2, Spielerin 2 auf die Position von Spielerin 1. Bei zwei Aufbauten wechselt Spielerin 2 in die andere Gruppe auf die Position von Spielerin 1.',
+ ablauf:['Spielerin 1 dribbelt durch den Slalom.','Spielerin 2 löst sich mit einer Gegenbewegung: erst kurz weg, dann entgegen.','Spielerin 1 macht die Finte am Dummy und spielt Spielerin 2 an.','Spielerin 2 spielt direkt zurück in den Lauf von Spielerin 1 (Doppelpass).','Spielerin 1 schließt aufs nahe rechte Minitor ab. Der linke Aufbau schließt aufs linke Minitor ab.'],
+ stufen:[['Stufe 1 · Zwei Kontakte','Spielerin 2 darf den Ball annehmen und dann zurückspielen.'],['Stufe 2 · Direkt','Doppelpass direkt, Abschluss mit höchstens zwei Kontakten.'],['Stufe 3 · Entscheidung','Die Trainerin ruft beim Pass „Doppel“ oder „Dreh“: Bei „Dreh“ dreht Spielerin 2 auf und schließt selbst ab.']],
+ coach:[['Gegenbewegung','Spielerin 2 geht erst kurz weg und kommt dann entgegen. Fehlerbild: Sie steht still und der Pass kommt in den Rücken.'],['Pass und sofort starten','Spielerin 1 läuft direkt nach dem Pass in die Tiefe. Erkennbar: Der Rückpass kommt in den Lauf, nicht auf die Stelle, an der sie gepasst hat.'],['Rückpass','Flach, mit der Innenseite, vor die Laufende.'],['Finte und Pass','Die Finte am Dummy und der Pass gehen fließend ineinander über, ohne Stopp.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 4–6 Spielerinnen pro Aufbau ca. 30 Sekunden','Pro Spielerin: ca. 6–7 Aktionen pro Durchgang, davon die Hälfte mit Abschluss','Intensität: mittel bis hoch'],
+ leicht:['Zwei Kontakte für Spielerin 2 (Stufe 1)','Dummy neben Spielerin 2 weglassen','Slalom weiter stellen'],
+ steig:['Doppelpass direkt (Stufe 2)','Entscheidung auf Zuruf (Stufe 3)','Abschluss direkt aus dem Lauf']}),
+Object.assign({},KJP,{id:'pmdritte',title:'Slalom, Finte und dritte Spielerin',legend:['spielerin','ball','dummy','minitor'],
+ chips:[['Schwerpunkt','Spiel über die dritte Spielerin · Tiefenlauf · Abschluss'],['','9–12 Spielerinnen (3 Positionen)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 4 Hütchen, 2 Dummys, Bälle']],
+ ziel:'Nach Slalom und Finte spielt die Spielerin auf eine Mitspielerin, diese lässt auf eine dritte Spielerin klatschen, und die spielt die erste in die Tiefe. Im Spiel: nach dem Pass sofort in die Tiefe starten und über die dritte Spielerin hinter die Abwehr kommen.',
+ org:['Slalom rechts neben dem Strafraum wie in der Grundform','Spielerin 2 halbrechts vor dem Strafraum, Spielerin 3 zentral etwas tiefer','Ein Dummy vor dem Slalom, ein zweiter zentral an der Strafraumgrenze','Minitore links und rechts neben dem großen Tor'],
+ rot:'Im Uhrzeigersinn: Spielerin 1 wird Spielerin 2, Spielerin 2 wird Spielerin 3, Spielerin 3 geht zum Slalom und wird Spielerin 1.',
+ ablauf:['Spielerin 1 dribbelt durch den Slalom und macht die Finte am Dummy.','Spielerin 2 kommt entgegen und bekommt den Pass.','Spielerin 2 lässt direkt auf die nachrückende Spielerin 3 klatschen.','Spielerin 1 ist nach ihrem Pass in die Tiefe gestartet. Spielerin 3 spielt sie in den Lauf.','Spielerin 1 schließt aufs rechte Minitor ab.'],
+ stufen:[['Stufe 1 · Festes Muster','Ablauf fest, zwei Kontakte für Spielerin 3.'],['Stufe 2 · Direkt','Spielerin 2 und 3 spielen direkt.'],['Stufe 3 · Zwei Lösungen','Spielerin 3 darf statt des Tiefenpasses auch selbst aufs linke Minitor schießen, wenn Spielerin 1 zu spät startet.']],
+ coach:[['Tiefenlauf nach dem Pass','Spielerin 1 startet sofort nach ihrem Pass. Fehlerbild: Sie schaut ihrem Pass hinterher und ist zu spät.'],['Klatschpass','Spielerin 2 lässt weich und in den Lauf von Spielerin 3 prallen.'],['Timing Spielerin 3','Sie rückt nach, wenn Spielerin 2 angespielt wird. Erkennbar: Sie bekommt den Ball im Lauf mit Blick nach vorne.'],['Tiefenpass','In den Raum vor Spielerin 1, nicht auf den Fuß.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 3–4 Spielerinnen pro Position ca. 30–40 Sekunden','Pro Spielerin: ca. 6 Aktionen pro Durchgang, jede dritte mit Abschluss','Intensität: mittel bis hoch'],
+ leicht:['Zwei Kontakte (Stufe 1)','Ohne Finte, nur Slalom','Abstände zwischen den Positionen kleiner'],
+ steig:['Alles direkt (Stufe 2)','Zwei Lösungen (Stufe 3)','Tiefenpass mit dem schwachen Fuß']}),
+Object.assign({},KJP,{id:'pmhinter',title:'Slalom und Hinterlaufen auf Minitore',legend:['spielerin','ball','cone','dummy','minitor'],
+ chips:[['Schwerpunkt','Dribbling · Hinterlaufen · Pass in den Lauf · Abschluss'],['','8–12 Spielerinnen (2 Aufbauten)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 8 Hütchen, 2 Dummys, Bälle']],
+ ziel:'Nach dem Slalom spielt die Spielerin nach innen und hinterläuft ihre Mitspielerin außen. Diese dribbelt kurz an und spielt sie in den Lauf. Im Spiel: Hinterlaufen auf dem Flügel, um eine Gegnerin zu überladen.',
+ org:['Slalom rechts neben dem Strafraum','Spielerin 2 halbrechts vor dem Strafraum, etwas tiefer als in der Grundform','Ein Dummy an der Strafraumgrenze als Gegnerin von Spielerin 2','Minitore links und rechts neben dem großen Tor, links optional spiegelverkehrt ein zweiter Aufbau'],
+ rot:'Spielerin 1 wechselt auf die Position von Spielerin 2, Spielerin 2 auf die Position von Spielerin 1. Bei zwei Aufbauten wechselt Spielerin 2 in die andere Gruppe auf die Position von Spielerin 1.',
+ ablauf:['Spielerin 1 dribbelt durch den Slalom, Spielerin 2 kommt entgegen.','Am Ende des Slaloms passt Spielerin 1 nach innen zu Spielerin 2.','Spielerin 1 hinterläuft außen.','Spielerin 2 dribbelt kurz nach innen Richtung Dummy und bindet ihn.','Spielerin 2 spielt Spielerin 1 außen in den Lauf, diese schließt aufs rechte Minitor ab.'],
+ stufen:[['Stufe 1 · Fester Ablauf','Spielerin 2 dribbelt immer an und spielt dann.'],['Stufe 2 · Tempo','Der Pass in den Lauf kommt spätestens nach zwei Kontakten, Abschluss direkt oder mit einem Kontakt.'],['Stufe 3 · Halbaktive Gegnerin','Statt des Dummys verteidigt eine Spielerin halbaktiv. Läuft sie mit nach außen, zieht Spielerin 2 selbst nach innen und schließt aufs linke Minitor ab.']],
+ coach:[['Hinterlaufen mit Tempo','Spielerin 1 sprintet direkt nach dem Pass außen vorbei. Fehlerbild: Sie läuft hinter Spielerin 2 statt außen an ihr vorbei.'],['Gegnerin binden','Spielerin 2 dribbelt auf den Dummy zu, damit die Gegnerin nicht mit nach außen kann. Erkennbar: Der Pass kommt erst, wenn sie auf Höhe des Dummys ist.'],['Pass in den Lauf','Vor Spielerin 1 in den Raum, nicht in den Rücken.'],['Kommunikation','Spielerin 1 ruft „Hinten!“, wenn sie hinterläuft.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 4–6 Spielerinnen pro Aufbau ca. 30 Sekunden','Pro Spielerin: ca. 6 Aktionen pro Durchgang, davon die Hälfte mit Abschluss','Intensität: hoch, Sprint beim Hinterlaufen'],
+ leicht:['Ohne Dummy','Spielerin 2 darf stehen bleiben und direkt passen','Slalom kürzer'],
+ steig:['Tempo-Vorgaben (Stufe 2)','Halbaktive Gegnerin (Stufe 3)','Abschluss direkt aus dem Lauf']}),
+Object.assign({},KJP,{id:'pmquer',title:'Slalom, Finte und Querpass vor dem Tor',legend:['spielerin','ball','dummy','minitor'],
+ chips:[['Schwerpunkt','Dribbling mit Finte · Querpass · Direktabschluss'],['','8–12 Spielerinnen (2 Aufbauten)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 8 Hütchen, 4 Dummys, Bälle']],
+ ziel:'Nach Slalom und Finte dribbelt die Spielerin bis zur Strafraumgrenze und spielt einen flachen Querpass in den Lauf ihrer Mitspielerin, die direkt abschließt. Im Spiel: Flügelspielerin zieht nach innen, die Stürmerin läuft ins Zentrum und verwertet den Querpass.',
+ org:['Slalom rechts neben dem Strafraum','Spielerin 2 startet links vor dem Strafraum (Stürmerinnen-Position)','Ein Dummy vor dem Slalom, ein zweiter an der Strafraumgrenze','Minitore links und rechts neben dem großen Tor'],
+ rot:'Spielerin 1 wechselt auf die Position von Spielerin 2, Spielerin 2 auf die Position von Spielerin 1. Bei zwei Aufbauten wechselt Spielerin 2 in die andere Gruppe auf die Position von Spielerin 1.',
+ ablauf:['Spielerin 1 dribbelt durch den Slalom.','Spielerin 2 startet von links Richtung Strafraum.','Spielerin 1 macht die Finte am Dummy und dribbelt zur Strafraumgrenze.','Flacher Querpass in den Lauf von Spielerin 2.','Spielerin 2 schließt direkt aufs rechte Minitor ab.'],
+ stufen:[['Stufe 1 · Mit Kontakt','Spielerin 2 darf den Querpass annehmen und dann abschließen.'],['Stufe 2 · Direkt','Abschluss nur direkt.'],['Stufe 3 · Zwei Läuferinnen','Eine dritte Spielerin läuft mit in den Strafraum: eine an den ersten Pfosten, eine in den Rückraum. Spielerin 1 wählt.']],
+ coach:[['Laufweg Spielerin 2','Erst im Bogen laufen, dann diagonal zum Tor, nicht zu früh in den Strafraum. Fehlerbild: Sie steht schon im Strafraum und muss auf den Ball warten.'],['Querpass','Flach und scharf, vor die Laufende. Erkennbar: Spielerin 2 trifft den Ball im Lauf, ohne abzubremsen.'],['Kopf hoch vor dem Pass','Spielerin 1 schaut nach der Finte auf, bevor sie passt.'],['Direktabschluss','Innenseite, platziert ins Minitor, Oberkörper über dem Ball.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 4–6 Spielerinnen pro Aufbau ca. 30 Sekunden','Pro Spielerin: ca. 6 Aktionen pro Durchgang, davon die Hälfte mit Abschluss','Intensität: mittel bis hoch'],
+ leicht:['Annahme erlaubt (Stufe 1)','Ohne Dummy an der Strafraumgrenze','Spielerin 2 startet näher am Tor'],
+ steig:['Nur Direktabschluss (Stufe 2)','Zwei Läuferinnen (Stufe 3)','Querpass mit dem schwachen Fuß']}),
+Object.assign({},KJP,{id:'pmduell',title:'Slalom, Ablage und Abschluss gegen Verteidigerin',legend:['spielerin','verteidiger','ball','cone','dummy','minitor'],
+ chips:[['Schwerpunkt','Dribbling · Pass und Ablage unter Druck · Abschluss'],['','9–12 Spielerinnen (3 Positionen)'],['Feld','Strafraum und Raum davor, ca. 40 × 35 m'],['Dauer','15–20 min'],['Material','2 Minitore, 7 Hütchen, 1 Dummy, Leibchen, Bälle']],
+ ziel:'Wie die Grundform, aber im Strafraum steht eine Verteidigerin. Pass, Ablage und Abschluss müssen jetzt schnell und genau kommen. Im Spiel: über eine Ablage zum Abschluss kommen, bevor die Verteidigerin den Weg zuläuft.',
+ org:['Aufbau wie bei „Slalom, Finte und Ablage auf Minitore“, aber nur ein Dummy vor dem Slalom','Am Strafraum steht eine Verteidigerin (Leibchen), sie darf erst starten, wenn Spielerin 1 passt','Minitore links und rechts neben dem großen Tor'],
+ rot:'Spielerin 1 wird Verteidigerin, die Verteidigerin wird Spielerin 2, Spielerin 2 geht zum Slalom und wird Spielerin 1.',
+ ablauf:['Spielerin 1 dribbelt durch den Slalom und macht die Finte am Dummy.','Spielerin 2 startet in der Mitte des Slaloms und bietet sich an.','Spielerin 1 spielt Spielerin 2 an. Jetzt darf die Verteidigerin pressen.','Spielerin 2 legt nach links ab, bevor die Verteidigerin da ist.','Spielerin 1 schließt aufs linke Minitor ab, die Verteidigerin versucht zu blocken. Erobert sie den Ball, kontert sie aufs rechte Minitor.'],
+ stufen:[['Stufe 1 · Halbaktiv','Die Verteidigerin läuft nur mit und blockt nicht.'],['Stufe 2 · Aktiv','Die Verteidigerin verteidigt aktiv, darf aber erst beim Pass starten.'],['Stufe 3 · Früher Start','Die Verteidigerin darf schon starten, wenn Spielerin 1 aus dem Slalom kommt.']],
+ coach:[['Schnelle Ablage','Spielerin 2 legt direkt ab, bevor die Verteidigerin da ist. Fehlerbild: Sie nimmt den Ball an und dreht sich in die Verteidigerin.'],['Abschluss nach Ablage','Spielerin 1 schließt mit dem ersten oder zweiten Kontakt ab. Erkennbar: Die Verteidigerin kommt zu spät zum Block.'],['Passweg wählen','Steht die Verteidigerin auf dem Passweg zu Spielerin 2, dribbelt Spielerin 1 weiter und schließt selbst ab.'],['Verteidigerin','Schnell herausrücken, kurz vor der Ballführenden abbremsen, den Weg zum Tor zustellen.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1 Minute Pause','Wartezeit: bei 3–4 Spielerinnen pro Position ca. 30–40 Sekunden','Pro Spielerin: ca. 6 Aktionen pro Durchgang, im Wechsel Angriff und Verteidigung','Intensität: hoch, Duelle und Sprints'],
+ leicht:['Halbaktive Verteidigerin (Stufe 1)','Verteidigerin startet weiter weg','Zwei Kontakte bei der Ablage'],
+ steig:['Aktive Verteidigerin (Stufe 2)','Früher Start (Stufe 3)','Zweite Verteidigerin gegen Spielerin 2']})
+]);
 /* ---------- Schuss Bambini – U9: Inhalte ---------- */
 const KS={rotTitle:'Wechsel',lastTitle:'Dauer',steigTitle:'Varianten',cat:'schuss',lv:['kinder']};
 EX.push(...[
