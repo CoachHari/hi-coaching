@@ -10,5 +10,6 @@ window.HI_CONFIG={
 window.HI_SHOP={
   bambini:'',   /* Passübungen für Bambinis, 9 € */
   rondos:'',    /* Rondos, die jeder braucht, 12 € */
-  tore:''       /* So schießt deine Mannschaft mehr Tore, 12 € */
+  tore:'',      /* So schießt deine Mannschaft mehr Tore, 12 € */
+  kombi:''      /* Kombo-Paket: alle drei Pakete, 25 € statt 33 € */
 };
