@@ -3429,6 +3429,39 @@ const jrSeq=(S,Q,C)=>{let k=[];const U=(a,b)=>{const d=Math.hypot(b[0]-a[0],b[1]
       {id:'Y1',fill:RED,label:'Y'},{id:'Y2',fill:RED,label:'Y'},{id:'Y3',fill:RED,label:'Y'},{id:'Y4',fill:RED,label:'Y'}],
     sc:{a:Object.assign(a,{cycle:Ca}),b:Object.assign(b,{cycle:Cb})}};
 })();
+/* ---------- Mit Ball U10 – KM: 3 gegen 3 „Tiefe vor Breite“ in Wellen (nach Video von Haris, 12.11.2026) ---------- */
+(function(){
+  const draw=s=>{field(s,0,0,360,300,false);
+    el('rect',{x:40,y:60,width:280,height:180,fill:'none',stroke:'#FFFFFF','stroke-width':'1.8',opacity:'.85'},s);
+    [[30,62],[30,214]].forEach(([x,y])=>mgoal(s,x,y,10,24));[[320,110],[320,166]].forEach(([x,y])=>mgoal(s,x,y,10,24));
+    el('ellipse',{cx:28,cy:150,rx:7,ry:3.5,fill:'#2F6FD6',stroke:'#FFFFFF','stroke-width':'1'},s);el('ellipse',{cx:332,cy:150,rx:7,ry:3.5,fill:'#D64545',stroke:'#FFFFFF','stroke-width':'1'},s);
+    const t=(x,y,v)=>{const e=el('text',{x,y,'text-anchor':'middle','font-size':'12','font-weight':'700','font-family':'Barlow Condensed, Arial Narrow, sans-serif',fill:'#FFFFFF',opacity:'.85'},s);e.textContent=v;};
+    t(180,50,'Tiefe vor Breite');t(180,258,'ca. 30 × 18 m');};
+  /* Welle Blau: Lauf hinter die Abwehr und Pass in die Tiefe */
+  const Ca=4.4,a={L:[[0.9,'3 gegen 3: Blau startet mit Ball von der Grundlinie'],[1.65,'Tiefe vor Breite: Lauf hinter die Abwehr, Pass in die Tiefe'],[2.8,'Mitnahme nach vorne und Abschluss auf eines der zwei Minitore'],[99,'Danach startet die nächste Welle: Rot von der anderen Seite']],
+    B1:[[0,28,150],[1.1,112,150],[1.6,119,150],[2.4,148,150],[Ca,148,150]],
+    B2:[[0,57,94],[0.4,86,92],[1.3,200,85],[1.6,237,90],[2.3,274,108],[Ca,274,108]],
+    B3:[[0,57,206],[1.4,148,212],[2.4,262,206],[Ca,262,206]],
+    R1:[[0,200,150],[0.9,163,156],[1.6,163,156],[2.2,200,150],[Ca,200,150]],
+    R2:[[0,226,107],[1.0,210,125],[1.6,215,122],[2.4,250,132],[Ca,250,132]],
+    R3:[[0,226,193],[1.0,226,184],[2.0,241,172],[Ca,241,172]],
+    WB1:[[0,14,110]],WB2:[[0,14,190]],WR1:[[0,346,84]],WR2:[[0,346,216]]};
+  a.BALLS=[jrSeq(a,[['d','B1',0.1,1.1],['p','B1','B2',1.2,1.6],['d','B2',1.7,2.3],['s','B2',2.4,2.65,320,122]],Ca)];
+  /* Welle Rot: Pass zwischen die Linien und direkt in die Tiefe */
+  const Cb=4.2,b={L:[[0.9,'Nächste Welle: Rot startet mit Ball, Blau verteidigt'],[1.7,'Pass zwischen die Linien und direkt weiter in die Tiefe'],[99,'Abschluss auf eines der Ecktore, danach wieder Blau']],
+    R1:[[0,338,150],[0.8,252,150],[2.0,148,161],[Cb,148,161]],
+    R2:[[0,293,105],[1.0,215,116],[1.2,215,116],[2.1,158,103],[Cb,158,103]],
+    R3:[[0,293,206],[1.0,179,231],[1.65,106,233],[2.1,86,226],[Cb,86,226]],
+    B1:[[0,148,150],[0.8,137,144],[2.0,117,150],[Cb,117,150]],
+    B2:[[0,117,99],[0.8,106,99],[2.0,115,114],[Cb,115,114]],
+    B3:[[0,117,201],[0.6,125,186],[1.3,132,172],[2.2,112,204],[Cb,112,204]],
+    WB1:[[0,14,110]],WB2:[[0,14,190]],WR1:[[0,346,84]],WR2:[[0,346,216]]};
+  b.BALLS=[jrSeq(b,[['d','R1',0.1,0.8],['p','R1','R2',0.9,1.15],['p','R2','R3',1.25,1.65],['d','R3',1.7,2.1],['s','R3',2.2,2.45,34,226]],Cb)];
+  A.tiefebreite={vb:'0 0 360 300',cycle:Ca,thumbT:1.5,scLabels:{a:'Welle Blau · Pass in die Tiefe',b:'Welle Rot · Zwischen die Linien und in die Tiefe'},draw,
+    ents:[{id:'B1'},{id:'B2'},{id:'B3'},{id:'R1',fill:RED},{id:'R2',fill:RED},{id:'R3',fill:RED},
+      {id:'WB1',wait:1},{id:'WB2',wait:1},{id:'WR1',fill:'#EDAB90'},{id:'WR2',fill:'#EDAB90'}],
+    sc:{a:Object.assign(a,{cycle:Ca}),b:Object.assign(b,{cycle:Cb})}};
+})();
 
 /* ---------- Gegen den Ball U13 – KM: fünf neue Formen (5 Säulen) ---------- */
 
@@ -7409,6 +7442,20 @@ EX.push(Object.assign({},KJM,{id:'dreisechzehn',title:'Doppelter Strafraum: Absc
  last:['Dauer: 3 Durchgänge à 6 Minuten, 2 Minuten Pause','Wartezeit: kurz, bei 16 Spielerinnen sind pro Durchgang 7 Spielerinnen gleichzeitig aktiv','Pro Spielerin: ca. 6–8 Aktionen pro Durchgang (Abschluss, Kombination, Duell oder Unterzahl)','Intensität: hoch, kurze Sprints und Duelle'],
  leicht:['Mit Pause (Stufe 1)','Bahnen schmaler (4 m), damit X leichter verteidigt','Im 3 gegen 2 kommt die zweite Y-Spielerin später'],
  steig:['Ohne Pause und 10-Sekunden-Regel (Stufe 2)','Mit Rückweg und Kontern (Stufe 3)','Im 3 gegen 2 höchstens zwei Kontakte']}));
+/* ---------- Mit Ball U10 – KM: 3 gegen 3 „Tiefe vor Breite“ in Wellen (nach Video von Haris, 12.11.2026) ---------- */
+EX.push(Object.assign({},KJM,{id:'tiefebreite',title:'3 gegen 3: Tiefe vor Breite',legend:['teamblau','teamrot','minitor','ball'],
+ lv:['u12','jugend','km'],catsLv:{u12:['mitball','umschalten'],jugend:['mitball','umschalten'],km:['mitball','umschalten']},
+ ad:{u12:'Feld ca. 25 × 15 m, Wellen höchstens 30 Sekunden. Jedes Kind kommt schnell wieder dran: lieber zwei Felder mit je 2 Teams aufbauen. Ein Tor nach Pass in die Tiefe zählt doppelt, so verstehen die Kinder die Idee sofort.'},
+ chips:[['Schwerpunkt','Tiefe statt Breite · Lauf hinter die Abwehr · Pass in die Tiefe · Umschalten'],['','12–16 Spielerinnen (2 Teams)'],['Feld','Ca. 30 × 18 m, länger als breit'],['Dauer','15–20 min'],['Material','4 Minitore, 2 Markierscheiben, Leibchen, viele Bälle']],
+ ziel:'Die Spielerin sucht mit Ball zuerst den Weg nach vorne: Sie erkennt den Lauf hinter die Abwehr und spielt in die Tiefe, statt quer zu spielen. Ohne Ball startet sie in die Tiefe statt in die Breite. Im Spiel: schnell und direkt hinter die gegnerische Kette kommen, solange der Gegner noch nicht sortiert ist.',
+ org:['Feld ca. 30 × 18 m, also deutlich länger als breit','Auf der einen Grundlinie zwei Minitore in den Ecken (Tore von Blau), auf der anderen zwei Minitore nah an der Mitte (Tore von Rot)','In der Mitte jeder Grundlinie eine Markierscheibe mit Bällen: Hier startet die Welle','Team Blau wartet hinter seiner Grundlinie, Team Rot hinter der anderen, jeweils 6–8 Spielerinnen'],
+ rot:'Nach jeder Welle (Tor, Ball im Aus oder nach 40 Sekunden) gehen beide Dreiergruppen raus und stellen sich hinten an. Die nächsten drei jedes Teams kommen ins Feld. Der Ball startet immer abwechselnd: einmal Blau, einmal Rot.',
+ ablauf:['Eine Blau-Spielerin dribbelt mit Ball von ihrer Scheibe ins Feld, zwei Mitspielerinnen kommen mit dazu: 3 gegen 3.','Blau greift die zwei Minitore nah an der Mitte an, Rot verteidigt.','Erobert Rot den Ball, kontert Rot sofort auf die zwei Ecktore.','Nach Tor oder Aus verlassen beide Gruppen das Feld.','Nächste Welle: Jetzt startet Rot mit Ball von der anderen Seite, drei neue Blau-Spielerinnen verteidigen.'],
+ stufen:[['Stufe 1 · Mit Hilfe','3 gegen 2: Die Verteidigerinnen sind eine Spielerin weniger. Tor nach Pass in die Tiefe zählt doppelt.'],['Stufe 2 · 3 gegen 3','Gleichzahl, freies Spiel. Tor nach Pass in die Tiefe zählt weiter doppelt.'],['Stufe 3 · Tempo','Nach 10 Sekunden ohne Abschluss kommt eine vierte Verteidigerin dazu. Ein Querpass zurück zählt als Ballverlust.']],
+ coach:[['Erst nach vorne schauen','Die Ballführende schaut nach der Annahme zuerst in die Tiefe. Fehlerbild: Sie spielt sofort quer, obwohl eine Mitspielerin hinter der Abwehr frei ist.'],['Lauf hinter die Abwehr','Ohne Ball in den Rücken der Verteidigerin starten, nicht zur Seitenlinie. Erkennbar: In jeder Welle startet mindestens eine Spielerin in die Tiefe.'],['Timing von Pass und Lauf','Der Lauf startet, wenn die Ballführende den Kopf hebt. Der Pass kommt in den Lauf, nicht auf den Fuß.'],['Mitnahme nach vorne','Den Pass mit dem ersten Kontakt Richtung Tor mitnehmen. Fehlerbild: Die Spielerin stoppt den Ball und wartet, bis die Verteidigerin wieder da ist.'],['Umschalten','Nach Ballverlust sofort zurück ins Pressing, nach Ballgewinn sofort nach vorne.']],
+ last:['Dauer: 4 Durchgänge à 4 Minuten, 1–2 Minuten Pause','Wartezeit: bei 6–8 Spielerinnen pro Team ca. 40–60 Sekunden zwischen den Wellen','Pro Spielerin: ca. 4–5 Wellen pro Durchgang mit mehreren Ballaktionen','Intensität: hoch, kurze Sprints in die Tiefe und Zweikämpfe'],
+ leicht:['3 gegen 2 (Stufe 1)','Feld breiter machen','Tor nach Pass in die Tiefe zählt doppelt'],
+ steig:['Vierte Verteidigerin nach 10 Sekunden (Stufe 3)','Querpass zurück zählt als Ballverlust','Feld schmaler machen, dann gibt es noch weniger Breite']}));
 /* ---------- Passen U13 – KM: Doppelsechs-Passform ---------- */
 EX.push(Object.assign({},KJP,{id:'pdoppelsechs',title:'Doppelsechs-Passform',legend:['spielerin','ball','cone'],
  chips:[['Schwerpunkt','Spiel über die Doppelsechs · Klatschen und Verlagern'],['','10 Spielerinnen pro Station (8 außen, 2 Sechserinnen)'],['Feld','15 × 30 m'],['Dauer','12–16 min'],['Material','4 Hütchen, Bälle']],
