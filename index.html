@@ -860,6 +860,9 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-demo{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:18px 0 0;padding:10px 14px;border:1px dashed rgba(242,194,48,.55);border-radius:8px;color:var(--kb-muted);font-size:14px}
 .kb-demo strong{color:var(--kb-gold);font-weight:600}
 .kb-demo .kb-sp{flex:1 1 220px;min-width:0}
+.kb-restore{border-style:solid;border-color:var(--gold,#F2C230)}
+.kb-rs{width:100%}.kb-rs-list{list-style:none;padding:0;margin:8px 0;display:grid;gap:4px}.kb-rs-list label{cursor:pointer}.kb-rs-list small,.kb-rs-row small{opacity:.8}
+.kb-rs-act{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}.kb-rs-gh{display:grid;gap:10px;margin-top:8px}.kb-rs-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.kb-rs-in input,.kb-rs-in select{font:inherit;padding:6px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:inherit;min-width:0;flex:1 1 120px}.kb-rs-in input[data-k=nr]{flex:0 0 64px}.kb-rs-in option{color:#111}
 .kb-confirm{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:var(--kb-danger)}
 .kb-pane{margin-top:20px}
 
@@ -1552,6 +1555,7 @@ s.addEventListener('click',function(){if(window.__hiGo)window.__hiGo();hide();})
       <div><p class="step-lbl">FC Bergheim Damen</p><h2 id="kader-h">Kader &amp; Spieltag</h2><p class="lead">Kader an der Stange, Aufstellung, Matchplan und Spielstatistik für die Saison.</p><p class="store-note" id="kb-store">Gespeichert nur in diesem Browser auf diesem Gerät. Zum Übertragen auf ein anderes Gerät: ganz unten „Daten sichern“.</p></div>
       <div class="kb-head-tools"><div class="seg kb-seg" id="kb-tabs" role="group" aria-label="Ansicht"><button type="button" data-kbtab="kader" aria-pressed="true">Kabine</button><button type="button" data-kbtab="auf" aria-pressed="false">Aufstellung</button><button type="button" data-kbtab="mp" aria-pressed="false">Matchplan</button><button type="button" data-kbtab="spiele" aria-pressed="false">Spiele</button></div></div>
     </div>
+    <div class="kb-demo kb-restore" id="kb-restore" hidden></div>
     <div class="kb-demo" id="kb-demo" hidden>
       <span class="kb-sp"><strong>Beispielkader.</strong> Die Namen sind erfunden. Lösche das Beispiel und trag deine Spielerinnen ein.</span>
       <span id="kb-demo-act"><button type="button" class="kb-btn" id="kb-demo-clear">Beispiel löschen</button></span>
@@ -11884,11 +11888,15 @@ function signedIn(){try{return Object.keys(localStorage).some(k=>/^sb-.+-auth-to
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.players)&&s.lineup){if(s.demo&&signedIn())return emptyState();return fix(s);}}catch(e){}return signedIn()?emptyState():demoState();}
 let S=load();
 let saveT=0;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(sync.col&&(S.ts||0)>sync.pushed)sync.schedule();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}histPush();if(sync.col&&(S.ts||0)>sync.pushed)sync.schedule();}
 function saveSoon(){S.ts=Date.now();clearTimeout(saveT);saveT=setTimeout(save,300);}
 function touch(){S.v=(S.v||0)+1;S.ts=Date.now();save();}
 const sync={col:null,pushed:0,timer:0,schedule(){clearTimeout(sync.timer);sync.timer=setTimeout(sync.push,1200);},
-  async push(){sync.timer=0;if(!sync.col||S.demo)return;const ts=S.ts||Date.now();if(!S.ts)S.ts=ts;const body=JSON.parse(JSON.stringify(S));delete body.games;delete body.gq;body.gamesSplit=true;try{await sync.col.doc('state').set(body);sync.pushed=ts;}catch(e){}},
+  async push(){sync.timer=0;if(!sync.col||S.demo)return;const ts=S.ts||Date.now();if(!S.ts)S.ts=ts;const body=JSON.parse(JSON.stringify(S));delete body.games;delete body.gq;body.gamesSplit=true;try{await sync.col.doc('state').set(body);sync.pushed=ts;sync.daily();}catch(e){}},
+  /* Tägliche Online-Sicherung des Kaders (bak_JJJJ-MM-TT, einmal pro Tag, 30 Tage) */
+  async daily(){try{if(!sync.col||S.demo||!S.players.length||!sync.seenDocs)return;const day=new Date().toISOString().slice(0,10);const id='bak_'+day;
+    if(sync.seenDocs.includes(id))return;sync.seenDocs.push(id);await sync.col.doc(id).set({ts:Date.now(),players:S.players.map(p=>({id:p.id,nr:p.nr,name:p.name,first:p.first||'',pos:p.pos}))});
+    const old=new Date(Date.now()-30*864e5).toISOString().slice(0,10);for(const d of sync.seenDocs.filter(x=>x.indexOf('bak_')===0&&x.slice(4)<old))await sync.col.doc(d).delete();}catch(e){}},
   /* Spiele einzeln speichern: nichts kann sie mehr mit einem älteren Stand überschreiben */
   gbusy:false,async flushGames(){if(!sync.col||sync.gbusy||!S.gq)return;sync.gbusy=true;
     try{for(const id of Object.keys(S.gq)){const op=S.gq[id];const g=S.games.find(x=>x.id===id);
@@ -12673,12 +12681,80 @@ function showTab(t){
 }
 $('kb-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-kbtab]');if(b)showTab(b.dataset.kbtab);});
 root.addEventListener('click',e=>{const b=e.target.closest('[data-kbgo]');if(b){showTab(b.dataset.kbgo);window.scrollTo({top:root.offsetTop-10,behavior:'auto'});}});
-function renderAll(){$('kb-demo').hidden=!S.demo;renderRail();cardKey='';showTab(tab);}
+function renderAll(){$('kb-demo').hidden=!S.demo;renderRestore();renderRail();cardKey='';showTab(tab);}
 renderAll();
 if(!signedIn()&&seedFixtures(null))renderAll();
 window.__kbShow=function(){showTab(tab);};
 /* Zweiter Tab auf demselben Gerät: neueren Stand übernehmen statt ihn später zu überschreiben */
 window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{const n=JSON.parse(e.newValue);if(n&&Array.isArray(n.players)&&(n.ts||0)>=(S.ts||0)){S=fix(n);cardKey='';if(!gEdit)renderAll();}}catch(_){}});
+/* ---------- Gelöschte Spielerinnen wiederherstellen (Sicherungen + Spiele) ---------- */
+var HKEY='hi-kabine-hist',SKIPKEY='hi-kabine-restore-skip';
+function nrm(x){return String(x||'').trim().toLowerCase();}
+function slim(p){return {id:p.id,nr:p.nr,name:p.name,first:p.first||'',pos:p.pos};}
+function histPush(){try{if(S.demo||!S.players.length)return;let h=JSON.parse(localStorage.getItem(HKEY)||'[]');if(!Array.isArray(h))h=[];
+  const sig=S.players.map(p=>[p.id,p.nr,p.name,p.first||'',p.pos].join(':')).sort().join('|');
+  if(h.length&&h[h.length-1].sig===sig)return;
+  h.push({ts:Date.now(),sig,players:S.players.map(slim)});
+  while(h.length>15){const mx=Math.max(...h.map(x=>x.players.length));const i=h.findIndex(x=>x.players.length<mx);h.splice(i>=0?i:0,1);}
+  localStorage.setItem(HKEY,JSON.stringify(h));}catch(e){}}
+function skipSet(){try{return new Set(JSON.parse(localStorage.getItem(SKIPKEY)||'[]'));}catch(e){return new Set();}}
+function lostSources(){const out=[];const add=(ts,pl)=>{if(Array.isArray(pl)&&pl.length)out.push({ts:ts||0,players:pl});};
+  try{const b=JSON.parse(localStorage.getItem('hi-kabine-backup')||'null');if(b&&!b.demo)add(b.ts,b.players);}catch(e){}
+  try{(JSON.parse(localStorage.getItem(HKEY)||'[]')||[]).forEach(h=>add(h.ts,h.players));}catch(e){}
+  try{const rows=JSON.parse(localStorage.getItem('hi-cache-kader')||'[]')||[];rows.forEach(r=>{if(r&&r.data&&(r.id==='state'||String(r.id).indexOf('bak_')===0)&&!r.data.demo)add(r.data.ts,r.data.players);});}catch(e){}
+  (sync.baks||[]).forEach(b=>add(b.ts,b.players));
+  return out.sort((a,b)=>b.ts-a.ts);}
+function lostPlayers(){const have=new Set(S.players.map(p=>p.id)),skip=skipSet(),found={};
+  lostSources().forEach(src=>src.players.forEach(p=>{if(!p||!p.id||have.has(p.id)||found[p.id]||skip.has(p.id))return;
+    const twin=S.players.find(q=>nrm(q.name)===nrm(p.name)&&nrm(q.first)===nrm(p.first));
+    found[p.id]={p:slim(p),ts:src.ts,twin:twin?twin.id:null};}));
+  return Object.values(found).sort((a,b)=>ORDER.indexOf(a.p.pos)-ORDER.indexOf(b.p.pos)||(+a.p.nr||99)-(+b.p.nr||99));}
+function ghosts(){const have=new Set(S.players.map(p=>p.id)),known=new Set(lostPlayers().map(x=>x.p.id)),skip=skipSet(),m={};
+  const get=id=>{if(!id||have.has(id)||known.has(id)||skip.has(id))return null;return m[id]||(m[id]={id,games:new Set(),goals:[],ast:0,pos:{}});};
+  S.games.forEach(g=>{const F=FORM[g.formation]||FORM['1-3-5-2'];
+    (g.starters||[]).forEach((id,i)=>{const o=get(id);if(!o)return;o.games.add(g.id);const l=F[i]&&F[i][0];if(l)o.pos[l]=(o.pos[l]||0)+1;});
+    (g.bank||[]).forEach(id=>get(id));(g.subs||[]).forEach(s=>{const o=get(s.in);if(o)o.games.add(g.id);get(s.out);});
+    (g.goals||[]).forEach(t=>{const o=get(t.pid);if(o)o.goals.push((g.gegner||'Spiel')+(t.min?' '+t.min+'\'':''));const a=get(t.ast);if(a)a.ast++;});});
+  return Object.values(m).sort((a,b)=>b.goals.length-a.goals.length||b.games.size-a.games.size);}
+function relink(map){const r=id=>id&&map[id]?map[id]:id;
+  S.games.forEach(g=>{const before=JSON.stringify(g);
+    g.starters=(g.starters||[]).map(r);g.bank=(g.bank||[]).map(r);(g.subs||[]).forEach(s=>{s.out=r(s.out);s.in=r(s.in);});(g.goals||[]).forEach(t=>{t.pid=r(t.pid);t.ast=r(t.ast);});
+    if(JSON.stringify(g)!==before){g.upd=Date.now();queueGame(g.id,'set');}});
+  if(sync.col)setTimeout(()=>sync.flushGames(),0);}
+function dstr(ts){if(!ts)return'';try{return new Date(ts).toLocaleString('de-AT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+var rsOpen=false;
+function renderRestore(){const box=$('kb-restore');if(!HKEY)return;if(!box)return;if(S.demo){box.hidden=true;return;}
+  const L=lostPlayers(),G=ghosts();
+  if(!L.length&&!G.length){box.hidden=true;box.innerHTML='';rsOpen=false;return;}
+  box.hidden=false;
+  const head=L.length?'<strong>'+L.length+(L.length===1?' gelöschte Spielerin':' gelöschte Spielerinnen')+' gefunden.</strong> Mit der Wiederherstellung sind auch ihre Tore, Einsätze und Minuten wieder da.'
+    :'<strong>'+G.length+(G.length===1?' Spielerin aus den Spielen fehlt':' Spielerinnen aus den Spielen fehlen')+' im Kader.</strong> '+(G.length===1?'Gib ihr den Namen':'Gib ihnen die Namen')+', dann sind Tore und Einsätze wieder zugeordnet.';
+  if(!rsOpen){box.innerHTML='<span class="kb-sp">'+head+'</span><span><button type="button" class="kb-btn kb-gold" data-rs="open">Ansehen</button></span>';return;}
+  let h='<div class="kb-rs"><p class="kb-sp">'+head+'</p>';
+  if(L.length){h+='<ul class="kb-rs-list">'+L.map(x=>'<li><label><input type="checkbox" data-rsp="'+x.p.id+'" checked> <b>'+esc(x.p.nr)+'</b> '+esc((x.p.first?x.p.first+' ':'')+x.p.name)+' <small>'+POS[x.p.pos]+(x.twin?' · steht schon im Kader, Spiele werden ihr zugeordnet':'')+(x.ts?' · Stand '+dstr(x.ts):'')+'</small></label></li>').join('')+'</ul>'+
+    '<p class="kb-rs-act"><button type="button" class="kb-btn kb-gold" data-rs="go">Ausgewählte wiederherstellen</button><button type="button" class="kb-btn kb-plain" data-rs="skip">Nicht ausgewählte ausblenden</button><button type="button" class="kb-btn kb-plain" data-rs="close">Schließen</button></p>';}
+  if(G.length){h+=(L.length?'<p class="kb-sp" style="margin-top:12px">Außerdem in den Spielen eingetragen, aber ohne Namen:</p>':'')+
+    '<div class="kb-rs-gh">'+G.map(o=>{const pos=Object.entries(o.pos).sort((a,b)=>b[1]-a[1]).map(x=>x[0]).slice(0,2).join('/');
+      const hint=[o.games.size+(o.games.size===1?' Spiel':' Spiele'),o.goals.length?o.goals.length+(o.goals.length===1?' Tor':' Tore')+' ('+o.goals.slice(0,4).map(esc).join(', ')+(o.goals.length>4?', …':'')+')':'',o.ast?o.ast+' Vorlage'+(o.ast>1?'n':''):''].filter(Boolean).join(' · ');
+      return '<div class="kb-rs-row" data-gh="'+o.id+'"><small>'+hint+'</small><div class="kb-rs-in"><input data-k="nr" type="number" min="0" max="99" placeholder="Nr." aria-label="Nummer"><input data-k="first" placeholder="Vorname" aria-label="Vorname"><input data-k="name" placeholder="Nachname" aria-label="Nachname"><select data-k="pos" aria-label="Position">'+ORDER.map(k=>'<option value="'+k+'"'+(k==='MIT'?' selected':'')+'>'+POS[k]+'</option>').join('')+'</select></div></div>';}).join('')+'</div>'+
+    '<p class="kb-rs-act"><button type="button" class="kb-btn kb-gold" data-rs="ghosts">Namen speichern</button>'+(L.length?'':'<button type="button" class="kb-btn kb-plain" data-rs="close">Schließen</button>')+'</p>';}
+  box.innerHTML=h+'</div>';}
+$('kb-restore').addEventListener('click',e=>{const b=e.target.closest('[data-rs]');if(!b)return;const a=b.dataset.rs;
+  if(a==='open'){rsOpen=true;renderRestore();return;}
+  if(a==='close'){rsOpen=false;renderRestore();return;}
+  const L=lostPlayers();
+  const picked=()=>L.filter(x=>{const c=$('kb-restore').querySelector('[data-rsp="'+x.p.id+'"]');return c&&c.checked;});
+  if(a==='skip'){const sk=skipSet();L.filter(x=>!picked().includes(x)).forEach(x=>sk.add(x.p.id));try{localStorage.setItem(SKIPKEY,JSON.stringify([...sk]));}catch(_){}renderRestore();return;}
+  if(a==='go'){const sel=picked();if(!sel.length)return;const map={};
+    sel.forEach(x=>{if(x.twin)map[x.p.id]=x.twin;else if(!S.players.some(p=>p.id===x.p.id))S.players.push({id:x.p.id,nr:x.p.nr,name:x.p.name,first:x.p.first||'',pos:POS[x.p.pos]?x.p.pos:'MIT',status:'fit',back:''});});
+    if(Object.keys(map).length)relink(map);
+    rsOpen=false;touch();cardKey='';renderAll();toastKb(sel.length+(sel.length===1?' Spielerin':' Spielerinnen')+' wiederhergestellt.');return;}
+  if(a==='ghosts'){let n=0;$('kb-restore').querySelectorAll('[data-gh]').forEach(r=>{const v=k=>r.querySelector('[data-k="'+k+'"]').value.trim();
+      if(!v('name'))return;S.players.push({id:r.dataset.gh,nr:v('nr')===''?'':+v('nr'),name:v('name'),first:v('first'),pos:v('pos')||'MIT',status:'fit',back:''});n++;});
+    if(!n)return;touch();cardKey='';renderAll();toastKb(n+(n===1?' Spielerin':' Spielerinnen')+' eingetragen.');}
+});
+function toastKb(t){const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600);}
+histPush();renderRestore();
 /* ---------- Sync (Supabase) ---------- */
 (async()=>{
   let db=null;try{if(window.claude&&typeof window.claude.use==='function')db=await window.claude.use('db');}catch(e){db=null;}
@@ -12706,6 +12782,7 @@ window.addEventListener('storage',e=>{if(e.key!==KEY||!e.newValue)return;try{con
   }
   col.onSnapshot(snap=>{
     const d=snap.docs.find(x=>x.id==='state'),r=d&&d.data();
+    sync.seenDocs=snap.docs.map(x=>x.id);sync.baks=snap.docs.filter(x=>x.id.indexOf('bak_')===0).map(x=>x.data()).filter(Boolean);setTimeout(renderRestore,0);
     /* Spiele: online gespeicherte Spiele + noch nicht hochgeladene Änderungen dieses Geräts */
     const rg={};snap.docs.forEach(x=>{if(x.id.indexOf('g_')===0){const g=x.data();if(g&&g.id)rg[g.id]=g;}});
     const norm=x=>String(x||'').trim().toLowerCase();
