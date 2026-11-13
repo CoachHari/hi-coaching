@@ -882,9 +882,10 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 .kb-rail{--slot:60px;--shirt:200px;position:relative;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch}
 .kb-rail::-webkit-scrollbar{display:none}
 .kb-rail.kb-dragging{cursor:grabbing;scroll-snap-type:none}
-.kb-track{position:relative;display:flex;box-sizing:content-box;width:max-content;min-width:var(--slot);padding-inline:calc(50% - var(--slot)/2);height:calc(var(--shirt)*1.25 + 70px);perspective:900px;perspective-origin:50% 30%}
+.kb-track{position:relative;display:flex;box-sizing:content-box;width:max-content;min-width:var(--slot);padding:0;height:calc(var(--shirt)*1.25 + 70px);perspective:900px;perspective-origin:50% 30%}
 .kb-bar{position:absolute;left:0;right:0;top:44px;height:7px;border-radius:4px;background:linear-gradient(180deg,#E6E9F0,#8C93A3 60%,#5D6372);box-shadow:0 3px 8px rgba(0,0,0,.5)}
 .kb-gap{position:relative;flex:0 0 calc(var(--slot)*1.9)}
+.kb-pad{flex:0 0 auto;width:40vw;height:1px;pointer-events:none}
 .kb-gap::before{content:"";position:absolute;left:50%;top:30px;width:12px;margin-left:-6px;height:26px;border-radius:2px;background:linear-gradient(90deg,#5D6372,#C9CED8 50%,#5D6372);box-shadow:0 3px 6px rgba(0,0,0,.5)}
 .kb-gap::after{content:"";position:absolute;left:50%;top:64px;bottom:24px;width:1px;background:linear-gradient(180deg,rgba(242,194,48,.45),rgba(242,194,48,0))}
 .kb-hang{position:relative;flex:0 0 var(--slot);scroll-snap-align:center;height:100%;border:0;background:none;padding:0;cursor:pointer;color:inherit}
@@ -12004,7 +12005,7 @@ document.body.insertAdjacentHTML('beforeend',
 const rail=$('kb-rail'),track=$('kb-track');
 let items=[],active=-1,cardKey='';
 function renderRail(){
-  track.querySelectorAll('.kb-hang,.kb-gap,.kb-empty').forEach(n=>n.remove());
+  track.querySelectorAll('.kb-hang,.kb-gap,.kb-empty,.kb-pad').forEach(n=>n.remove());
   const list=sorted();
   if(!list.length)track.insertAdjacentHTML('beforeend','<div class="kb-empty"><p>Noch keine Spielerin an der Stange.</p><div class="kb-empty-act"><button type="button" class="kb-btn kb-gold" data-kbadd>+ Erste Spielerin hinzufügen</button><button type="button" class="kb-btn" data-kbbulk>Ganze Liste einfügen</button></div></div>');
   let last='';
@@ -12014,6 +12015,7 @@ function renderRail(){
     if(first&&i>0)track.insertAdjacentHTML('beforeend','<div class="kb-gap" aria-hidden="true"></div>');
     track.insertAdjacentHTML('beforeend','<button type="button" class="kb-hang" data-id="'+p.id+'" aria-label="'+esc(p.nr)+' '+esc(p.name)+', '+POS[p.pos]+', '+STAT[p.status]+'">'+(first?'<span class="kb-tag">'+POS[p.pos]+' · '+cnt+'</span>':'')+'<div class="kb-sw">'+shirt(p)+'</div></button>');
   });
+  if(list.length){track.insertAdjacentHTML('afterbegin','<div class="kb-pad" aria-hidden="true"></div>');const bar=track.querySelector('.kb-bar');if(bar)track.insertBefore(bar,track.firstChild);track.insertAdjacentHTML('beforeend','<div class="kb-pad" aria-hidden="true"></div>');}
   items=[...track.querySelectorAll('.kb-hang')];
   $('kb-groups').innerHTML=ORDER.map(k=>{const c=list.filter(p=>p.pos===k).length;return c?'<button type="button" class="kb-chip" data-g="'+k+'">'+POS[k]+'<b>'+c+'</b></button>':'';}).join('');
   if(active<0){const i=items.findIndex(it=>(pById(it.dataset.id)||{}).nr===10);active=i>=0?i:0;}
@@ -12021,7 +12023,10 @@ function renderRail(){
   sizeTrack(true);
 }
 let railW=0;
-function sizeTrack(force){const w=rail.clientWidth;if(!w||(!force&&w===railW))return;railW=w;const slot=items[0]?items[0].offsetWidth:60;const pad=Math.max(0,Math.round(w/2-slot/2))+'px';track.style.paddingLeft=pad;track.style.paddingRight=pad;}
+/* Abstand links/rechts als echte Elemente (Safari ignoriert sonst das Polster am Ende): erstes und letztes Trikot lassen sich mittig stellen */
+function sizeTrack(force){const w=rail.clientWidth;if(!w||(!force&&w===railW))return;railW=w;const slot=items[0]?items[0].offsetWidth:60;const pad=Math.max(0,Math.round(w/2-slot/2));
+  const pads=track.querySelectorAll('.kb-pad');pads.forEach(p=>{p.style.width=pad+'px';p.style.flexBasis=pad+'px';});
+  const last=items[items.length-1];if(last&&pads.length){const need=Math.ceil(last.offsetLeft+last.offsetWidth/2+w/2),have=rail.scrollWidth;if(have<need){const e=pads[pads.length-1];const nw=pad+need-have;e.style.width=nw+'px';e.style.flexBasis=nw+'px';}}}
 function layout(){
   if(root.hidden||$('kb-v-kader').hidden)return;
   sizeTrack();
