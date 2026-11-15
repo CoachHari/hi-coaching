@@ -4604,9 +4604,9 @@ const zoneR=(s,x,y,w,h,col,op)=>el('rect',{x,y,width:w,height:h,fill:col||'#FFFF
   A.zweieins_v={vb:'0 0 360 360',cycle:12,linear:true,thumbT:1.6,draw(s){field(s,0,0,360,360,false);mtor(s,150,2,60,16);line(s,10,326,350,326,null,'.8');lbl(s,350,346,'Konterlinie','end');},ents,sc:{a:S}};
 })();
 (function(){
-  const r=game({seed:73,dur:12,bounds:[0,0,360,360],passEvery:1.2,tackle:0.02,
+  const r=game({seed:73,dur:12,bounds:[0,0,360,360],restart:'home',start:0,passEvery:1.2,tackle:0.02,
     teams:[{pos:[[110,290],[250,290]]},{pos:[[110,80],[250,80]]}],goals:[{team:0,kind:'zone',zone:[0,0,360,36],pt:[180,18]},{team:1,kind:'zone',zone:[0,324,360,360],pt:[180,342]}]});
-  const {S,ents}=gameS([r],{teams:[[{fill:BLUE},{fill:RED}]],L:[[99,'2 gegen 2: Punkt gibt es, wenn der Ball über die gegnerische Linie gedribbelt wird']]});
+  const {S,ents}=gameS([r],{teams:[[{fill:BLUE},{fill:RED}]],L:[[99,'Blau greift an, Rot verteidigt zu zweit: eine geht zum Ball, eine sichert dahinter']]});
   A.zweizwei_v={vb:'0 0 360 360',cycle:12,linear:true,thumbT:2.0,draw(s){field(s,0,0,360,360,false);line(s,10,36,350,36,null,'.9');line(s,10,324,350,324,null,'.9');},ents,sc:{a:S}};
 })();
 (function(){
@@ -7779,9 +7779,9 @@ KU('verteidigung',{id:'zweieins_v',title:'2 gegen 1 verteidigen',legend:['angrei
  last:['4 Runden à 2 Minuten'],steig:['Zweite Verteidigerin startet verzögert','Minitor kleiner','Nur 3 Kontakte für die Angreiferinnen']},
  'Feld 20 × 25 m. Eine zweite Verteidigerin darf nach 3 Sekunden nachrücken.'),
 KU('verteidigung',{id:'zweizwei_v',title:'2 gegen 2 auf Linien',legend:['teamblau','teamrot','ball'],chips:ch('Zu zweit verteidigen','8–12 Kinder, Teams zu 2','15 × 20 m','6–8 min','1 Ball pro Feld'),
- ziel:'Zwei gegen zwei auf breite Linien: Gepunktet wird, wenn der Ball über die gegnerische Linie gedribbelt wird. Die Kinder lernen, gemeinsam zu verteidigen: eine geht zum Ball, die andere sichert.',
- org:['Felder mit einer Linie an jedem Ende','Je zwei Teams à 2 pro Feld'],rot:'Nach 2 Minuten spielt jedes Team gegen ein anderes.',
- ablauf:['Beide Teams spielen auf die gegnerische Linie.','Punkt, wenn der Ball über die Linie gedribbelt wird.','Nach einem Punkt bekommt das andere Team den Ball.'],
+ ziel:'Zwei gegen zwei in Angriffswellen: Blau greift an, Rot verteidigt zu zweit die eigene Linie. Die Kinder lernen, gemeinsam zu verteidigen: eine geht zum Ball, die andere sichert.',
+ org:['Felder ca. 15 × 20 m mit einer breiten Linie an jedem Ende','Je zwei Teams à 2 pro Feld: Blau mit Ball an der eigenen Linie, Rot an der Linie, die es verteidigt','Ein paar Bälle hinter der Linie von Blau'],rot:'Nach 4 Angriffen tauschen Blau und Rot die Aufgaben. Nach 2 Minuten spielt jedes Team gegen ein anderes.',
+ ablauf:['Blau startet mit Ball an der eigenen Linie und greift die Linie von Rot an.','Rot verteidigt zu zweit: Ein Kind geht zum Ball, das andere sichert versetzt dahinter.','Blau punktet, wenn der Ball über die Linie von Rot gedribbelt wird. Rot punktet, wenn es den Ball erobert oder Blau ihn ins Aus spielt.','Danach holt Blau einen neuen Ball und startet den nächsten Angriff.'],
  coach:[['Zum Ball','eine Spielerin geht drauf'],['Sichern','die andere bleibt etwas dahinter'],['Umschalten','nach Ballverlust sofort zurück']],
  last:['4 Runden à 2 Minuten'],steig:['Linie schmaler (nur in der Mitte)','Punkt nur nach Pass','3 gegen 3']},
  'Feld 20 × 25 m. Punkt nur, wenn vorher mindestens ein Pass gespielt wurde.'),
@@ -7848,8 +7848,8 @@ KB('angriff',{id:'doppelpass_k',title:'Doppelpass und Tor',legend:['kind','wand'
  last:['3 Runden à 2 Minuten'],steig:['Wand-Partnerin bewegt sich','Abschluss direkt','Halbaktiver Verteidiger']}),
 KU('angriff',{id:'linienfussball',title:'Linienfußball 3 gegen 3',legend:['teamblau','teamrot','ball'],chips:ch('Raum gewinnen · Dribbling','6–12 Kinder, Teams zu 3','20 × 25 m','8 min','1 Ball pro Feld'),
  ziel:'Statt Toren gibt es breite Linien: Gepunktet wird, wenn der Ball über die gegnerische Linie gedribbelt wird. Die Kinder lernen, Räume zu erkennen und mutig nach vorne zu dribbeln.',
- org:['Feld mit einer Linie an jedem Ende','Teams zu 3'],rot:'Nach 2 Minuten spielt jedes Team gegen ein anderes.',
- ablauf:['Beide Teams spielen auf die gegnerische Linie.','Punkt, wenn der Ball über die Linie gedribbelt wird.','Nach einem Punkt bekommt das andere Team den Ball.'],
+ org:['Feld ca. 20 × 25 m mit einer breiten Linie an jedem Ende','Teams zu 3, ein Ballvorrat an jeder Linie'],rot:'Nach 2 Minuten spielt jedes Team gegen ein anderes.',
+ ablauf:['Freies Spiel 3 gegen 3: Jedes Team greift die gegnerische Linie an und verteidigt die eigene.','Punkt, wenn ein Kind den Ball über die gegnerische Linie dribbelt und dahinter mit der Sohle stoppt.','Ist vor dem Kind Platz, dribbelt es los. Ist vorne zu, sucht es den Platz außen oder spielt zu einem freien Kind.','Nach einem Punkt startet das andere Team sofort mit neuem Ball von seiner Linie, ohne Pause.'],
  coach:[['Raum','dorthin dribbeln, wo Platz ist'],['Breite','auseinanderstehen'],['Tempo','schnell nach vorne, wenn Platz ist']],
  last:['4 Spiele à 2 Minuten'],steig:['Punkt nur nach Pass','Linie nur in der Mitte gültig','4 gegen 4']},
  'Feld 25 × 35 m, 4 gegen 4. Punkt zählt doppelt, wenn der Ball über die Linie gepasst und dort angenommen wird.'),
@@ -8491,7 +8491,7 @@ KJ('verteidigung',{id:'gegenpress55',title:'Gegenpressing 5 gegen 5',legend:['te
 KJ('verteidigung',{id:'drittel33',title:'3 gegen 3 im letzten Drittel',legend:['angreifer','verteidiger','torfrau','minitor','ball'],chips:ch('Verteidigen vor dem Tor','6 Spielerinnen plus Torfrau','30 × 35 m','12–15 min','Bälle, 2 Minitore'),
  ziel:'Drei Verteidigerinnen und die Torfrau verteidigen gegen drei Angreiferinnen. Nach Ballgewinn kontern sie auf zwei Minitore. Verteidigen in Gleichzahl im eigenen Drittel.',
  org:['Feld 30 × 35 m vor dem großen Tor','Zwei Minitore an der Mittellinie'],rot:'Nach 4 Angriffen tauschen.',
- ablauf:['Angriff startet an der Mittellinie.','3 gegen 3 bis zum Abschluss.','Ballgewinn: Konter auf ein Minitor.','Neuer Angriff.'],
+ ablauf:['Drei Angreiferinnen starten mit Ball an der Mittellinie, drei Verteidigerinnen und die Torfrau erwarten sie vor dem Strafraum.','Die Verteidigerinnen schließen die Mitte, lenken nach außen und decken im Strafraum eng an der Gegnerin.','Nach Ballgewinn oder Parade kontern die Verteidigerinnen auf eines der zwei Minitore an der Mittellinie.','Danach startet sofort der nächste Angriff.'],
  coach:[['Zentrum','die Mitte schließen'],['Gegenspielerin','eng an der Gegnerin im Strafraum'],['Konter','nach Ballgewinn schnell umschalten']],
  last:['4 × 3 Minuten'],steig:['Angreiferinnen mit Joker','Zeitlimit','Mehr Angreiferinnen']},
  'U13/U14 genau so, Feld etwas größer.'),
@@ -8541,7 +8541,7 @@ KJ('angriff',{id:'dreizweiwelle',title:'3 gegen 2 in Wellen',legend:['angreifer'
 KJ('angriff',{id:'vierdrei',title:'4 gegen 3 mit Konter',legend:['angreifer','verteidiger','torfrau','minitor','ball'],chips:ch('Überzahl · Torabschluss','7 Spielerinnen plus Torfrau','Halbes Feld','15 min','Bälle, 2 Minitore'),
  ziel:'Vier Angreiferinnen gegen drei Verteidigerinnen und die Torfrau. Überzahl schnell ausspielen. Die Abwehr kontert nach Ballgewinn auf zwei Minitore.',
  org:['Halbes Feld','Zwei Minitore an der Mittellinie'],rot:'Nach 5 Angriffen tauschen.',
- ablauf:['Angriff von der Mittellinie.','4 gegen 3 bis zum Abschluss.','Ballgewinn: Konter.','Neuer Angriff.'],
+ ablauf:['Vier Angreiferinnen starten mit Ball an der Mittellinie und greifen das große Tor an.','Sie spielen die Überzahl schnell aus: die freie Spielerin finden und abschließen. Eine Angreiferin bleibt als Absicherung hinter dem Ball.','Erobern die drei Verteidigerinnen oder die Torfrau den Ball, kontern sie auf zwei Minitore an der Mittellinie. Die Angreiferinnen schalten sofort um und verteidigen.','Neuer Angriff von der Mittellinie.'],
  coach:[['Überzahl','die freie Spielerin finden'],['Tempo','schnell spielen'],['Restverteidigung','eine Spielerin sichert hinten']],
  last:['3 × 5 Minuten'],steig:['Zeitlimit','Kontaktbegrenzung','Tore nach Flanke doppelt']},
  'U13/U14 im größeren Feld.'),
@@ -9826,7 +9826,7 @@ zweieins_v:{ziel:'Das Kind verteidigt allein gegen zwei, stellt die Ballführend
  leicht:['1 gegen 1 + passiv (Stufe 1)','Schmaleres Feld','Größeres Minitor für die Konter'],
  steig:['2 gegen 1 (Stufe 2)','Breiteres Feld','Hilfe kommt (Stufe 3)']},
 zweizwei_v:{ziel:'Das Kind verteidigt zu zweit: Eine geht zum Ball, die andere sichert dahinter. Im Spiel: Absprache in der Verteidigung.',
- stufen:[['Stufe 1 · Überzahl','2 gegen 1 verteidigen: Eine geht, eine sichert.'],['Stufe 2 · 2 gegen 2','Punkt über die Linie für beide Teams.'],['Stufe 3 · Schmale Linie','Die Linie ist schmaler, nach Ballgewinn muss über die Linie gedribbelt werden.']],
+ stufen:[['Stufe 1 · Überzahl','2 gegen 1 verteidigen: Eine geht, eine sichert.'],['Stufe 2 · 2 gegen 2','Blau greift zu zweit an. Ballgewinn oder Ball im Aus ist ein Punkt für Rot.'],['Stufe 3 · Schmale Linie','Die Linie von Rot ist schmaler. Rot punktet nach Ballgewinn nur, wenn es selbst über die Linie von Blau dribbelt.']],
  coach:[['Eine geht, eine sichert','Erkennbar: Die beiden Verteidigerinnen stehen nicht nebeneinander, sondern hintereinander versetzt.'],['Rufen','„Ich geh!“, „Ich sichere!“'],['Zurück','Nach Ballverlust sofort zurück. Fehlerbild: Beide laufen zum Ball und die andere Angreiferin ist frei.'],['Ball erobert','Sofort nach vorne.']],
  last:['Dauer: 4 Spiele à 90 Sekunden','Wartezeit: keine','Pro Kind: ca. 15 Ballkontakte pro Spiel','Intensität: hoch'],
  leicht:['Überzahl (Stufe 1)','Schmaleres Feld','Kürzeres Feld'],
