@@ -1090,7 +1090,9 @@ dialog.login-dlg{width:min(460px,calc(100vw - 24px))}
 (function(){var on=false;try{var q=new URLSearchParams(location.search).get('test');
 if(q!==null){if(q==='aus'||q==='0'){try{localStorage.removeItem('hi-test');}catch(e){}}else{on=true;try{localStorage.setItem('hi-test','1');}catch(e){}}}
 try{if(localStorage.getItem('hi-test')==='1')on=true;}catch(e){}}catch(e){}
-if(on)document.documentElement.classList.add('testmode');})();</script>
+if(on){document.documentElement.classList.add('testmode');
+/* Auf dem Home-Bildschirm startet die App mit eigener Adresse und eigenem Speicher: Test-Manifest mit start_url ./?test, damit der Testmodus erhalten bleibt */
+try{var ml=document.querySelector('link[rel="manifest"]');if(ml)ml.setAttribute('href','manifest-test.webmanifest');}catch(e){}}})();</script>
 <style>
 /* ---------- Testmodus und Bewertungsbogen ---------- */
 .test-banner{display:none}
